@@ -1624,7 +1624,8 @@
       }
 
       const regCodes = getRegistrationCodes();
-      const validCodeObj = regCodes.find(c => c.code.toLowerCase() === code.toLowerCase() && c.grade === grade);
+      // تعديل مطابقة الأكواد بدقة تامة وبدون مشاكل في الحروف
+      const validCodeObj = regCodes.find(c => c.code.trim().toUpperCase() === code.trim().toUpperCase() && c.grade === grade);
 
       if (!validCodeObj) {
         systemMsg.innerText = "❌ كود السنتر غير صحيح أو غير مخصص لهذا الصف الدراسي! اطلب الكود من مستر يوسف.";
@@ -1950,7 +1951,8 @@
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
       const code = document.getElementById("input-promo-code").value.trim();
       const promos = getPromos();
-      const idx = promos.findIndex(p => p.code === code && p.grade === currentActiveStudent.grade && !p.used);
+      // تعديل مطابقة كود الشحن بدقة تامة ليتوافق مع الحروف والمسافات
+      const idx = promos.findIndex(p => p.code.trim().toUpperCase() === code.trim().toUpperCase() && p.grade === currentActiveStudent.grade && !p.used);
 
       if (idx !== -1) {
         promos[idx].used = true;
