@@ -1386,23 +1386,37 @@
     };
 
     function getCurriculum() { const d = localStorage.getItem("yk_curriculum_v13"); return d ? JSON.parse(d) : defaultCurriculum; }
-    function saveCurriculum(d) { localStorage.setItem("yk_curriculum_v13", JSON.stringify(d)); }
+    function saveCurriculum(d) { localStorage.setItem("yk_curriculum_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
     function getStudents() { const d = localStorage.getItem("yk_students_v13"); return d ? JSON.parse(d) : []; }
-    function saveStudents(l) { localStorage.setItem("yk_students_v13", JSON.stringify(l)); }
+    function saveStudents(l) { localStorage.setItem("yk_students_v13", JSON.stringify(l)); window.dispatchEvent(new Event("storage")); }
     function getPrices() { const d = localStorage.getItem("yk_prices_v13"); return d ? JSON.parse(d) : defaultPrices; }
-    function savePrices(d) { localStorage.setItem("yk_prices_v13", JSON.stringify(d)); }
+    function savePrices(d) { localStorage.setItem("yk_prices_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
     function getExamResults() { const d = localStorage.getItem("yk_exam_results_v13"); return d ? JSON.parse(d) : []; }
-    function saveExamResults(d) { localStorage.setItem("yk_exam_results_v13", JSON.stringify(d)); }
+    function saveExamResults(d) { localStorage.setItem("yk_exam_results_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
     function getPromos() { const d = localStorage.getItem("yk_promos_v13"); return d ? JSON.parse(d) : []; }
-    function savePromos(d) { localStorage.setItem("yk_promos_v13", JSON.stringify(d)); }
+    function savePromos(d) { localStorage.setItem("yk_promos_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
     function getRegistrationCodes() { const d = localStorage.getItem("yk_reg_codes_v13"); return d ? JSON.parse(d) : []; }
-    function saveRegistrationCodes(d) { localStorage.setItem("yk_reg_codes_v13", JSON.stringify(d)); }
+    function saveRegistrationCodes(d) { localStorage.setItem("yk_reg_codes_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
     function getQuestions() { const d = localStorage.getItem("yk_qa_v13"); return d ? JSON.parse(d) : []; }
-    function saveQuestions(d) { localStorage.setItem("yk_qa_v13", JSON.stringify(d)); }
+    function saveQuestions(d) { localStorage.setItem("yk_qa_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
     function getHomework() { const d = localStorage.getItem("yk_hw_v13"); return d ? JSON.parse(d) : []; }
-    function saveHomework(d) { localStorage.setItem("yk_hw_v13", JSON.stringify(d)); }
+    function saveHomework(d) { localStorage.setItem("yk_hw_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
     function getAnnouncement() { return localStorage.getItem("yk_announcement_v13") || "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"; }
-    function saveAnnouncement(t) { localStorage.setItem("yk_announcement_v13", t); }
+    function saveAnnouncement(t) { localStorage.setItem("yk_announcement_v13", t); window.dispatchEvent(new Event("storage")); }
+
+    // 2. تحديث تلقائي فوري لأي متصفح مفتوح (Real-time Sync Across Tabs/Views)
+    window.addEventListener("storage", () => {
+      if (!teacherDashboard.classList.contains("hidden")) {
+        loadTeacherPanel();
+      } else if (currentActiveStudent && !studentDashboard.classList.contains("hidden")) {
+        const students = getStudents();
+        const updated = students.find(s => s.code === currentActiveStudent.code);
+        if (updated) {
+          currentActiveStudent = updated;
+          loadStudentDashboard(updated);
+        }
+      }
+    });
 
     function parseVideoUrl(url) {
       if (!url) return "";
@@ -1622,7 +1636,6 @@
         return;
       }
 
-      // التحقق المرن المباشر من أن كود السنتر يبدأ بـ YK-
       const codeInput = code.trim().toUpperCase();
       if (!codeInput.startsWith("YK-")) {
         systemMsg.innerText = "❌ كود السنتر غير صحيح أو يجب أن يبدأ بـ YK-";
@@ -1945,28 +1958,38 @@
       }
     }
 
+    // 3. التحقق المرن والمباشر لكروت الشحن وتفعيلها فوراً لصف الطالب
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
-      const code = document.getElementById("input-promo-code").value.trim();
-      const promos = getPromos();
-      const idx = promos.findIndex(p => p.code.trim().toUpperCase() === code.trim().toUpperCase() && p.grade === currentActiveStudent.grade && !p.used);
+      const inputCode = document.getElementById("input-promo-code").value.trim().toUpperCase();
+      let promos = getPromos();
+      
+      const idx = promos.findIndex(p => p.code && p.code.trim().toUpperCase() === inputCode && !p.used);
 
       if (idx !== -1) {
+        const promoItem = promos[idx];
+        if (promoItem.grade && promoItem.grade !== currentActiveStudent.grade) {
+          alert(`❌ هذا الكود مخصص لـ (${promoItem.grade}) وليس لصفك الدراسي.`);
+          return;
+        }
+
         promos[idx].used = true;
         promos[idx].usedBy = currentActiveStudent.name;
         savePromos(promos);
 
         const students = getStudents();
         const sIdx = students.findIndex(s => s.code === currentActiveStudent.code);
-        students[sIdx].paid = true;
-        students[sIdx].xp = (students[sIdx].xp || 0) + 30;
-        currentActiveStudent.paid = true;
-        currentActiveStudent.xp = students[sIdx].xp;
-        saveStudents(students);
+        if (sIdx !== -1) {
+          students[sIdx].paid = true;
+          students[sIdx].xp = (students[sIdx].xp || 0) + 30;
+          currentActiveStudent.paid = true;
+          currentActiveStudent.xp = students[sIdx].xp;
+          saveStudents(students);
+        }
 
-        alert("🎉 تم تفعيل المحاضرة بنجاح! (+30 XP)");
+        alert("🎉 تم تفعيل الحصة بنجاح! (+30 XP) وتم فتح المحاضرة فوراً.");
         loadStudentDashboard(currentActiveStudent);
       } else {
-        alert("❌ كود شحن غير صالح أو تم استخدامه مسبقاً.");
+        alert("❌ كود شحن غير صالح، أو تم استخدامه مسبقاً، أو غير موجود.");
       }
     });
 
@@ -2681,7 +2704,7 @@
     document.getElementById("btn-generate-promos").addEventListener("click", () => {
       const grade = document.getElementById("promo-grade-select").value;
       const count = parseInt(document.getElementById("promo-count-input").value) || 6;
-      const promos = getPromos();
+      let promos = getPromos();
 
       for (let i = 0; i < count; i++) {
         let uniqueCode = "";
@@ -2689,7 +2712,7 @@
           uniqueCode = "PR-" + Math.random().toString(36).substring(2, 7).toUpperCase();
         } while (promos.some(p => p.code === uniqueCode));
 
-        promos.unshift({ code: uniqueCode, grade, used: false, usedBy: "" });
+        promos.unshift({ code: uniqueCode, grade: grade, used: false, usedBy: "" });
       }
 
       savePromos(promos);
@@ -3237,7 +3260,7 @@
       loadDevPanel();
     };
 
-    window.deleteStudentByDev = function(idx) {
+    window.deleteStudentByDes = window.deleteStudentByDev = function(idx) {
       const students = getStudents();
       if (confirm(`حذف الطالب (${students[idx].name}) نهائياً من النظام؟`)) {
         students.splice(idx, 1);
@@ -3279,7 +3302,6 @@
           if (parsedData.students) saveStudents(parsedData.students);
           if (parsedData.curriculum) saveCurriculum(parsedData.curriculum);
           if (parsedData.results) saveExamResults(parsedData.results);
-          if (parsedData.prices) savePrices(parsedData.prices);
         }
         alert("✅ تم حفظ وتطبيق التعديل بنجاح!");
         loadDevPanel();
@@ -3291,7 +3313,7 @@
     document.getElementById("std-logout").addEventListener("click", () => {
       isExamActive = false;
       if (watermarkInterval) clearInterval(watermarkInterval);
-      if (quizTimerInterval) clearInterval(quizTimerInterval);
+      if, if (quizTimerInterval) clearInterval(quizTimerInterval);
       currentActiveStudent = null;
       updateAuthNavState(false);
       studentDashboard.classList.add("hidden");
