@@ -1958,6 +1958,7 @@
       }
     }
 
+    // تفعيل كروت الشحن بدقة تامة ومطابقة مريحة
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
       const inputCode = document.getElementById("input-promo-code").value.trim().toUpperCase();
       let promos = getPromos();
@@ -2011,8 +2012,9 @@
           students[idx].receiptImg = receiptImg;
           saveStudents(students);
           currentActiveStudent.senderWallet = senderPhone;
-          statusMsg.innerText = "✅ تم استلام طلبك! سيتم تفعيل الحصة فور التأكيد.";
+          statusMsg.innerText = "✅ تم إرسال طلبك للمستر بنجاح! سيتم تفعيل الحصة فوراً.";
           statusMsg.style.color = "var(--success)";
+          renderTeacherPayments();
         }
       };
 
