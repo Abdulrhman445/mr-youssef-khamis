@@ -2306,7 +2306,7 @@
       
       isExamActive = true;
       cheatWarningsCount = 0;
-      document.getElementById("anti-cheat-alert").classList.add("hidden");
+      document.getElementById("anti-cheat-alert").classList.remove("hidden");
       document.getElementById("quiz-popup-modal").classList.remove("hidden");
       renderQuizQuestions(currentExamQuestions);
       startQuizTimer(duration);
@@ -3322,6 +3322,35 @@
       authSection.classList.remove("hidden");
       updateAuthNavState(false);
       tabLogin.click();
+    });
+
+    // === كود الربط التلقائي مع Google Sheets API ===
+    async function fetchLessonsFromGoogleSheet() {
+      const sheetApiUrl = "https://script.google.com/macros/s/AKfycbxUnT0EIwVjEx8jNY9d6y8KOsNj-W9lSiOAu_I112Tcalvb4zO1PlpsF_wX7SANQGzH0Q/exec";
+      try {
+        const response = await fetch(sheetApiUrl);
+        const data = await response.json();
+        console.log("تم سحب البيانات من الشيت بنجاح:", data);
+        if (data && data.length > 0) {
+          const curr = getCurriculum();
+          data.forEach(item => {
+            if (item.title && item.url) {
+              const targetGrade = "الصف الأول الابتدائي";
+              if (!curr[targetGrade]) curr[targetGrade] = { questions: [] };
+              curr[targetGrade].videoTitle = item.title;
+              curr[targetGrade].videoUrl = item.url;
+              curr[targetGrade].videoType = item.type === "pdf" ? "pdf" : "youtube";
+            }
+          });
+          saveCurriculum(curr);
+        }
+      } catch (error) {
+        console.error("خطأ أثناء سحب البيانات من جوجل شيت:", error);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchLessonsFromGoogleSheet();
     });
   </script>
 </body>
