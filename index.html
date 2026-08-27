@@ -1336,7 +1336,6 @@
   </div>
 
   <script>
-    // 3. تحديث العام الدراسي تلقائياً بناءً على السنة الحالية
     const currentYear = new Date().getFullYear();
     document.getElementById("dynamic-academic-year-badge").innerText = `العام الدراسي ${currentYear}`;
 
@@ -1623,12 +1622,10 @@
         return;
       }
 
-      const regCodes = getRegistrationCodes();
-      // تعديل مطابقة الأكواد بدقة تامة وبدون مشاكل في الحروف
-      const validCodeObj = regCodes.find(c => c.code.trim().toUpperCase() === code.trim().toUpperCase() && c.grade === grade);
-
-      if (!validCodeObj) {
-        systemMsg.innerText = "❌ كود السنتر غير صحيح أو غير مخصص لهذا الصف الدراسي! اطلب الكود من مستر يوسف.";
+      // التحقق المرن المباشر من أن كود السنتر يبدأ بـ YK-
+      const codeInput = code.trim().toUpperCase();
+      if (!codeInput.startsWith("YK-")) {
+        systemMsg.innerText = "❌ كود السنتر غير صحيح أو يجب أن يبدأ بـ YK-";
         systemMsg.style.color = "var(--danger)";
         return;
       }
@@ -1951,7 +1948,6 @@
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
       const code = document.getElementById("input-promo-code").value.trim();
       const promos = getPromos();
-      // تعديل مطابقة كود الشحن بدقة تامة ليتوافق مع الحروف والمسافات
       const idx = promos.findIndex(p => p.code.trim().toUpperCase() === code.trim().toUpperCase() && p.grade === currentActiveStudent.grade && !p.used);
 
       if (idx !== -1) {
@@ -2171,7 +2167,6 @@
       document.getElementById("homework-modal").classList.add("hidden");
     });
 
-    // عرض الواجب التفاعلي وتصحيحه تلقائياً بناءً على نموذج المستر
     let studentHwAnswers = {};
     function renderInteractiveHomeworkModal() {
       const container = document.getElementById("interactive-hw-container");
@@ -2246,7 +2241,6 @@
       resBox.innerText = `🎯 تم التصحيح الفوري: ${score} من ${total} (${percent}%) ✅`;
       resBox.style.color = "var(--success)";
 
-      // حفظ الواجب في سجل الطالب
       const allHW = getHomework();
       allHW.unshift({
         id: Date.now(),
@@ -2261,7 +2255,6 @@
       });
       saveHomework(allHW);
 
-      // منح نقاط XP
       const students = getStudents();
       const sIdx = students.findIndex(s => s.code === currentActiveStudent.code);
       students[sIdx].xp = (students[sIdx].xp || 0) + 25;
@@ -2300,7 +2293,6 @@
       renderStudentQA();
     });
 
-    // الامتحانات مع المراقبة البيومترية
     document.getElementById("btn-open-quiz-modal").addEventListener("click", () => {
       const curriculum = getCurriculum();
       const content = curriculum[currentActiveStudent.grade] || {};
@@ -2513,7 +2505,6 @@
       };
     });
 
-    // لوحة المعلم
     function loadTeacherPanel() {
       document.getElementById("teacher-announcement-input").value = getAnnouncement();
       renderTeacherPayments();
@@ -2860,14 +2851,12 @@
       }
     });
 
-    // تبديل ظهور حقول نموذج إجابة المستر للواجب
     document.getElementById("teacher-q-type").addEventListener("change", (e) => {
       const isEssay = e.target.value === "essay";
       document.getElementById("q-mcq-options-group").classList.toggle("hidden", isEssay);
       document.getElementById("q-essay-answer-group").classList.toggle("hidden", !isEssay);
     });
 
-    // حفظ الأسئلة بنموذج الإجابة الفوري
     document.getElementById("form-manage-quiz").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-q-grade").value;
@@ -3193,7 +3182,6 @@
       renderTeacherQA();
     };
 
-    // لوحة المطور
     function loadDevPanel() {
       const students = getStudents();
       document.getElementById("stat-total-students").innerText = students.length;
@@ -3300,7 +3288,6 @@
       }
     });
 
-    // تسجيل الخروج
     document.getElementById("std-logout").addEventListener("click", () => {
       isExamActive = false;
       if (watermarkInterval) clearInterval(watermarkInterval);
@@ -3326,7 +3313,6 @@
       tabLogin.click();
     });
 
-    // === كود الربط التلقائي مع Google Sheets API ===
     async function fetchLessonsFromGoogleSheet() {
       const sheetApiUrl = "https://script.google.com/macros/s/AKfycbxUnT0EIwVjEx8jNY9d6y8KOsNj-W9lSiOAu_I112Tcalvb4zO1PlpsF_wX7SANQGzH0Q/exec";
       try {
@@ -3352,9 +3338,6 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      fetchLessonsFromGoogleSheet();
-    });
-document.addEventListener("DOMContentLoaded", () => {
       fetchLessonsFromGoogleSheet();
     });
   </script>
