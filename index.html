@@ -1404,7 +1404,7 @@
     function getAnnouncement() { return localStorage.getItem("yk_announcement_v13") || "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"; }
     function saveAnnouncement(t) { localStorage.setItem("yk_announcement_v13", t); window.dispatchEvent(new Event("storage")); }
 
-    // 2. تحديث تلقائي فوري لأي متصفح مفتوح (Real-time Sync Across Tabs/Views)
+    // التحديث الفوري التلقائي (Real-time Sync Across Tabs/Views)
     window.addEventListener("storage", () => {
       if (!teacherDashboard.classList.contains("hidden")) {
         loadTeacherPanel();
@@ -1958,7 +1958,6 @@
       }
     }
 
-    // 3. التحقق المرن والمباشر لكروت الشحن وتفعيلها فوراً لصف الطالب
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
       const inputCode = document.getElementById("input-promo-code").value.trim().toUpperCase();
       let promos = getPromos();
@@ -3260,7 +3259,7 @@
       loadDevPanel();
     };
 
-    window.deleteStudentByDes = window.deleteStudentByDev = function(idx) {
+    window.deleteStudentByDev = function(idx) {
       const students = getStudents();
       if (confirm(`حذف الطالب (${students[idx].name}) نهائياً من النظام؟`)) {
         students.splice(idx, 1);
@@ -3313,7 +3312,7 @@
     document.getElementById("std-logout").addEventListener("click", () => {
       isExamActive = false;
       if (watermarkInterval) clearInterval(watermarkInterval);
-      if, if (quizTimerInterval) clearInterval(quizTimerInterval);
+      if (quizTimerInterval) clearInterval(quizTimerInterval);
       currentActiveStudent = null;
       updateAuthNavState(false);
       studentDashboard.classList.add("hidden");
