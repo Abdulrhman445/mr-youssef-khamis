@@ -557,7 +557,7 @@
           <!-- شاشة الدفع -->
           <div id="payment-gate-box" class="payment-gate-box hidden anime-slide-up">
             <div class="lock-icon">🔒</div>
-            <h3>هذه المحاضرة تتطلب تفعيل الاشتراك أو كود شحن فوري</h3>
+            <h3>هذه المحاضرة تتطلب تفعيل كود شحن لهذه الحصة أو تأكيد التحويل</h3>
             <p class="price-tag">سعر الحصة المخصص لهذا الدرس: <strong id="display-lesson-price">0</strong> جنيه مصري</p>
             
             <div class="quick-code-box">
@@ -582,12 +582,12 @@
             </div>
             
             <div class="payment-confirm-form">
-              <p>أدخل رقم المحفظة المحول منها (11 رقم) وأرفق صورة التحويل:</p>
+              <p>أدخل رقم المحفظة المحول منها (11 رقم) وأرفق صورة إيصال التحويل:</p>
               <div class="grid-2col" style="margin-top: 10px;">
                 <input type="tel" id="pay-sender-phone" placeholder="رقم المحفظة (01xxxxxxxxx)" maxlength="11" required>
-                <input type="file" id="pay-receipt-file" accept="image/*">
+                <input type="file" id="pay-receipt-file" accept="image/*" required>
               </div>
-              <button id="btn-request-activation" class="btn btn-success btn-full" type="button">إرسال طلب التفعيل للمستر</button>
+              <button id="btn-request-activation" class="btn btn-success btn-full" type="button">إرسال طلب التفعيل للمستر مع الإيصال</button>
               <p id="payment-status-msg" class="system-msg"></p>
             </div>
           </div>
@@ -799,21 +799,22 @@
             </div>
           </div>
 
-          <!-- 2. المشتركون (تم تنسيق الأعمدة وحذف زر الواتساب اليدوي وإضافة زر الحذف بالكامل) -->
+          <!-- 2. المشتركون (يظهر إيصال التحويل ورقم المحفظة مع زر التفعيل للحصة المحددة) -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">💳 المشتركون، التحكم في المشاهدات، وبيانات الطلاب</h3>
+              <h3 class="box-title">💳 المشتركون، إيصالات التحويل، والتحكم في المشاهدات</h3>
               <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
                     <tr>
                       <th>اسم الطالب</th>
                       <th>الصف</th>
+                      <th>المحفظة / الإيصال</th>
                       <th>المشاهدات</th>
                       <th>إعادة تعيين (فك الحظر)</th>
                       <th>الحالة</th>
                       <th>الملف الشامل</th>
-                      <th>تفعيل الاشتراك</th>
+                      <th>تفعيل الحصة</th>
                       <th>إجراء (حذف)</th>
                     </tr>
                   </thead>
@@ -1195,7 +1196,7 @@
     <!-- نافذة الكلمات -->
     <div id="vocab-modal" class="quiz-popup-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:480px;">
-        <h3 class="box-title">🗂️ بنك الكلمات الصوتية للحصة</h3>
+        <h3 class="box-title">ّه بنك الكلمات الصوتية للحصة</h3>
         <div id="flashcard-box" class="flashcard-display" style="text-align:center; padding:15px;">
           <div id="fc-word" class="fc-word-text" style="font-size:1.4rem; font-weight:bold; color:var(--primary-glow);">Word</div>
           <div id="fc-meaning" class="fc-meaning-text" style="font-size:1.1rem; margin:8px 0;">المعنى بالعربية</div>
@@ -1668,7 +1669,6 @@
       systemMsg.innerText = "🎉 تم إنشاء حسابك بنجاح! يمكنك الدخول الآن.";
       systemMsg.style.color = "var(--success)";
 
-      // إشعار تلقائي عبر الواتساب عند التسجيل الناجح
       const welcomeText = encodeURIComponent(`مرحباً بك يا ${name} في أكاديمية مستر يوسف خميس للغة الإنجليزية! تم تسجيل حسابك بنجاح.`);
       window.open(`https://wa.me/2${phone}?text=${welcomeText}`, "_blank");
     });
@@ -1866,7 +1866,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض المحاضرات للطالب (مع تفعيل الحصة الفردية عبر الكود أو اشتراك الحساب)
+    // عرض المحاضرات للطالب مع دعم فتح الحصة المفعلة حصرياً عبر الكود أو تفعيل المستر
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -1901,7 +1901,6 @@
             if (btnBackCatalog) btnBackCatalog.classList.remove("hidden");
             const prices = getPrices();
             document.getElementById("display-lesson-price").innerText = prices[student.grade] || 50;
-            // تخزين معرف الدرس الحالي المراد فتحه بعد تفعيل الكود
             window.targetLessonToUnlock = lesson.id;
           } else {
             openLessonPlayer(student, lesson);
@@ -1980,7 +1979,7 @@
       }
     }
 
-    // تفعيل كود شحن الحصة (يفعل فيديو واحد فقط المرتبط بالكرت أو الحصة المختارة)
+    // تفعيل الكرت (يفعل فيديو واحد فقط المرتبط بالكرت أو الحصة المستهدفة)
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
       const inputCode = document.getElementById("input-promo-code").value.trim().toUpperCase();
       let promos = getPromos();
@@ -2005,7 +2004,7 @@
             students[sIdx].unlockedLessons = [];
           }
           
-          let lessonToUnlock = window.targetLessonToUnlock;
+          let lessonToUnlock = promoItem.lessonId || window.targetLessonToUnlock;
           if (!lessonToUnlock) {
             const curr = getCurriculum();
             const lessons = curr[currentActiveStudent.grade] || [];
@@ -2025,15 +2024,12 @@
 
         alert("🎉 تم تفعيل الحصة بنجاح! وتم فتح هذه المحاضرة فقط لحسابك.");
         loadStudentDashboard(currentActiveStudent);
-
-        // إشعار تلقائي عبر الواتساب عند التفعيل الناجح
-        const successText = encodeURIComponent(`تم بنجاح تفعيل حصتك الدراسية في منصة مستر يوسف خميس 🌟.`);
-        window.open(`https://wa.me/2${currentActiveStudent.parentPhone}?text=${successText}`, "_blank");
       } else {
         alert("❌ كود الشحن غير صالح، أو تم استخدامه مسبقاً.");
       }
     });
 
+    // إرسال طلب تفعيل التحويل الإلكتروني مع صورة الإيصال ورقم المحفظة للمستر
     document.getElementById("btn-request-activation").addEventListener("click", () => {
       const senderPhone = document.getElementById("pay-sender-phone").value.trim();
       const fileInput = document.getElementById("pay-receipt-file");
@@ -2045,30 +2041,28 @@
         return;
       }
 
-      const handleUpdate = (receiptImg = "") => {
+      if (!fileInput.files[0]) {
+        statusMsg.innerText = "⚠️ يرجى إرفاق صورة إيصال التحويل لتأكيد الطلب.";
+        statusMsg.style.color = "var(--danger)";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const receiptImg = e.target.result;
         const students = getStudents();
         const idx = students.findIndex(s => s.code === currentActiveStudent.code);
         if (idx !== -1) {
           students[idx].senderWallet = senderPhone;
           students[idx].receiptImg = receiptImg;
+          students[idx].pendingLessonId = window.targetLessonToUnlock || "";
           saveStudents(students);
-          currentActiveStudent.senderWallet = senderPhone;
-          statusMsg.innerText = "✅ تم إرسال طلب التفعيل للمستر بنجاح!";
+          currentActiveStudent = students[idx];
+          statusMsg.innerText = "✅ تم إرسال طلب التفعيل والإيصال للمستر بنجاح! سيتم المراجعة والفتح قريباً.";
           statusMsg.style.color = "var(--success)";
-
-          // إشعار تلقائي للمستر عبر الواتساب بطلب التفعيل
-          const waMsg = encodeURIComponent(`طلب تفعيل حصة للطالب: ${currentActiveStudent.name} (${currentActiveStudent.grade})\nرقم المحفظة: ${senderPhone}`);
-          window.open(`https://wa.me/201152039710?text=${waMsg}`, "_blank");
         }
       };
-
-      if (fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (e) => handleUpdate(e.target.result);
-        reader.readAsDataURL(fileInput.files[0]);
-      } else {
-        handleUpdate();
-      }
+      reader.readAsDataURL(fileInput.files[0]);
     });
 
     let activeVideoElForTimestamp = null;
@@ -2782,13 +2776,12 @@
         do {
           uniqueCode = "PR-" + Math.random().toString(36).substring(2, 7).toUpperCase();
         } while (promos.some(p => p.code === uniqueCode));
-        // ربط الكرت بفيديو واحد محدد (أحدث محاضرة)
         promos.unshift({ code: uniqueCode, grade: grade, lessonId: latestLessonId, used: false, usedBy: "" });
       }
 
       savePromos(promos);
       renderPromosList();
-      alert(`✅ تم توليد كروت الشحن المخصصة لفيديو واحد بنجاح!`);
+      alert(`✅ تم توليد كروت شحن تفعيل فيديو واحد بنجاح!`);
     });
 
     window.deletePromoCard = function(code) {
@@ -2882,7 +2875,6 @@
       });
     }
 
-    // رفع محاضرة جديدة وإضافتها للأرشيف وتحديث الجدول فوراً
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -3085,7 +3077,7 @@
       });
     }
 
-    // جدول المشتركون (تم تنسيق الأعمدة المطلوبة بالكامل مع زر الحذف والإجراءات بدون واتساب يدوي)
+    // جدول المشتركون (يظهر رقم المحفظة وصورة الإيصال ليتأكد المستر ويفعل الحصة المحددة فقط)
     function renderTeacherPayments() {
       const students = getStudents();
       const tbody = document.getElementById("teacher-payments-table");
@@ -3093,14 +3085,16 @@
       tbody.innerHTML = "";
       students.forEach((s, idx) => {
         const tr = document.createElement("tr");
+        const receiptHtml = s.receiptImg ? `<a href="${s.receiptImg}" target="_blank" style="color:#2563eb; font-weight:bold;">🖼️ عرض الإيصال</a><br><small>${s.senderWallet || ''}</small>` : (s.senderWallet ? `<code>${s.senderWallet}</code>` : "لم يرسل");
         tr.innerHTML = `
           <td><strong>${s.name}</strong></td>
           <td>${s.grade}</td>
+          <td>${receiptHtml}</td>
           <td><span class="badge-score-pill">${s.views || 0} / 3 مشاهدات</span></td>
           <td><button class="btn btn-accent btn-sm" type="button" onclick="resetStudentViews(${idx})">🔄 تصفير</button></td>
-          <td><span class="${s.paid ? 'status-badge-active' : 'status-badge-pending'}">${s.paid ? 'مفعلة' : 'في الانتظار'}</span></td>
+          <td><span class="${s.paid || (s.unlockedLessons && s.unlockedLessons.length > 0) ? 'status-badge-active' : 'status-badge-pending'}">${s.paid || (s.unlockedLessons && s.unlockedLessons.length > 0) ? 'مفعلة' : 'في الانتظار'}</span></td>
           <td><button class="btn btn-primary btn-sm" type="button" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td>
-          <td><button class="btn btn-success btn-sm" type="button" onclick="toggleStudentPayment(${idx})">${s.paid ? 'إلغاء' : 'تفعيل'}</button></td>
+          <td><button class="btn btn-success btn-sm" type="button" onclick="toggleStudentPayment(${idx})">${(s.paid || (s.unlockedLessons && s.unlockedLessons.length > 0)) ? 'إلغاء' : 'تفعيل'}</button></td>
           <td><button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByTeacher(${idx})">🗑️ حذف</button></td>
         `;
         tbody.appendChild(tr);
@@ -3125,7 +3119,7 @@
       document.getElementById("det-phone").innerText = s.phone || "—";
       document.getElementById("det-parent-phone").innerText = s.parentPhone || "—";
       document.getElementById("det-xp").innerText = `${s.xp || 0} XP`;
-      document.getElementById("det-paid").innerText = s.paid ? "مفعل ✅" : "غير مفعل ❌";
+      document.getElementById("det-paid").innerText = (s.paid || (s.unlockedLessons && s.unlockedLessons.length > 0)) ? "مفعل ✅" : "غير مفعل ❌";
       document.getElementById("det-device").innerText = s.deviceId || "غير مقفل";
       document.getElementById("det-views").innerText = `${s.views || 0} / 3`;
       document.getElementById("student-full-details-modal").classList.remove("hidden");
@@ -3153,9 +3147,32 @@
     document.getElementById("btn-close-parent-modal").addEventListener("click", () => document.getElementById("parent-dashboard-modal").classList.add("hidden"));
     document.getElementById("btn-close-details-modal").addEventListener("click", () => document.getElementById("student-full-details-modal").classList.add("hidden"));
 
+    // عند تفعيل المستر للطالب من جدول المشتركون، يفتح له أحدث محاضرة أو المحاضرة المعلقة
     window.toggleStudentPayment = function(idx) {
       const students = getStudents();
-      students[idx].paid = !students[idx].paid;
+      const student = students[idx];
+      const isCurrentlyActive = student.paid || (student.unlockedLessons && student.unlockedLessons.length > 0);
+
+      if (!isCurrentlyActive) {
+        student.paid = true;
+        if (!student.unlockedLessons) student.unlockedLessons = [];
+        let lessonToOpen = student.pendingLessonId;
+        if (!lessonToOpen) {
+          const curr = getCurriculum();
+          const lessons = curr[student.grade] || [];
+          if (lessons.length > 0) {
+            lessonToOpen = lessons[lessons.length - 1].id;
+          }
+        }
+        if (lessonToOpen && !student.unlockedLessons.includes(lessonToOpen)) {
+          student.unlockedLessons.push(lessonToOpen);
+        }
+        alert(`✅ تم تفعيل الاشتراك وفتح الحصة للطالب (${student.name}) بنجاح!`);
+      } else {
+        student.paid = false;
+        student.unlockedLessons = [];
+        alert(`⚠️ تم إلغاء تفعيل الحصة عن الطالب (${student.name}).`);
+      }
       saveStudents(students);
       renderTeacherPayments();
     };
