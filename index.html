@@ -557,7 +557,7 @@
           <!-- شاشة الدفع -->
           <div id="payment-gate-box" class="payment-gate-box hidden anime-slide-up">
             <div class="lock-icon">🔒</div>
-            <h3>هذه المحاضرة تتطلب تفعيل كود شحن لهذه الحصة أو تأكيد التحويل</h3>
+            <h3>هذه المحاضرة تتطلب تفعيل كود الشحن أو التحويل الإلكتروني لهذه الحصة فقط</h3>
             <p class="price-tag">سعر الحصة المخصص لهذا الدرس: <strong id="display-lesson-price">0</strong> جنيه مصري</p>
             
             <div class="quick-code-box">
@@ -582,12 +582,12 @@
             </div>
             
             <div class="payment-confirm-form">
-              <p>أدخل رقم المحفظة المحول منها (11 رقم) وأرفق صورة إيصال التحويل:</p>
+              <p>أدخل رقم المحفظة المحول منها (11 رقم) وأرفق صورة إيصال التحويل لتصل للمستر فوراً:</p>
               <div class="grid-2col" style="margin-top: 10px;">
                 <input type="tel" id="pay-sender-phone" placeholder="رقم المحفظة (01xxxxxxxxx)" maxlength="11" required>
                 <input type="file" id="pay-receipt-file" accept="image/*" required>
               </div>
-              <button id="btn-request-activation" class="btn btn-success btn-full" type="button">إرسال طلب التفعيل للمستر مع الإيصال</button>
+              <button id="btn-request-activation" class="btn btn-success btn-full" type="button">إرسال طلب التفعيل والإيصال للمستر</button>
               <p id="payment-status-msg" class="system-msg"></p>
             </div>
           </div>
@@ -749,7 +749,7 @@
           </button>
           <div>
             <h2 style="font-size:1.2rem;">لوحة إدارة المعلم - مستر يوسف خميس</h2>
-            <p class="subtitle">التحكم في المناهج، أسعار الحصص، وتوليد أكواد السنتر الحصرية</p>
+            <p class="subtitle">التحكم في المناهج، أسعار الحصص لكل درس، وتوليد أكواد السنتر</p>
           </div>
         </div>
         <button id="teacher-logout" class="btn btn-danger btn-sm" type="button">خروج المعلم</button>
@@ -799,10 +799,10 @@
             </div>
           </div>
 
-          <!-- 2. المشتركون (يظهر إيصال التحويل ورقم المحفظة مع زر التفعيل للحصة المحددة) -->
+          <!-- 2. المشتركون (مع عرض صورة الإيصال ورقم المحفظة للمستر وتفعيل الحصة المعنية فقط) -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">💳 المشتركون، إيصالات التحويل، والتحكم في المشاهدات</h3>
+              <h3 class="box-title">💳 المشتركون، إيصالات التحويل، وتفعيل الحصص المفردة</h3>
               <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
@@ -845,22 +845,11 @@
             </div>
           </div>
 
-          <!-- 4. أسعار الحصص -->
+          <!-- 4. أسعار الحصص لكل درس على حدة -->
           <div id="t-sec-prices" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">💰 تحديد سعر كل حصة على حدة لكل صف دراسي</h3>
-              <div class="table-responsive">
-                <table class="custom-table">
-                  <thead>
-                    <tr>
-                      <th>المرحلة الدراسية</th>
-                      <th>سعر الحصة الحالي (جنيه)</th>
-                      <th>تعديل السعر</th>
-                    </tr>
-                  </thead>
-                  <tbody id="teacher-prices-table"></tbody>
-                </table>
-              </div>
+              <h3 class="box-title">💰 تحديد سعر كل حصة / درس على حدة لكل صف دراسي</h3>
+              <div id="teacher-prices-container"></div>
             </div>
           </div>
 
@@ -950,8 +939,12 @@
                   </select>
                 </div>
                 <div class="input-field">
-                  <label>عنوان المحاضرة:</label>
+                  <label>عنوان المحاضرة (اسم الحصة):</label>
                   <input type="text" id="teacher-v-title" placeholder="مثال: Unit 1 - Grammar" required>
+                </div>
+                <div class="input-field">
+                  <label>سعر هذه الحصة (بالجنيه):</label>
+                  <input type="number" id="teacher-v-price" placeholder="مثال: 50" value="50" min="0" required>
                 </div>
                 <div class="input-field">
                   <label>نوع المصدر:</label>
@@ -988,6 +981,7 @@
                     <tr>
                       <th>الصف</th>
                       <th>عنوان المحاضرة</th>
+                      <th>السعر</th>
                       <th>المذكرة PDF</th>
                       <th>الكلمات</th>
                       <th>إجراء</th>
@@ -1196,7 +1190,7 @@
     <!-- نافذة الكلمات -->
     <div id="vocab-modal" class="quiz-popup-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:480px;">
-        <h3 class="box-title">ّه بنك الكلمات الصوتية للحصة</h3>
+        <h3 class="box-title">🗂️ بنك الكلمات الصوتية للحصة</h3>
         <div id="flashcard-box" class="flashcard-display" style="text-align:center; padding:15px;">
           <div id="fc-word" class="fc-word-text" style="font-size:1.4rem; font-weight:bold; color:var(--primary-glow);">Word</div>
           <div id="fc-meaning" class="fc-meaning-text" style="font-size:1.1rem; margin:8px 0;">المعنى بالعربية</div>
@@ -1838,7 +1832,7 @@
       document.getElementById("prof-parent-phone").innerText = student.parentPhone;
       const profXp = document.getElementById("prof-xp");
       if (profXp) profXp.innerText = `${student.xp || 0} XP`;
-      document.getElementById("prof-status").innerText = (student.paid || (student.unlockedLessons && student.unlockedLessons.length > 0)) ? "مشترك ومفعل 🟢" : "غير مفعل (في الانتظار) 🟡";
+      document.getElementById("prof-status").innerText = (student.unlockedLessons && student.unlockedLessons.length > 0) ? "مشترك بحصص مفعلة 🟢" : "غير مفعل (في الانتظار) 🟡";
 
       const att = document.getElementById("std-attendance-status");
       att.innerText = "مسجل ومتابع بالمنصة والسنتر ✅";
@@ -1866,7 +1860,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض المحاضرات للطالب مع دعم فتح الحصة المفعلة حصرياً عبر الكود أو تفعيل المستر
+    // عرض المحاضرات للطالب مع التحقق من فتح الحصة بشكل فردي حصرياً
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -1882,25 +1876,26 @@
       const sortedLessons = [...lessonsArr].reverse();
 
       sortedLessons.forEach((lesson) => {
-        const isUnlocked = student.paid || (student.unlockedLessons && student.unlockedLessons.includes(lesson.id));
+        // الحصة تكون مفعلة فقط إذا كانت ضمن مصفوفة الحصص المفتوحة للطالب
+        const isLessonUnlocked = student.unlockedLessons && student.unlockedLessons.includes(lesson.id);
         const card = document.createElement("div");
         card.className = "lesson-card";
         card.innerHTML = `
-          <div class="icon" style="font-size:32px; margin-bottom:6px;">${isUnlocked ? "🔓" : "🔒"}</div>
+          <div class="icon" style="font-size:32px; margin-bottom:6px;">${isLessonUnlocked ? "🔓" : "🔒"}</div>
           <h4>${lesson.videoTitle || "محاضرة الأسبوع"}</h4>
           <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">${student.grade}</p>
-          <span class="status-pill ${isUnlocked ? 'status-unlocked' : 'status-locked'}">
-            ${isUnlocked ? 'مفعل ومتاح للمشاهدة' : 'تتطلب كود شحن لهذه الحصة أو تفعيل'}
+          <p style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold); margin-bottom:6px;">السعر: ${lesson.price || 50} جنيه</p>
+          <span class="status-pill ${isLessonUnlocked ? 'status-unlocked' : 'status-locked'}">
+            ${isLessonUnlocked ? 'مفعلة ومتاحة للمشاهدة' : 'تتطلب تفعيل هذه الحصة فقط'}
           </span>
         `;
 
         card.addEventListener("click", () => {
-          if (!isUnlocked) {
+          if (!isLessonUnlocked) {
             document.getElementById("student-courses-catalog").classList.add("hidden");
             document.getElementById("payment-gate-box").classList.remove("hidden");
             if (btnBackCatalog) btnBackCatalog.classList.remove("hidden");
-            const prices = getPrices();
-            document.getElementById("display-lesson-price").innerText = prices[student.grade] || 50;
+            document.getElementById("display-lesson-price").innerText = lesson.price || 50;
             window.targetLessonToUnlock = lesson.id;
           } else {
             openLessonPlayer(student, lesson);
@@ -1979,7 +1974,7 @@
       }
     }
 
-    // تفعيل الكرت (يفعل فيديو واحد فقط المرتبط بالكرت أو الحصة المستهدفة)
+    // تفعيل الكرت (يفعل الحصة المرتبطة بالكرت حصرياً)
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
       const inputCode = document.getElementById("input-promo-code").value.trim().toUpperCase();
       let promos = getPromos();
@@ -2005,14 +2000,6 @@
           }
           
           let lessonToUnlock = promoItem.lessonId || window.targetLessonToUnlock;
-          if (!lessonToUnlock) {
-            const curr = getCurriculum();
-            const lessons = curr[currentActiveStudent.grade] || [];
-            if (lessons.length > 0) {
-              lessonToUnlock = lessons[lessons.length - 1].id;
-            }
-          }
-
           if (lessonToUnlock && !students[sIdx].unlockedLessons.includes(lessonToUnlock)) {
             students[sIdx].unlockedLessons.push(lessonToUnlock);
           }
@@ -2022,14 +2009,14 @@
           saveStudents(students);
         }
 
-        alert("🎉 تم تفعيل الحصة بنجاح! وتم فتح هذه المحاضرة فقط لحسابك.");
+        alert("🎉 تم تفعيل هذه الحصة فقط بنجاح!");
         loadStudentDashboard(currentActiveStudent);
       } else {
         alert("❌ كود الشحن غير صالح، أو تم استخدامه مسبقاً.");
       }
     });
 
-    // إرسال طلب تفعيل التحويل الإلكتروني مع صورة الإيصال ورقم المحفظة للمستر
+    // إرسال طلب التحويل الإلكتروني مع صورة الإيصال ليراها المستر في لوحته
     document.getElementById("btn-request-activation").addEventListener("click", () => {
       const senderPhone = document.getElementById("pay-sender-phone").value.trim();
       const fileInput = document.getElementById("pay-receipt-file");
@@ -2042,7 +2029,7 @@
       }
 
       if (!fileInput.files[0]) {
-        statusMsg.innerText = "⚠️ يرجى إرفاق صورة إيصال التحويل لتأكيد الطلب.";
+        statusMsg.innerText = "⚠️ يرجى إرفاق صورة إيصال التحويل ليتمكن المستر من مراجعته.";
         statusMsg.style.color = "var(--danger)";
         return;
       }
@@ -2058,8 +2045,11 @@
           students[idx].pendingLessonId = window.targetLessonToUnlock || "";
           saveStudents(students);
           currentActiveStudent = students[idx];
-          statusMsg.innerText = "✅ تم إرسال طلب التفعيل والإيصال للمستر بنجاح! سيتم المراجعة والفتح قريباً.";
+          statusMsg.innerText = "✅ تم إرسال الإيصال وطلب التفعيل للمستر بنجاح!";
           statusMsg.style.color = "var(--success)";
+
+          const waMsg = encodeURIComponent(`طلب تفعيل حصة للطالب: ${currentActiveStudent.name} (${currentActiveStudent.grade})\nرقم المحفظة: ${senderPhone}`);
+          window.open(`https://wa.me/201152039710?text=${waMsg}`, "_blank");
         }
       };
       reader.readAsDataURL(fileInput.files[0]);
@@ -2626,7 +2616,7 @@
 
       const grades = Object.keys(curr);
       if (grades.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً. ابدأ برفع محاضرة جديدة.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً. ابدأ برفع محاضرة جديدة.</td></tr>";
         return;
       }
 
@@ -2638,6 +2628,7 @@
           tr.innerHTML = `
             <td><strong>${grade}</strong></td>
             <td><input type="text" id="edit-v-title-${grade}-${lessonIdx}" value="${item.videoTitle || ''}" style="width:100%; padding:4px;"></td>
+            <td><input type="number" id="edit-v-price-${grade}-${lessonIdx}" value="${item.price || 50}" style="width:70px; padding:4px;" min="0"></td>
             <td>${item.pdfData ? '📄 مرفقة ✅' : '❌ لا توجد'}</td>
             <td>${item.vocab ? item.vocab.length + ' كلمة' : '0'}</td>
             <td>
@@ -2654,11 +2645,13 @@
 
     window.saveCurriculumTitleEdit = function(grade, lessonIdx) {
       const newTitle = document.getElementById(`edit-v-title-${grade}-${lessonIdx}`).value.trim();
+      const newPrice = parseInt(document.getElementById(`edit-v-price-${grade}-${lessonIdx}`).value) || 50;
       const curr = getCurriculum();
       if (curr[grade] && curr[grade][lessonIdx]) {
         curr[grade][lessonIdx].videoTitle = newTitle;
+        curr[grade][lessonIdx].price = newPrice;
         saveCurriculum(curr);
-        alert(`✅ تم تحديث عنوان المحاضرة!`);
+        alert(`✅ تم تحديث بيانات المحاضرة بنجاح!`);
         renderTeacherCurriculumTable();
       }
     };
@@ -2732,34 +2725,59 @@
     };
 
     function renderTeacherPrices() {
-      const tbody = document.getElementById("teacher-prices-table");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-      const prices = getPrices();
+      const container = document.getElementById("teacher-prices-container");
+      if (!container) return;
+      container.innerHTML = "";
+      const curr = getCurriculum();
 
-      Object.keys(prices).forEach(grade => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><strong>${grade}</strong></td>
-          <td><strong style="color:var(--primary-glow); font-size:1.1rem;">${prices[grade]} ج.م</strong></td>
-          <td>
-            <div style="display:flex; gap:6px;">
-              <input type="number" id="price-input-${grade}" value="${prices[grade]}" min="0" style="width:90px; padding:4px;">
-              <button class="btn btn-success btn-sm" onclick="updateGradePrice('${grade}')">تحديث</button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
+      let hasLessons = false;
+      Object.keys(curr).forEach(grade => {
+        let lessons = curr[grade] || [];
+        if (!Array.isArray(lessons)) lessons = lessons ? [lessons] : [];
+        if (lessons.length > 0) {
+          hasLessons = true;
+          const gradeBox = document.createElement("div");
+          gradeBox.style.marginBottom = "15px";
+          gradeBox.innerHTML = `<h4 style="color:var(--primary-glow); margin-bottom:8px;">📚 ${grade}</h4>`;
+          
+          const table = document.createElement("table");
+          table.className = "custom-table";
+          table.innerHTML = `<thead><tr><th>عنوان الحصة</th><th>السعر الحالي</th><th>تعديل السعر</th></tr></thead><tbody id="price-tbody-${grade.replace(/\s+/g, '_')}"></tbody>`;
+          gradeBox.appendChild(table);
+          container.appendChild(gradeBox);
+
+          const tbody = document.getElementById(`price-tbody-${grade.replace(/\s+/g, '_')}`);
+          lessons.forEach((lesson, lIdx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td><strong>${lesson.videoTitle}</strong></td>
+              <td><strong style="color:var(--accent-gold);">${lesson.price || 50} ج.م</strong></td>
+              <td>
+                <div style="display:flex; gap:6px;">
+                  <input type="number" id="lesson-price-${grade}-${lIdx}" value="${lesson.price || 50}" min="0" style="width:90px; padding:4px;">
+                  <button class="btn btn-success btn-sm" onclick="saveLessonPrice('${grade}', ${lIdx})">حفظ السعر</button>
+                </div>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
       });
+
+      if (!hasLessons) {
+        container.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لا توجد محاضرات مرفوعة حالياً لتحديد أسعارها.</p>";
+      }
     }
 
-    window.updateGradePrice = function(grade) {
-      const newPrice = parseInt(document.getElementById(`price-input-${grade}`).value) || 0;
-      const prices = getPrices();
-      prices[grade] = newPrice;
-      savePrices(prices);
-      alert(`✅ تم تحديث سعر الحصة!`);
-      renderTeacherPrices();
+    window.saveLessonPrice = function(grade, lessonIdx) {
+      const newPrice = parseInt(document.getElementById(`lesson-price-${grade}-${lessonIdx}`).value) || 50;
+      const curr = getCurriculum();
+      if (curr[grade] && curr[grade][lessonIdx]) {
+        curr[grade][lessonIdx].price = newPrice;
+        saveCurriculum(curr);
+        alert(`✅ تم تحديث سعر هذه الحصة ليصبح: ${newPrice} ج.م!`);
+        renderTeacherPrices();
+      }
     };
 
     document.getElementById("btn-generate-promos").addEventListener("click", () => {
@@ -2781,7 +2799,7 @@
 
       savePromos(promos);
       renderPromosList();
-      alert(`✅ تم توليد كروت شحن تفعيل فيديو واحد بنجاح!`);
+      alert(`✅ تم توليد كروت الشحن المخصصة لتفعيل الفيديو المرتبط بها بنجاح!`);
     });
 
     window.deletePromoCard = function(code) {
@@ -2812,7 +2830,7 @@
           <h5>🌟 Mr. Youssef Academy</h5>
           <p style="font-size:0.75rem; color:#64748b;">${p.grade}</p>
           <div class="card-code-val">${p.code}</div>
-          <p style="font-size:0.7rem; color:${p.used ? '#ef4444' : '#10b981'}; font-weight:bold;">${p.used ? '❌ مستخدم' : '✅ يفعل فيديو واحد'}</p>
+          <p style="font-size:0.7rem; color:${p.used ? '#ef4444' : '#10b981'}; font-weight:bold;">${p.used ? '❌ مستخدم' : '✅ يفعل حصة واحدة'}</p>
         `;
         container.appendChild(card);
       });
@@ -2879,6 +2897,7 @@
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
       const title = document.getElementById("teacher-v-title").value.trim();
+      const price = parseInt(document.getElementById("teacher-v-price").value) || 50;
       const type = document.getElementById("teacher-v-type").value;
       const pdfFileInput = document.getElementById("teacher-pdf-file");
       const vocabRaw = document.getElementById("teacher-vocab-input").value.trim();
@@ -2897,6 +2916,7 @@
         const newLesson = {
           id: "les_" + Date.now(),
           videoTitle: title,
+          price: price,
           videoType: type,
           videoUrl: videoUrl,
           pdfData: pdfData,
@@ -3077,7 +3097,7 @@
       });
     }
 
-    // جدول المشتركون (يظهر رقم المحفظة وصورة الإيصال ليتأكد المستر ويفعل الحصة المحددة فقط)
+    // جدول المشتركون (يعرض صورة الإيصال ورقم المحفظة، وعند تفعيل المستر يتم فتح الحصة المحددة للطالب فقط)
     function renderTeacherPayments() {
       const students = getStudents();
       const tbody = document.getElementById("teacher-payments-table");
@@ -3085,16 +3105,17 @@
       tbody.innerHTML = "";
       students.forEach((s, idx) => {
         const tr = document.createElement("tr");
-        const receiptHtml = s.receiptImg ? `<a href="${s.receiptImg}" target="_blank" style="color:#2563eb; font-weight:bold;">🖼️ عرض الإيصال</a><br><small>${s.senderWallet || ''}</small>` : (s.senderWallet ? `<code>${s.senderWallet}</code>` : "لم يرسل");
+        const isUnlocked = s.unlockedLessons && s.unlockedLessons.length > 0;
+        const receiptHtml = s.receiptImg ? `<a href="${s.receiptImg}" target="_blank" style="color:#2563eb; font-weight:bold;">🖼️ عرض الإيصال</a><br><small>${s.senderWallet || ''}</small>` : (s.senderWallet ? `<code>${s.senderWallet}</code>` : "لم يرسل إيصال");
         tr.innerHTML = `
           <td><strong>${s.name}</strong></td>
           <td>${s.grade}</td>
           <td>${receiptHtml}</td>
           <td><span class="badge-score-pill">${s.views || 0} / 3 مشاهدات</span></td>
           <td><button class="btn btn-accent btn-sm" type="button" onclick="resetStudentViews(${idx})">🔄 تصفير</button></td>
-          <td><span class="${s.paid || (s.unlockedLessons && s.unlockedLessons.length > 0) ? 'status-badge-active' : 'status-badge-pending'}">${s.paid || (s.unlockedLessons && s.unlockedLessons.length > 0) ? 'مفعلة' : 'في الانتظار'}</span></td>
+          <td><span class="${isUnlocked ? 'status-badge-active' : 'status-badge-pending'}">${isUnlocked ? 'مفعلة حصة' : 'في الانتظار'}</span></td>
           <td><button class="btn btn-primary btn-sm" type="button" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td>
-          <td><button class="btn btn-success btn-sm" type="button" onclick="toggleStudentPayment(${idx})">${(s.paid || (s.unlockedLessons && s.unlockedLessons.length > 0)) ? 'إلغاء' : 'تفعيل'}</button></td>
+          <td><button class="btn btn-success btn-sm" type="button" onclick="toggleStudentPayment(${idx})">${isUnlocked ? 'إلغاء' : 'تفعيل الحصة'}</button></td>
           <td><button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByTeacher(${idx})">🗑️ حذف</button></td>
         `;
         tbody.appendChild(tr);
@@ -3119,7 +3140,7 @@
       document.getElementById("det-phone").innerText = s.phone || "—";
       document.getElementById("det-parent-phone").innerText = s.parentPhone || "—";
       document.getElementById("det-xp").innerText = `${s.xp || 0} XP`;
-      document.getElementById("det-paid").innerText = (s.paid || (s.unlockedLessons && s.unlockedLessons.length > 0)) ? "مفعل ✅" : "غير مفعل ❌";
+      document.getElementById("det-paid").innerText = (s.unlockedLessons && s.unlockedLessons.length > 0) ? "مفعل ✅" : "غير مفعل ❌";
       document.getElementById("det-device").innerText = s.deviceId || "غير مقفل";
       document.getElementById("det-views").innerText = `${s.views || 0} / 3`;
       document.getElementById("student-full-details-modal").classList.remove("hidden");
@@ -3147,14 +3168,13 @@
     document.getElementById("btn-close-parent-modal").addEventListener("click", () => document.getElementById("parent-dashboard-modal").classList.add("hidden"));
     document.getElementById("btn-close-details-modal").addEventListener("click", () => document.getElementById("student-full-details-modal").classList.add("hidden"));
 
-    // عند تفعيل المستر للطالب من جدول المشتركون، يفتح له أحدث محاضرة أو المحاضرة المعلقة
+    // عند تفعيل المستر للطالب، يتم فتح الحصة التي طلبها فقط بشكل فردي
     window.toggleStudentPayment = function(idx) {
       const students = getStudents();
       const student = students[idx];
-      const isCurrentlyActive = student.paid || (student.unlockedLessons && student.unlockedLessons.length > 0);
+      const isUnlocked = student.unlockedLessons && student.unlockedLessons.length > 0;
 
-      if (!isCurrentlyActive) {
-        student.paid = true;
+      if (!isUnlocked) {
         if (!student.unlockedLessons) student.unlockedLessons = [];
         let lessonToOpen = student.pendingLessonId;
         if (!lessonToOpen) {
@@ -3167,9 +3187,8 @@
         if (lessonToOpen && !student.unlockedLessons.includes(lessonToOpen)) {
           student.unlockedLessons.push(lessonToOpen);
         }
-        alert(`✅ تم تفعيل الاشتراك وفتح الحصة للطالب (${student.name}) بنجاح!`);
+        alert(`✅ تم تفعيل وفتح الحصة للطالب (${student.name}) بنجاح!`);
       } else {
-        student.paid = false;
         student.unlockedLessons = [];
         alert(`⚠️ تم إلغاء تفعيل الحصة عن الطالب (${student.name}).`);
       }
@@ -3248,7 +3267,8 @@
       tbody.innerHTML = "";
       students.forEach((s, idx) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}</td><td><code>${s.code}</code></td><td><input type="number" id="dev-std-xp-${idx}" value="${s.xp || 0}" style="width:70px;"><button class="btn btn-accent btn-sm" onclick="devUpdateStudentXP(${idx})">تعديل</button></td><td><button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td><td><small><code>${s.deviceId || "غير مقفل"}</code></small></td><td><span class="${s.paid ? 'status-badge-active' : 'status-badge-pending'}">${s.paid ? 'مفعل' : 'غير مفعل'}</span></td><td><button class="btn btn-primary btn-sm" type="button" onclick="resetStudentDevice(${idx})">فك القفل</button> <button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByDev(${idx})">حذف</button></td>`;
+        const isUnlocked = s.unlockedLessons && s.unlockedLessons.length > 0;
+        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}</td><td><code>${s.code}</code></td><td><input type="number" id="dev-std-xp-${idx}" value="${s.xp || 0}" style="width:70px;"><button class="btn btn-accent btn-sm" onclick="devUpdateStudentXP(${idx})">تعديل</button></td><td><button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td><td><small><code>${s.deviceId || "غير مقفل"}</code></small></td><td><span class="${isUnlocked ? 'status-badge-active' : 'status-badge-pending'}">${isUnlocked ? 'مفعل' : 'غير مفعل'}</span></td><td><button class="btn btn-primary btn-sm" type="button" onclick="resetStudentDevice(${idx})">فك القفل</button> <button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByDev(${idx})">حذف</button></td>`;
         tbody.appendChild(tr);
       });
     }
