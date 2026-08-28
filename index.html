@@ -542,7 +542,7 @@
       </aside>
 
       <main class="main-content-panel glass-card">
-        <!-- 1. المحاضرات والكورسات والأرشيف -->
+        <!-- 1. المحاضرات والكورسات والأرشيف (عرض الأحدث أولاً) -->
         <section id="section-courses" class="std-content-tab active anime-fade-in">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
             <h2 class="box-title" style="margin:0;">📚 أرشيف ومحاضرات (<span id="std-courses-grade-text"></span>)</h2>
@@ -556,7 +556,7 @@
           <!-- شاشة الدفع واشتراك الحصة -->
           <div id="payment-gate-box" class="payment-gate-box hidden anime-slide-up">
             <div class="lock-icon">🔒</div>
-            <h3>هذه المحاضرة جديدة وتتطلب تفعيل الاشتراك</h3>
+            <h3>هذه المحاضرة تتطلب تفعيل الاشتراك أو كود شحن فوري</h3>
             <p class="price-tag">سعر الحصة المخصص لهذا الدرس: <strong id="display-lesson-price">0</strong> جنيه مصري</p>
             
             <div class="quick-code-box">
@@ -591,7 +591,7 @@
             </div>
           </div>
 
-          <!-- مشغل المحاضرة مع المفكرة الحية ونظام الـ 3 مشاهدات الذكي -->
+          <!-- مشغل المحاضرة مع المفكرة الحية ونظام الـ 3 مشاهدات الذكي (بعد نصف الوقت) -->
           <div id="student-lesson-viewer" class="dash-box hidden anime-fade-in">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap:wrap; gap:8px;">
               <h3 id="std-video-title" class="box-title" style="margin: 0;">عنوان المحاضرة</h3>
@@ -675,9 +675,9 @@
           </div>
         </section>
 
-        <!-- 3. الامتحانات -->
+        <!-- 3. الامتحانات (تفتح مرة واحدة فقط) -->
         <section id="section-exams" class="std-content-tab hidden anime-fade-in">
-          <h2 class="box-title">📝 سجل الاختبارات والدرجات</h2>
+          <h2 class="box-title">📝 سجل الاختبارات والدرجات (متاحة لمرة واحدة)</h2>
           <div class="grid-2col">
             <div class="dash-box">
               <h3 class="box-title">⏳ اختبارات مطلوب أداؤها</h3>
@@ -801,7 +801,7 @@
             </div>
           </div>
 
-          <!-- 2. المشتركون والبيانات وفك المشاهدات للطالب -->
+          <!-- 2. المشتركون والبيانات -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">💳 المشتركون، التحكم في المشاهدات، وبيانات الطلاب</h3>
@@ -811,11 +811,11 @@
                     <tr>
                       <th>اسم الطالب</th>
                       <th>الصف</th>
-                      <th>المشاهدات الحالية</th>
-                      <th>إعادة تعيين المشاهدات (فك الحظر)</th>
+                      <th>المشاهدات</th>
+                      <th>إعادة تعيين (فك الحظر)</th>
                       <th>الحالة</th>
                       <th>الملف الشامل</th>
-                      <th>إجراء الاشتراك</th>
+                      <th>تفعيل الاشتراك</th>
                       <th>واتساب 📲</th>
                     </tr>
                   </thead>
@@ -919,7 +919,7 @@
             </div>
           </div>
 
-          <!-- 7. رفع المحاضرات -->
+          <!-- 7. رفع المحاضرات (تضاف للأرشيف بأعلى القائمة) -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
@@ -940,7 +940,7 @@
                 </div>
                 <div class="input-field">
                   <label>عنوان المحاضرة:</label>
-                  <input type="text" id="teacher-v-title" placeholder="مثال: Unit 1 - Present Simple" required>
+                  <input type="text" id="teacher-v-title" placeholder="مثال: Unit 2 - Past Simple" required>
                 </div>
                 <div class="input-field">
                   <label>نوع المصدر:</label>
@@ -965,12 +965,12 @@
                   <label>🗂️ كلمات الحصة والترجمة (كلمة : ترجمة في كل سطر):</label>
                   <textarea id="teacher-vocab-input" rows="2" placeholder="Book : كتاب&#10;Teacher : معلم"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary btn-full">حفظ ونشر المحتوى للأرشيف</button>
+                <button type="submit" class="btn btn-primary btn-full">حفظ وإضافة للأرشيف (الأحدث أولاً)</button>
               </form>
             </div>
 
             <div class="dash-box" style="margin-top:15px;">
-              <h3 class="box-title">📑 إدارة وتعديل وحذف المحاضرات المنشورة</h3>
+              <h3 class="box-title">📑 إدارة وتعديل وحذف المحاضرات والأرشيف</h3>
               <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
@@ -1231,7 +1231,7 @@
       </div>
     </div>
 
-    <!-- نافذة الاختبار الدوري مع الحماية البيومترية لمنع الغش (مرة واحدة فقط) -->
+    <!-- نافذة الاختبار الدوري (مرة واحدة فقط) -->
     <div id="quiz-popup-modal" class="quiz-popup-modal hidden exam-no-copy" oncopy="return false;" oncut="return false;" oncontextmenu="return false;">
       <div class="quiz-modal-content anime-slide-up">
         <div id="anti-cheat-alert" class="anti-cheat-banner hidden">
@@ -1374,27 +1374,34 @@
       "الصف الأول الإعدادي": 75, "الصف الثاني الإعدادي": 75, "الصف الثالث الإعدادي": 80
     };
 
+    // هيكل الأرشيف كقائمة محاضرات لكل صف بحيث يظهر الأحدث أولاً
     const defaultCurriculum = {
-      "الصف الأول الابتدائي": {
-        videoType: "youtube", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        videoTitle: "المحاضرة 1: الحروف وأساسيات الصوتيات Alphabet Basics",
-        pdfData: "", quizDuration: 10,
-        vocab: [{ word: "Cat", meaning: "قطة" }, { word: "Dog", meaning: "كلب" }],
-        questions: [
-          { type: "mcq", question: "1. Which letter comes after 'A'?", options: ["C", "B", "D", "E"], correctIndex: 1 },
-          { type: "essay", question: "2. Write the small form of letter (B):", correctText: "b" }
-        ]
-      },
-      "الصف الثالث الإعدادي": {
-        videoType: "youtube", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        videoTitle: "المحاضرة 1: Prep 3 - Around Town Grammar",
-        pdfData: "", quizDuration: 15,
-        vocab: [{ word: "Botanical garden", meaning: "حديقة نباتية" }, { word: "Aquarium", meaning: "متحف الأحياء المائية" }],
-        questions: [
-          { type: "mcq", question: "1. The train to Alexandria _____ at 7:00 AM.", options: ["leaves", "leave", "is leaving", "left"], correctIndex: 0 },
-          { type: "essay", question: "2. Mention a place you can visit around town:", correctText: "museum" }
-        ]
-      }
+      "الصف الأول الابتدائي": [
+        {
+          id: "les_1",
+          videoType: "youtube", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoTitle: "المحاضرة 1: الحروف وأساسيات الصوتيات Alphabet Basics",
+          pdfData: "", quizDuration: 10,
+          vocab: [{ word: "Cat", meaning: "قطة" }, { word: "Dog", meaning: "كلب" }],
+          questions: [
+            { type: "mcq", question: "1. Which letter comes after 'A'?", options: ["C", "B", "D", "E"], correctIndex: 1 },
+            { type: "essay", question: "2. Write the small form of letter (B):", correctText: "b" }
+          ]
+        }
+      ],
+      "الصف الثالث الإعدادي": [
+        {
+          id: "les_2",
+          videoType: "youtube", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoTitle: "المحاضرة 1: Prep 3 - Around Town Grammar",
+          pdfData: "", quizDuration: 15,
+          vocab: [{ word: "Botanical garden", meaning: "حديقة نباتية" }, { word: "Aquarium", meaning: "متحف الأحياء المائية" }],
+          questions: [
+            { type: "mcq", question: "1. The train to Alexandria _____ at 7:00 AM.", options: ["leaves", "leave", "is leaving", "left"], correctIndex: 0 },
+            { type: "essay", question: "2. Mention a place you can visit around town:", correctText: "museum" }
+          ]
+        }
+      ]
     };
 
     let cloudCache = {
@@ -1910,42 +1917,47 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض الأرشيف والمحاضرات مع توفرها دائماً للطالب
+    // عرض جميع محاضرات الأرشيف للصف، بحيث يظهر الأحدث أولاً
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
       const curriculum = getCurriculum();
-      const content = curriculum[student.grade];
+      const lessonsArr = curriculum[student.grade] || [];
 
-      if (!content || !content.videoUrl) {
+      if (!lessonsArr || lessonsArr.length === 0) {
         container.innerHTML = "<p style='color:var(--text-muted); text-align:center; grid-column: 1/-1;'>لا توجد محاضرات مرفوعة لصفك الدراسي حالياً.</p>";
         return;
       }
 
-      const card = document.createElement("div");
-      card.className = "lesson-card";
-      card.innerHTML = `
-        <div class="icon" style="font-size:32px; margin-bottom:6px;">${student.paid ? "🔓" : "🔒"}</div>
-        <h4>${content.videoTitle || "محاضرة الأسبوع"}</h4>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">${student.grade}</p>
-        <span class="status-pill ${student.paid ? 'status-unlocked' : 'status-locked'}">
-          ${student.paid ? 'محتوى مفعل ومتاح للأرشيف' : 'محاضرة جديدة - تتطلب اشتراك أو كود شحن'}
-        </span>
-      `;
+      // عكس الترتيب بحيث الأحدث يظهر في البداية
+      const sortedLessons = [...lessonsArr].reverse();
 
-      card.addEventListener("click", () => {
-        if (!student.paid) {
-          document.getElementById("student-courses-catalog").classList.add("hidden");
-          document.getElementById("payment-gate-box").classList.remove("hidden");
-          if (btnBackCatalog) btnBackCatalog.classList.remove("hidden");
-          const prices = getPrices();
-          document.getElementById("display-lesson-price").innerText = prices[student.grade] || 50;
-        } else {
-          openLessonPlayer(student);
-        }
+      sortedLessons.forEach((lesson, index) => {
+        const card = document.createElement("div");
+        card.className = "lesson-card";
+        card.innerHTML = `
+          <div class="icon" style="font-size:32px; margin-bottom:6px;">${student.paid ? "🔓" : "🔒"}</div>
+          <h4>${lesson.videoTitle || "محاضرة الأسبوع"}</h4>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">${student.grade}</p>
+          <span class="status-pill ${student.paid ? 'status-unlocked' : 'status-locked'}">
+            ${student.paid ? 'مفعل ومتاح للأرشيف' : 'محاضرة جديدة - تتطلب اشتراك/كود'}
+          </span>
+        `;
+
+        card.addEventListener("click", () => {
+          if (!student.paid) {
+            document.getElementById("student-courses-catalog").classList.add("hidden");
+            document.getElementById("payment-gate-box").classList.remove("hidden");
+            if (btnBackCatalog) btnBackCatalog.classList.remove("hidden");
+            const prices = getPrices();
+            document.getElementById("display-lesson-price").innerText = prices[student.grade] || 50;
+          } else {
+            openLessonPlayer(student, lesson);
+          }
+        });
+
+        container.appendChild(card);
       });
-
-      container.appendChild(card);
     }
 
     function renderStudentHomeworkHistory(student) {
@@ -1981,8 +1993,9 @@
       pendingBox.innerHTML = "";
 
       const myResults = getExamResults().filter(r => r.name === student.name);
-      const curr = getCurriculum()[student.grade] || {};
-      const hasQuiz = curr.questions && curr.questions.length > 0;
+      const lessonsArr = getCurriculum()[student.grade] || [];
+      const latestLesson = lessonsArr.length > 0 ? lessonsArr[lessonsArr.length - 1] : {};
+      const hasQuiz = latestLesson.questions && latestLesson.questions.length > 0;
 
       if (myResults.length === 0) {
         completedBox.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لم تؤدِ أي امتحان بعد.</p>";
@@ -1998,20 +2011,19 @@
         });
       }
 
-      // الامتحان يفتح مرة واحدة فقط، فإذا امتحن لا يظهر له زر دخول الامتحان مجدداً
       if (hasQuiz && myResults.length === 0) {
         const item = document.createElement("div");
         item.className = "exam-status-item";
         item.style.borderColor = "var(--primary-glow)";
         item.innerHTML = `
-          <div><strong>📝 اختبار: ${curr.videoTitle || "محاضرة الأسبوع"}</strong></div>
-          <div><button class="btn btn-primary btn-sm" type="button" onclick="document.querySelector('.side-nav-btn[data-tab=\\'tab-courses\\']').click(); openLessonPlayer(currentActiveStudent);">دخول الامتحان (مرة واحدة)</button></div>
+          <div><strong>📝 اختبار: ${latestLesson.videoTitle || "محاضرة الأسبوع"}</strong></div>
+          <div><button class="btn btn-primary btn-sm" type="button" onclick="document.querySelector('.side-nav-btn[data-tab=\\'tab-courses\\']').click();">دخول الاختبار (مرة واحدة)</button></div>
         `;
         pendingBox.appendChild(item);
       } else if (hasQuiz && myResults.length > 0) {
         pendingBox.innerHTML = "<p style='color:var(--success); font-size:0.85rem;'>✅ أتممت امتحان هذه الحصة بنجاح (متاح لمرة واحدة).</p>";
       } else {
-        pendingBox.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لا توجد اختبارات معلقة لصفك الدراسي حالياً.</p>";
+        pendingBox.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لا توجد اختبارات معلقة حالياً.</p>";
       }
     }
 
@@ -2084,14 +2096,14 @@
 
     let activeVideoElForTimestamp = null;
 
-    // مشغل الحصة مع نظام احتساب الـ 3 مشاهدات الذكي (بعد نصف الوقت)
-    function openLessonPlayer(student) {
+    // مشغل الحصة مع احتساب المشاهدة بعد نصف وقت الفيديو
+    function openLessonPlayer(student, lesson) {
       const students = getStudents();
       const sIdx = students.findIndex(s => s.code === student.code);
       const currentViews = students[sIdx].views || 0;
 
       if (currentViews >= 3) {
-        alert("⚠️ لقد استنفدت الحد الأقصى للمشاهدات (3 مرات). يرجى التواصل مع المستر لفك وإعادة تعيين المشاهدات.");
+        alert("⚠️ لقد استنفدت الحد الأقصى للمشاهدات (3 مرات). يرجى التواصل مع المستر لفك وتصفير المشاهدات.");
         return;
       }
 
@@ -2099,9 +2111,6 @@
       document.getElementById("payment-gate-box").classList.add("hidden");
       document.getElementById("student-lesson-viewer").classList.remove("hidden");
       if (btnBackCatalog) btnBackCatalog.classList.remove("hidden");
-
-      const curriculum = getCurriculum();
-      const content = curriculum[student.grade] || {};
 
       startWatermark(student);
 
@@ -2111,39 +2120,37 @@
       activeVideoElForTimestamp = null;
       hasCountedThisSession = false;
 
-      if (content.videoType === "local" && content.videoUrl) {
+      if (lesson.videoType === "local" && lesson.videoUrl) {
         const videoEl = document.createElement("video");
         videoEl.id = "main-local-video";
-        videoEl.src = content.videoUrl;
+        videoEl.src = lesson.videoUrl;
         videoEl.controls = true;
         videoEl.autoplay = true;
         videoEl.controlsList = "nodownload";
         vContainer.appendChild(videoEl);
         activeVideoElForTimestamp = videoEl;
 
-        // تتبع نصف مدة الفيديو المحلي لاحتساب المشاهدة
         videoEl.ontimeupdate = () => {
           if (!hasCountedThisSession && videoEl.duration > 0 && videoEl.currentTime >= (videoEl.duration / 2)) {
             hasCountedThisSession = true;
             incrementStudentViewCount(student.code);
           }
         };
-      } else if (content.videoUrl) {
+      } else if (lesson.videoUrl) {
         const iframe = document.createElement("iframe");
         iframe.id = "main-yt-iframe";
-        iframe.src = parseVideoUrl(content.videoUrl) + "?enablejsapi=1";
+        iframe.src = parseVideoUrl(lesson.videoUrl) + "?enablejsapi=1";
         iframe.setAttribute("allowfullscreen", "true");
         iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
         vContainer.appendChild(iframe);
 
-        // لفيديوهات يوتيوب نحتسب المشاهدة بمرور نصف الوقت التقديري (مثلاً 5 دقائق أو عند النصف)
         if (videoWatchTrackTimer) clearTimeout(videoWatchTrackTimer);
         videoWatchTrackTimer = setTimeout(() => {
           if (!hasCountedThisSession) {
             hasCountedThisSession = true;
             incrementStudentViewCount(student.code);
           }
-        }, 180000); // 3 دقائق تفاعل تعتبر منتصف الحصة وتحسب مرة
+        }, 180000); // 3 دقائق تعادل نصف الوقت التقديري
       }
 
       document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views || 0} / 3`;
@@ -2171,7 +2178,7 @@
         }
       };
 
-      document.getElementById("std-video-title").innerText = content.videoTitle || "محاضرة الشرح";
+      document.getElementById("std-video-title").innerText = lesson.videoTitle || "محاضرة الشرح";
 
       const savedNotesKey = `yk_notes_${student.code}`;
       document.getElementById("live-notes-input").value = localStorage.getItem(savedNotesKey) || "";
@@ -2193,25 +2200,24 @@
       };
 
       const pdfBox = document.getElementById("pdf-viewer-section");
-      if (content.pdfData) {
+      if (lesson.pdfData) {
         pdfBox.classList.remove("hidden");
-        document.getElementById("std-pdf-frame").src = content.pdfData;
+        document.getElementById("std-pdf-frame").src = lesson.pdfData;
       } else {
         pdfBox.classList.add("hidden");
       }
 
       const quizBtn = document.getElementById("btn-open-quiz-modal");
-      currentExamQuestions = content.questions || [];
+      currentExamQuestions = lesson.questions || [];
       const myResults = getExamResults().filter(r => r.name === student.name);
-      
-      // الامتحان يفتح مرة واحدة ولا يفتح إذا تم أداؤه مسبقاً
+
       if (currentExamQuestions.length > 0 && myResults.length === 0) {
         quizBtn.classList.remove("hidden");
       } else {
         quizBtn.classList.add("hidden");
       }
 
-      currentVocabList = content.vocab || [];
+      currentVocabList = lesson.vocab || [];
       renderStudentQA();
     }
 
@@ -2222,7 +2228,7 @@
         students[sIdx].views = (students[sIdx].views || 0) + 1;
         saveStudents(students);
         document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views} / 3`;
-        alert("👁️ تم تجاوز نصف مدة الحصة، وتم احتساب هذه المشاهدة (مرة من الـ 3 مرات المسموحة).");
+        alert("👁️ تم تجاوز منتصف مدة الحصة، وتم احتساب هذه المشاهدة (مرة من الـ 3 مرات المسموحة).");
       }
     }
 
@@ -2285,9 +2291,9 @@
       studentHwAnswers = {};
       document.getElementById("interactive-hw-result").innerText = "";
 
-      const curr = getCurriculum();
-      const content = curr[currentActiveStudent.grade] || {};
-      const questions = content.questions || [];
+      const lessonsArr = getCurriculum()[currentActiveStudent.grade] || [];
+      const latestLesson = lessonsArr.length > 0 ? lessonsArr[lessonsArr.length - 1] : {};
+      const questions = latestLesson.questions || [];
 
       if (questions.length === 0) {
         container.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لا توجد أسئلة واجب تفاعلي منشورة لهذا الدرس بعد.</p>";
@@ -2330,9 +2336,9 @@
     }
 
     document.getElementById("btn-submit-interactive-hw").onclick = () => {
-      const curr = getCurriculum();
-      const content = curr[currentActiveStudent.grade] || {};
-      const questions = content.questions || [];
+      const lessonsArr = getCurriculum()[currentActiveStudent.grade] || [];
+      const latestLesson = lessonsArr.length > 0 ? lessonsArr[lessonsArr.length - 1] : {};
+      const questions = latestLesson.questions || [];
 
       if (questions.length === 0) return;
 
@@ -2405,9 +2411,9 @@
     });
 
     document.getElementById("btn-open-quiz-modal").addEventListener("click", () => {
-      const curriculum = getCurriculum();
-      const content = curriculum[currentActiveStudent.grade] || {};
-      const duration = content.quizDuration || 10;
+      const lessonsArr = getCurriculum()[currentActiveStudent.grade] || [];
+      const latestLesson = lessonsArr.length > 0 ? lessonsArr[lessonsArr.length - 1] : {};
+      const duration = latestLesson.quizDuration || 10;
       
       isExamActive = true;
       cheatWarningsCount = 0;
@@ -2670,42 +2676,46 @@
       const curr = getCurriculum();
 
       Object.keys(curr).forEach(grade => {
-        const item = curr[grade];
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><strong>${grade}</strong></td>
-          <td><input type="text" id="edit-v-title-${grade}" value="${item.videoTitle || ''}" style="width:100%; padding:4px;"></td>
-          <td>${item.pdfData ? '📄 مرفقة ✅' : '❌ لا توجد'}</td>
-          <td>${item.vocab ? item.vocab.length + ' كلمة' : '0'}</td>
-          <td>
-            <div style="display:flex; gap:4px;">
-              <button class="btn btn-success btn-sm" onclick="saveCurriculumTitleEdit('${grade}')">حفظ</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteCurriculumForGrade('${grade}')">حذف</button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
+        const lessonsArr = curr[grade] || [];
+        lessonsArr.forEach((item, lessonIdx) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><strong>${grade}</strong></td>
+            <td><input type="text" id="edit-v-title-${grade}-${lessonIdx}" value="${item.videoTitle || ''}" style="width:100%; padding:4px;"></td>
+            <td>${item.pdfData ? '📄 مرفقة ✅' : '❌ لا توجد'}</td>
+            <td>${item.vocab ? item.vocab.length + ' كلمة' : '0'}</td>
+            <td>
+              <div style="display:flex; gap:4px;">
+                <button class="btn btn-success btn-sm" onclick="saveCurriculumTitleEdit('${grade}', ${lessonIdx})">حفظ</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteCurriculumLesson('${grade}', ${lessonIdx})">حذف</button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
       });
     }
 
-    window.saveCurriculumTitleEdit = function(grade) {
-      const newTitle = document.getElementById(`edit-v-title-${grade}`).value.trim();
+    window.saveCurriculumTitleEdit = function(grade, lessonIdx) {
+      const newTitle = document.getElementById(`edit-v-title-${grade}-${lessonIdx}`).value.trim();
       const curr = getCurriculum();
-      if (curr[grade]) {
-        curr[grade].videoTitle = newTitle;
+      if (curr[grade] && curr[grade][lessonIdx]) {
+        curr[grade][lessonIdx].videoTitle = newTitle;
         saveCurriculum(curr);
-        alert(`✅ تم تحديث عنوان المحاضرة لـ (${grade})!`);
+        alert(`✅ تم تحديث عنوان المحاضرة!`);
         renderTeacherCurriculumTable();
       }
     };
 
-    window.deleteCurriculumForGrade = function(grade) {
-      if (confirm(`⚠️ هل أنت متأكد من حذف محتوى ومحاضرة (${grade})؟`)) {
+    window.deleteCurriculumLesson = function(grade, lessonIdx) {
+      if (confirm(`⚠️ هل أنت متأكد من حذف هذه المحاضرة من أرشيف (${grade})؟`)) {
         const curr = getCurriculum();
-        delete curr[grade];
-        saveCurriculum(curr);
-        alert(`✅ تم مسح محتوى (${grade}) بنجاح.`);
-        renderTeacherCurriculumTable();
+        if (curr[grade]) {
+          curr[grade].splice(lessonIdx, 1);
+          saveCurriculum(curr);
+          alert(`✅ تم مسح المحاضرة بنجاح.`);
+          renderTeacherCurriculumTable();
+        }
       }
     };
 
@@ -2904,6 +2914,7 @@
       });
     }
 
+    // رفع محاضرة جديدة وإضافتها لتظهر في أعلى الأرشيف
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -2919,15 +2930,21 @@
 
       const handleSave = (videoUrl, pdfData = "") => {
         const curr = getCurriculum();
-        if (!curr[grade]) curr[grade] = { questions: [] };
-        curr[grade].videoTitle = title;
-        curr[grade].videoType = type;
-        curr[grade].videoUrl = videoUrl;
-        if (pdfData) curr[grade].pdfData = pdfData;
-        if (parsedVocab.length > 0) curr[grade].vocab = parsedVocab;
+        if (!curr[grade]) curr[grade] = [];
+        
+        const newLesson = {
+          id: "les_" + Date.now(),
+          videoTitle: title,
+          videoType: type,
+          videoUrl: videoUrl,
+          pdfData: pdfData,
+          vocab: parsedVocab,
+          questions: []
+        };
 
+        curr[grade].push(newLesson); // تضاف للأرشيف
         saveCurriculum(curr);
-        alert(`✅ تم نشر المحاضرة والمذكرة PDF لـ (${grade}) للأرشيف ووصلت للطلاب فوراً!`);
+        alert(`✅ تم نشر المحاضرة الجديدة لـ (${grade}) وأضيفت لأعلى الأرشيف بنجاح!`);
         document.getElementById("form-manage-video").reset();
         renderTeacherCurriculumTable();
       };
@@ -2938,8 +2955,7 @@
           pdfReader.onload = (event) => handleSave(videoUrl, event.target.result);
           pdfReader.readAsDataURL(pdfFileInput.files[0]);
         } else {
-          const existingPdf = getCurriculum()[grade]?.pdfData || "";
-          handleSave(videoUrl, existingPdf);
+          handleSave(videoUrl, "");
         }
       };
 
@@ -2982,12 +2998,17 @@
       const qText = document.getElementById("teacher-q-text").value.trim();
 
       const curr = getCurriculum();
-      if (!curr[grade]) curr[grade] = { questions: [] };
-      if (!curr[grade].questions) curr[grade].questions = [];
+      if (!curr[grade] || curr[grade].length === 0) {
+        alert("⚠️ يرجى رفع محاضرة لهذا الصف أولاً قبل إضافة أسئلة لها.");
+        return;
+      }
 
-      curr[grade].quizDuration = duration;
+      // إضافة الأسئلة لأحدث محاضرة في الأرشيف
+      const latestLesson = curr[grade][curr[grade].length - 1];
+      latestLesson.quizDuration = duration;
+      if (!latestLesson.questions) latestLesson.questions = [];
 
-      const count = curr[grade].questions.length + 1;
+      const count = latestLesson.questions.length + 1;
       const newQ = { type, question: `${count}. ${qText}` };
 
       if (type === "mcq") {
@@ -3002,21 +3023,21 @@
         newQ.correctText = document.getElementById("teacher-essay-correct-text").value.trim();
       }
 
-      curr[grade].questions.push(newQ);
+      latestLesson.questions.push(newQ);
       saveCurriculum(curr);
-      alert(`✅ تم حفظ السؤال ونموذج الإجابة الفوري بنجاح!`);
+      alert(`✅ تم حفظ السؤال ونموذج الإجابة الفوري للمحاضرة الأخيرة!`);
       document.getElementById("teacher-q-text").value = "";
       document.getElementById("teacher-essay-correct-text").value = "";
     });
 
     document.getElementById("btn-clear-quiz").addEventListener("click", () => {
       const grade = document.getElementById("teacher-q-grade").value;
-      if (confirm(`حذف كافة أسئلة (${grade})؟`)) {
+      if (confirm(`حذف كافة أسئلة أحدث محاضرة لـ (${grade})؟`)) {
         const curr = getCurriculum();
-        if (curr[grade]) {
-          curr[grade].questions = [];
+        if (curr[grade] && curr[grade].length > 0) {
+          curr[grade][curr[grade].length - 1].questions = [];
           saveCurriculum(curr);
-          alert(`✅ تم مسح أسئلة (${grade}) بنجاح.`);
+          alert(`✅ تم مسح الأسئلة بنجاح.`);
         }
       }
     });
@@ -3114,7 +3135,7 @@
       });
     }
 
-    // جدول المشتركون وإمكانية فك أو إعادة تعيين مشاهدات الطالب ليعيد الحصة من جديد
+    // جدول المشتركون والتحكم في تصفير وفك الـ 3 مشاهدات
     function renderTeacherPayments() {
       const students = getStudents();
       const tbody = document.getElementById("teacher-payments-table");
@@ -3152,7 +3173,6 @@
       });
     }
 
-    // دالة تحكم المستر لفك وإعادة تعيين مشاهدات الطالب
     window.resetStudentViews = function(idx) {
       const students = getStudents();
       students[idx].views = 0;
