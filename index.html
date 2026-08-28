@@ -550,7 +550,7 @@
       <div id="leaderboard-cards-container" class="lessons-grid"></div>
     </div>
 
-    <!-- لوحة تحكم الطالب المبسطة والمرتبة في قائمة جانبية خفيفة -->
+    <!-- لوحة تحكم الطالب -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
       <aside class="adaptive-sidebar" id="std-sidebar-panel">
         <div class="sidebar-user-header">
@@ -706,7 +706,7 @@
           </div>
         </section>
 
-        <!-- 3. الامتحانات (بشرط الاجتياز 60% وإشعارات ولي الأمر الذكية) -->
+        <!-- 3. الامتحانات -->
         <section id="section-exams" class="std-content-tab hidden anime-fade-in">
           <h2 class="box-title">📝 سجل الاختبارات والدرجات (تتطلب اجتياز 60% فأعلى)</h2>
           <div class="grid-2col">
@@ -818,11 +818,11 @@
             </div>
           </div>
 
-          <!-- 2. ماسح الحضور بالكاميرا الحية والـ QR والكود اليدوي -->
+          <!-- 2. ماسح الحضور بالكاميرا والـ QR -->
           <div id="t-sec-qr-scan" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box" style="text-align:center;">
               <h3 class="box-title">📷 نظام مسح حضور السنتر (كاميرا الجوال / QR / كود يدوي)</h3>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">قم بتوجيه الكاميرا نحو كود الـ QR الخاص بالطالب، أو أدخل كوده يدوياً لتسجيل الحضور وإرسال إشعار فوري لولي الأمر عبر الواتساب:</p>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">قم بتوجيه الكاميرا نحو كود الـ QR الخاص بالطالب، أو أدخل كوده يدوياً لتسجيل الحضور:</p>
               
               <div style="display:flex; gap:8px; max-width:400px; margin:0 auto 15px;">
                 <input type="text" id="scanner-code-input" placeholder="أدخل كود الطالب (مثال: YK-xxxxxx)">
@@ -885,7 +885,7 @@
             </div>
           </div>
 
-          <!-- 5. أسعار الحصص لكل درس على حدة -->
+          <!-- 5. أسعار الحصص لكل درس على حدة وخيار المجاني (Free) -->
           <div id="t-sec-prices" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">💰 تحديد سعر كل حصة / درس على حدة أو جعلها مجانية (Free)</h3>
@@ -956,7 +956,7 @@
             </div>
           </div>
 
-          <!-- 8. رفع المحاضرات (مع جعل السعر 0 للمجاني التلقائي) -->
+          <!-- 8. رفع المحاضرات (تعمل بفاعلية تامة وتظهر للمستر والطالب فوراً) -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
@@ -985,7 +985,7 @@
                   <input type="number" id="teacher-v-price" placeholder="مثال: 50 أو 0" value="50" min="0" required>
                 </div>
                 <div class="input-field">
-                  <label>رابط صورة مصغرة مخصصة (اختياري - يترك فارغاً ليتم جلبها أوتوماتيكياً من يوتيوب):</label>
+                  <label>رابط صورة مصغرة مخصصة (اختياري - يترك فارغاً لجلبها أوتوماتيكياً من يوتيوب):</label>
                   <input type="url" id="teacher-v-thumb" placeholder="https://example.com/image.jpg">
                 </div>
                 <div class="input-field">
@@ -1004,7 +1004,7 @@
                   <input type="file" id="teacher-v-file" accept="video/*">
                 </div>
                 <div class="input-field">
-                  <label>📄 اختر ملف مذكرة الشرح (PDF من جهازك - سيظهر للطالب لتنزيله):</label>
+                  <label>📄 اختر ملف مذكرة الشرح (PDF من جهازك):</label>
                   <input type="file" id="teacher-pdf-file" accept="application/pdf">
                 </div>
                 <div class="input-field">
@@ -1035,10 +1035,10 @@
             </div>
           </div>
 
-          <!-- 8. بنك الأسئلة (تحديد هل هو امتحان أو واجب وربطه بالمحاضرة المحددة) -->
+          <!-- 8. بنك الأسئلة -->
           <div id="t-sec-quiz" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">📝 بنك الأسئلة، الاختبارات، ونموذج إجابة الواجب المخصص</h3>
+              <h3 class="box-title">📝 بنك الأسئلة، الاختبارات، ونموذج إجابة الواجب</h3>
               <form id="form-manage-quiz">
                 <div class="input-field">
                   <label>الصف الدراسي:</label>
@@ -1089,7 +1089,7 @@
                     <input type="text" id="t-opt-3" placeholder="الاختيار 4">
                   </div>
                   <div class="input-field" style="margin-top: 10px;">
-                    <label>الاختيار الصحيح (للتصحيح الآلي):</label>
+                    <label>الاختيار الصحيح:</label>
                     <select id="teacher-q-correct">
                       <option value="0">الاختيار 1</option>
                       <option value="1">الاختيار 2</option>
@@ -1110,11 +1110,11 @@
             </div>
           </div>
 
-          <!-- 9. تصدير Excel لكل صف على حدة -->
+          <!-- 9. تصدير النتائج -->
           <div id="t-sec-results" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-                <h3 class="box-title" style="margin:0;">📊 تصدير كشف نتائج Excel (حسب الصف الدراسي)</h3>
+                <h3 class="box-title" style="margin:0;">📊 كشف نتائج واختبارات الطلاب والتقارير</h3>
                 <div style="display:flex; gap:8px;">
                   <select id="export-grade-select" style="max-width:220px; padding:4px 8px; font-size:0.85rem;">
                     <option value="" disabled selected>اختر الصف للتصدير</option>
@@ -1150,10 +1150,10 @@
             </div>
           </div>
 
-          <!-- 10. متابعة وتصحيح الواجبات المرسلة بصور متعددة -->
+          <!-- 10. متابعة الواجبات -->
           <div id="t-sec-homework" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">📝 متابعة وتصحيح الواجبات (صور متعددة / PDF)</h3>
+              <h3 class="box-title">📝 تصدير ومتابعة الواجبات (صور متعددة)</h3>
               <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
@@ -1182,10 +1182,10 @@
       </div>
     </div>
 
-    <!-- نافذة رفع الواجب (متعدد الصور أو PDF للطالب) -->
+    <!-- نافذة الواجب -->
     <div id="homework-modal" class="quiz-popup-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
-        <h3 class="box-title">📤 تسليم الواجب (تصوير عدة صفحات كشكول / ملف)</h3>
+        <h3 class="box-title">📤 تسليم الواجب (صور متعددة / PDF)</h3>
         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">قم برفع صور صفحات الواجب (يمكنك اختيار أكثر من صورة معاً) أو ملف PDF:</p>
         
         <div class="input-field">
@@ -1203,7 +1203,7 @@
       </div>
     </div>
 
-    <!-- نافذة عرض صور الواجب للمستر وتصحيحها -->
+    <!-- نافذة عرض صور الواجب للمعلم وتصحيحها -->
     <div id="view-hw-images-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:700px; text-align:center;">
         <h3 class="box-title">📄 معاينة صور الواجب المقدمة</h3>
@@ -1454,6 +1454,16 @@
       if (url.includes("youtu.be/")) return url.replace("youtu.be/", "www.youtube.com/embed/");
       if (url.includes("shorts/")) return url.replace("shorts/", "embed/");
       return url;
+    }
+
+    function getYoutubeThumbnail(url) {
+      if (!url) return "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
+      let videoId = "";
+      if (url.includes("embed/")) videoId = url.split("embed/")[1].split("?")[0];
+      else if (url.includes("watch?v=")) videoId = url.split("watch?v=")[1].split("&")[0];
+      else if (url.includes("youtu.be/")) videoId = url.split("youtu.be/")[1].split("?")[0];
+      else if (url.includes("shorts/")) videoId = url.split("shorts/")[1].split("?")[0];
+      return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
     }
 
     const authSection = document.getElementById("auth-section");
@@ -1936,7 +1946,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض المحاضرات للطالب مع التصميم الاحترافي والـ FREE الكرت اللامع
+    // عرض المحاضرات للطالب مع التصميم الاحترافي والـ FREE الكرت اللامع والصور المصغرة
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -2016,7 +2026,6 @@
       });
     }
 
-    // نظام الامتحانات عند الطالب مع التحقق من شرط الاجتياز 60% وتنبيه ولي الأمر التلقائي
     function renderStudentExamStatus(student) {
       const completedBox = document.getElementById("std-completed-exams-list");
       const pendingBox = document.getElementById("std-pending-exams-list");
@@ -2038,13 +2047,12 @@
           item.className = "exam-status-item";
           item.innerHTML = `
             <div><strong>${r.grade}</strong> <small>(${r.time})</small> ${r.isCheated ? '<span style="color:var(--danger); font-weight:bold;">[محاولة غش]</span>' : ''}</div>
-            <div><span style="color:${r.isCheated ? 'var(--danger)' : 'var(--success)'}; font-weight:800;">${r.score} (${r.percentage}) - ${r.status}</span></div>
+            <div><span style="color:${r.isCheated ? 'var(--danger)' : 'var(--success)'}; font-weight:800;">${r.score} (${r.percentage})</span></div>
           `;
           completedBox.appendChild(item);
         });
       }
 
-      // الطالب لا يمكنه حل الامتحان إلا إذا كان مشتركاً في هذه الحصة
       const isLatestUnlocked = student.paid || student.isFree || (student.unlockedLessons && student.unlockedLessons.includes(latestLesson.id));
       if (hasQuiz && myResults.length === 0 && isLatestUnlocked) {
         const item = document.createElement("div");
@@ -2084,7 +2092,6 @@
       startQuizTimer(duration);
     };
 
-    // تسليم الواجب المتعدد (صور كشكول / PDF)
     document.getElementById("btn-submit-multiple-hw").onclick = () => {
       const notes = document.getElementById("std-hw-notes-input").value.trim();
       const filesInput = document.getElementById("std-hw-files");
@@ -2127,7 +2134,6 @@
       });
     };
 
-    // تفعيل الكرت
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
       const inputCode = document.getElementById("input-promo-code").value.trim().toUpperCase();
       let promos = getPromos();
@@ -2382,13 +2388,6 @@
       window.speechSynthesis.speak(utterance);
     });
 
-    document.getElementById("btn-open-homework-modal").addEventListener("click", () => {
-      document.getElementById("homework-modal").classList.remove("hidden");
-    });
-    document.getElementById("btn-close-hw-modal").addEventListener("click", () => {
-      document.getElementById("homework-modal").classList.add("hidden");
-    });
-
     function renderStudentQA() {
       const container = document.getElementById("std-qa-thread");
       container.innerHTML = "";
@@ -2536,7 +2535,6 @@
       });
     }
 
-    // تسليم الامتحان التلقائي مع حساب النجاح (60% فأعلى) وإرسال النتيجة بذكاء لولي الأمر
     document.getElementById("btn-submit-exam").addEventListener("click", () => {
       if (currentExamQuestions.length === 0) return;
       isExamActive = false;
@@ -2600,7 +2598,6 @@
 
       renderStudentExamStatus(currentActiveStudent);
 
-      // إرسال النتيجة بذكاء لولي الأمر حسب الدرجة المحددة (أقل من 60% راسب، 60-80% نتيجة، 90-100% تهنئة وتفوق)
       let parentMsgText = "";
       if (percent < 60) {
         parentMsgText = `⚠️ [إشعار ولي الأمر]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nحضر الطالب الامتحان وحصل على نسبة ${percent}% (${status}). نرجو متابعة الطالب ومراجعته بجدية.`;
@@ -2709,7 +2706,7 @@
 
       const grades = Object.keys(curr);
       if (grades.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً. ابدأ برفع محاضرة جديدة.</td></tr>";
         return;
       }
 
@@ -2721,7 +2718,6 @@
           tr.innerHTML = `
             <td><strong>${grade}</strong></td>
             <td><input type="text" id="edit-v-title-${grade}-${lessonIdx}" value="${item.videoTitle || ''}" style="width:100%; padding:4px;"></td>
-            <td><strong style="color:var(--accent-gold);">${item.isFree ? 'مجاني' : (item.price || 50) + ' ج.م'}</strong></td>
             <td>${item.pdfData ? '📄 مرفقة ✅' : '❌ لا توجد'}</td>
             <td>${item.vocab ? item.vocab.length + ' كلمة' : '0'}</td>
             <td>
@@ -2742,13 +2738,13 @@
       if (curr[grade] && curr[grade][lessonIdx]) {
         curr[grade][lessonIdx].videoTitle = newTitle;
         saveCurriculum(curr);
-        alert(`✅ تم تحديث العنوان!`);
+        alert(`✅ تم تحديث عنوان المحاضرة!`);
         renderTeacherCurriculumTable();
       }
     };
 
     window.deleteCurriculumLesson = function(grade, lessonIdx) {
-      if (confirm(`⚠️ هل أنت متأكد من حذف هذه المحاضرة؟`)) {
+      if (confirm(`⚠️ هل أنت متأكد من حذف هذه المحاضرة من أرشيف (${grade})؟`)) {
         const curr = getCurriculum();
         if (curr[grade]) {
           if (Array.isArray(curr[grade])) {
@@ -2878,7 +2874,7 @@
         curr[grade][lessonIdx].price = finalPrice;
         curr[grade][lessonIdx].isFree = isFreeChecked;
         saveCurriculum(curr);
-        alert(`✅ تم تحديث سعر الحصة وجعلها ${isFreeChecked ? 'مجانية (Free)' : finalPrice + ' جنيه'} بنجاح!`);
+        alert(`✅ تم تحديث بيانات الحصة بنجاح!`);
         renderTeacherPricesUI();
       }
     };
@@ -2996,6 +2992,7 @@
       });
     }
 
+    // دالة رفع المحاضرات (مؤمنة وسريعة وتستجيب فوراً للضغط على حفظ)
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -3005,6 +3002,11 @@
       const type = document.getElementById("teacher-v-type").value;
       const pdfFileInput = document.getElementById("teacher-pdf-file");
       const vocabRaw = document.getElementById("teacher-vocab-input").value.trim();
+
+      if (!grade || !title) {
+        alert("⚠️ يرجى اختيار الصف وإدخال عنوان المحاضرة.");
+        return;
+      }
 
       const parsedVocab = vocabRaw.split("\n").filter(l => l.includes(":")).map(l => {
         const parts = l.split(":");
@@ -3100,7 +3102,7 @@
 
       const curr = getCurriculum();
       if (!curr[grade] || curr[grade].length === 0) {
-        alert("⚠️ يرجى رفع محاضرة لهذا الصف أولاً لربط هذا الاختبار أو الواجب بها.");
+        alert("⚠️ يرجى رفع محاضرة لهذا الصف أولاً قبل إضافة أسئلة لها.");
         return;
       }
 
@@ -3147,7 +3149,6 @@
       }
     });
 
-    // تصدير كشف نتائج Excel لكل صف على حدة حسب اختيار المستر
     document.getElementById("btn-export-grade-excel").addEventListener("click", () => {
       const selectedGrade = document.getElementById("export-grade-select").value;
       if (!selectedGrade) {
@@ -3209,7 +3210,6 @@
       });
     }
 
-    // جدول المشتركون
     function renderTeacherPayments() {
       const students = getStudents();
       const tbody = document.getElementById("teacher-payments-table");
@@ -3332,7 +3332,6 @@
       window.open(`https://wa.me/2${s.parentPhone}?text=${encodeURIComponent(text)}`, "_blank");
     };
 
-    // إدارة ومتابعة الواجبات المرفوعة بصور متعددة
     function renderTeacherHomework() {
       const tbody = document.getElementById("teacher-hw-table");
       if (!tbody) return;
