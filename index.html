@@ -13,6 +13,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
   
+  <!-- ربط مكتبات Firebase السحابية للـ Real-time Sync -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
   <style>
     :root {
       --primary-glow: #2563eb;
@@ -582,7 +586,7 @@
                 <input type="tel" id="pay-sender-phone" placeholder="رقم المحفظة (01xxxxxxxxx)" maxlength="11" required>
                 <input type="file" id="pay-receipt-file" accept="image/*">
               </div>
-              <button id="btn-request-activation" class="btn btn-success btn-full" type="button">إرسال طلب التفعيل</button>
+              <button id="btn-request-activation" class="btn btn-success btn-full" type="button">إرسال طلب التفعيل للمستر</button>
               <p id="payment-status-msg" class="system-msg"></p>
             </div>
           </div>
@@ -1336,6 +1340,15 @@
   </div>
 
   <script>
+    // إعدادات Firebase السحابية الحقيقية (Realtime Database مجاني لربط المستر بالطلاب أونلاين)
+    const firebaseConfig = {
+      databaseURL: "https://mr-youssef-academy-default-rtdb.firebaseio.com/"
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const rdb = firebase.database();
+
     const currentYear = new Date().getFullYear();
     document.getElementById("dynamic-academic-year-badge").innerText = `العام الدراسي ${currentYear}`;
 
@@ -1385,57 +1398,72 @@
       }
     };
 
-    // نظام سحابي مشترك وموحد لتوحيد الرؤية بين المعلم والطلاب عبر التخزين المشترك المحدث
-    function getCloudStorage(key, defaultVal) {
-      try {
-        const d = localStorage.getItem(key);
-        return d ? JSON.parse(d) : defaultVal;
-      } catch(e) {
-        return defaultVal;
-      }
-    }
-    function setCloudStorage(key, val) {
-      localStorage.setItem(key, JSON.stringify(val));
-      window.dispatchEvent(new StorageEvent('storage', { key: key }));
-    }
+    // نظام جفظ وحفظ سحابي مباشر عبر Firebase لضمان رؤية البيانات للجميع في نفس اللحظة
+    let cloudCache = {
+      curriculum: defaultCurriculum,
+      students: [],
+      prices: defaultPrices,
+      results: [],
+      promos: [],
+      regCodes: [],
+      qa: [],
+      hw: []
+    };
 
-    function getCurriculum() { return getCloudStorage("yk_curriculum_v13", defaultCurriculum); }
-    function saveCurriculum(d) { setCloudStorage("yk_curriculum_v13", d); }
-    
-    function getStudents() { return getCloudStorage("yk_students_v13", []); }
-    function saveStudents(l) { setCloudStorage("yk_students_v13", l); }
-    
-    function getPrices() { return getCloudStorage("yk_prices_v13", defaultPrices); }
-    function savePrices(d) { setCloudStorage("yk_prices_v13", d); }
-    
-    function getExamResults() { return getCloudStorage("yk_exam_results_v13", []); }
-    function saveExamResults(d) { setCloudStorage("yk_exam_results_v13", d); }
-    
-    function getPromos() { return getCloudStorage("yk_promos_v13", []); }
-    function savePromos(d) { setCloudStorage("yk_promos_v13", d); }
-    
-    function getRegistrationCodes() { return getCloudStorage("yk_reg_codes_v13", []); }
-    function saveRegistrationCodes(d) { setCloudStorage("yk_reg_codes_v13", d); }
-    
-    function getQuestions() { return getCloudStorage("yk_qa_v13", []); }
-    function saveQuestions(d) { setCloudStorage("yk_qa_v13", d); }
-    
-    function getHomework() { return getCloudStorage("yk_hw_v13", []); }
-    function saveHomework(d) { setCloudStorage("yk_hw_v13", d); }
-    
-    function getAnnouncement() { return localStorage.getItem("yk_announcement_v13") || "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"; }
-    function saveAnnouncement(t) { localStorage.setItem("yk_announcement_v13", t); window.dispatchEvent(new StorageEvent('storage')); }
+    function getCurriculum() { return cloudCache.curriculum || defaultCurriculum; }
+    function saveCurriculum(d) { cloudCache.curriculum = d; rdb.ref('curriculum').set(d); }
 
-    // التحديث الفوري المباشر لجميع الشاشات المفتوحة
-    window.addEventListener("storage", (e) => {
-      if (!teacherDashboard.classList.contains("hidden")) {
-        loadTeacherPanel();
-      } else if (currentActiveStudent && !studentDashboard.classList.contains("hidden")) {
-        const students = getStudents();
-        const updated = students.find(s => s.code === currentActiveStudent.code);
-        if (updated) {
-          currentActiveStudent = updated;
-          loadStudentDashboard(updated);
+    function getStudents() { return cloudCache.students || []; }
+    function saveStudents(l) { cloudCache.students = l; rdb.ref('students').set(l); }
+
+    function getPrices() { return cloudCache.prices || defaultPrices; }
+    function savePrices(d) { cloudCache.prices = d; rdb.ref('prices').set(d); }
+
+    function getExamResults() { return cloudCache.results || []; }
+    function saveExamResults(d) { cloudCache.results = d; rdb.ref('results').set(d); }
+
+    function getPromos() { return cloudCache.promos || []; }
+    function savePromos(d) { cloudCache.promos = d; rdb.ref('promos').set(d); }
+
+    function getRegistrationCodes() { return cloudCache.regCodes || []; }
+    function saveRegistrationCodes(d) { cloudCache.regCodes = d; rdb.ref('regCodes').set(d); }
+
+    function getQuestions() { return cloudCache.qa || []; }
+    function saveQuestions(d) { cloudCache.qa = d; rdb.ref('qa').set(d); }
+
+    function getHomework() { return cloudCache.hw || []; }
+    function saveHomework(d) { cloudCache.hw = d; rdb.ref('hw').set(d); }
+
+    function getAnnouncement() { return cloudCache.announcement || "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"; }
+    function saveAnnouncement(t) { cloudCache.announcement = t; rdb.ref('announcement').set(t); }
+
+    // الاستماع الفوري لكل تغيير من قاعدة البيانات السحابية (Real-time Listeners)
+    rdb.ref('/').on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        cloudCache.curriculum = data.curriculum || defaultCurriculum;
+        cloudCache.students = data.students || [];
+        cloudCache.prices = data.prices || defaultPrices;
+        cloudCache.results = data.results || [];
+        cloudCache.promos = data.promos || [];
+        cloudCache.regCodes = data.regCodes || [];
+        cloudCache.qa = data.qa || [];
+        cloudCache.hw = data.hw || [];
+        cloudCache.announcement = data.announcement || "";
+
+        if (document.getElementById("announcement-text") && cloudCache.announcement) {
+          document.getElementById("announcement-text").innerText = cloudCache.announcement;
+        }
+
+        // تحديث الشاشة المفتوحة حالياً فور حدوث أي تعديل سحابي
+        if (!teacherDashboard.classList.contains("hidden")) {
+          loadTeacherPanel();
+        } else if (currentActiveStudent && !studentDashboard.classList.contains("hidden")) {
+          const updated = cloudCache.students.find(s => s.code === currentActiveStudent.code);
+          if (updated) {
+            currentActiveStudent = updated;
+            loadStudentDashboard(updated);
+          }
         }
       }
     });
@@ -1472,8 +1500,6 @@
     let isExamActive = false;
     let cheatWarningsCount = 0;
     let generatedParentOTP = null;
-
-    document.getElementById("announcement-text").innerText = getAnnouncement();
 
     function updateAuthNavState(isLoggedIn) {
       const drawerAuthBtn = document.getElementById("drawer-btn-auth");
@@ -1637,6 +1663,7 @@
       systemMsg.innerText = "";
     });
 
+    // 5. حفظ بيانات الطالب فوراً في النظام السحابي العام
     formStudentSignup.addEventListener("submit", (e) => {
       e.preventDefault();
       const name = document.getElementById("signup-name").value.trim();
@@ -1884,11 +1911,12 @@
       renderStudentCoursesList(student);
     }
 
+    // 3. عرض المحاضرات والروابط المرفوعة للمرحلة التي اختارها المستر بدقة
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
       const curriculum = getCurriculum();
-      const content = curriculum[student.grade] || { videoTitle: "المحاضرة الأولى" };
+      const content = curriculum[student.grade] || { videoTitle: "لم يتم رفع محاضرة لهذا الصف بعد" };
 
       const card = document.createElement("div");
       card.className = "lesson-card";
@@ -1902,6 +1930,10 @@
       `;
 
       card.addEventListener("click", () => {
+        if (!content.videoUrl) {
+          alert("⚠️ لم يقم المستر برفع فيديو لهذه المحاضرة بعد.");
+          return;
+        }
         if (!student.paid) {
           document.getElementById("student-courses-catalog").classList.add("hidden");
           document.getElementById("payment-gate-box").classList.remove("hidden");
@@ -1980,7 +2012,7 @@
       }
     }
 
-    // تفعيل كروت الشحن بدقة تامة ومطابقة مريحة
+    // 4. تفعيل كروت الشحن الفورية لأي صف دراسي بشكل سحابي سليم
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
       const inputCode = document.getElementById("input-promo-code").value.trim().toUpperCase();
       let promos = getPromos();
@@ -2015,6 +2047,7 @@
       }
     });
 
+    // 2. إرسال طلب الدفع ليظهر للمستر فوراً على المنصة
     document.getElementById("btn-request-activation").addEventListener("click", () => {
       const senderPhone = document.getElementById("pay-sender-phone").value.trim();
       const fileInput = document.getElementById("pay-receipt-file");
@@ -2033,10 +2066,9 @@
           students[idx].senderWallet = senderPhone;
           students[idx].receiptImg = receiptImg;
           saveStudents(students);
-          currentActiveStudent.senderWallet = students[idx].senderWallet;
-          statusMsg.innerText = "✅ تم إرسال طلبك للمستر بنجاح! سيتم تفعيل الحصة فوراً.";
+          currentActiveStudent.senderWallet = senderPhone;
+          statusMsg.innerText = "✅ تم إرسال طلب الدفع للمستر بنجاح وسيظهر لديه في لوحة التحكم فوراً!";
           statusMsg.style.color = "var(--success)";
-          renderTeacherPayments();
         }
       };
 
@@ -2552,7 +2584,8 @@
     });
 
     function loadTeacherPanel() {
-      document.getElementById("teacher-announcement-input").value = getAnnouncement();
+      const announcementInput = document.getElementById("teacher-announcement-input");
+      if (announcementInput) announcementInput.value = getAnnouncement();
       renderTeacherPayments();
       renderTeacherLeaderboardMgr();
       renderTeacherPrices();
@@ -2572,7 +2605,7 @@
       alert("✅ تم نشر التنبيه العاجل لجميع الطلاب!");
     });
 
-    // 1 & 4. مسح رمز QR وكود السنتر المرن والمصحح بالكامل ليعمل بسلاسة مع أي صف دراسي
+    // 1 & 4. مسح QR الحضور وأكواد السنتر السحابية الموثوقة
     document.getElementById("btn-confirm-center-attendance").addEventListener("click", () => {
       const code = document.getElementById("scanner-code-input").value.trim().toUpperCase();
       const feedback = document.getElementById("scanner-feedback-msg");
@@ -2600,6 +2633,7 @@
 
     function renderTeacherCurriculumTable() {
       const tbody = document.getElementById("teacher-curriculum-manage-table");
+      if (!tbody) return;
       tbody.innerHTML = "";
       const curr = getCurriculum();
 
@@ -2645,6 +2679,7 @@
 
     function renderTeacherLeaderboardMgr() {
       const tbody = document.getElementById("teacher-leaderboard-mgr-table");
+      if (!tbody) return;
       tbody.innerHTML = "";
       const students = getStudents();
       const results = getExamResults();
@@ -2697,6 +2732,7 @@
 
     function renderTeacherPrices() {
       const tbody = document.getElementById("teacher-prices-table");
+      if (!tbody) return;
       tbody.innerHTML = "";
       const prices = getPrices();
 
@@ -2741,7 +2777,7 @@
 
       savePromos(promos);
       renderPromosList();
-      alert(`✅ تم توليد ${count} كروت شحن فريدة جديدة لـ (${grade})!`);
+      alert(`✅ تم توليد ${count} كروت شحن فريدة جديدة لـ (${grade}) وربطها سحابياً!`);
     });
 
     window.deletePromoCard = function(code) {
@@ -2761,6 +2797,7 @@
 
     function renderPromosList() {
       const container = document.getElementById("printable-cards-container");
+      if (!container) return;
       container.innerHTML = "";
       const promos = getPromos();
 
@@ -2796,7 +2833,7 @@
 
       saveRegistrationCodes(regCodes);
       renderRegistrationCodesList();
-      alert(`✅ تم توليد ${count} كروت تسجيل سنتر فريدة جديدة لـ (${grade})!`);
+      alert(`✅ تم توليد ${count} كروت تسجيل سنتر سحابية جديدة لـ (${grade})!`);
     });
 
     window.deleteStdRegCode = function(code) {
@@ -2816,6 +2853,7 @@
 
     function renderRegistrationCodesList() {
       const container = document.getElementById("printable-std-codes-container");
+      if (!container) return;
       container.innerHTML = "";
       const regCodes = getRegistrationCodes();
 
@@ -2834,7 +2872,6 @@
       });
     }
 
-    // 3. ربط رفع المحاضرات الفيديوهات والـ PDF وتوجيهها بدقة للمرحلة المختارة
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -2858,7 +2895,7 @@
         if (parsedVocab.length > 0) curr[grade].vocab = parsedVocab;
 
         saveCurriculum(curr);
-        alert(`✅ تم نشر المحاضرة والمذكرة PDF لـ (${grade}) بنجاح لتظهر للطلاب فوراً!`);
+        alert(`✅ تم نشر المحاضرة والمذكرة PDF لـ (${grade}) بنجاح ووصلت لجميع الطلاب فوراً!`);
         document.getElementById("form-manage-video").reset();
         renderTeacherCurriculumTable();
       };
@@ -3027,6 +3064,7 @@
     function renderTeacherResults() {
       const results = getExamResults();
       const tbody = document.getElementById("teacher-results-table");
+      if (!tbody) return;
       tbody.innerHTML = "";
       results.forEach(r => {
         const tr = document.createElement("tr");
@@ -3047,6 +3085,7 @@
     function renderTeacherPayments() {
       const students = getStudents();
       const tbody = document.getElementById("teacher-payments-table");
+      if (!tbody) return;
       tbody.innerHTML = "";
       students.forEach((s, idx) => {
         const tr = document.createElement("tr");
@@ -3179,6 +3218,7 @@
 
     function renderTeacherHomework() {
       const tbody = document.getElementById("teacher-hw-table");
+      if (!tbody) return;
       tbody.innerHTML = "";
       const allHW = getHomework();
 
@@ -3197,6 +3237,7 @@
 
     function renderTeacherQA() {
       const container = document.getElementById("teacher-qa-container");
+      if (!container) return;
       container.innerHTML = "";
       const allQA = getQuestions();
 
@@ -3235,6 +3276,7 @@
       document.getElementById("stat-total-students").innerText = students.length;
 
       const tbody = document.getElementById("dev-students-table-body");
+      if (!tbody) return;
       tbody.innerHTML = "";
       students.forEach((s, idx) => {
         const tr = document.createElement("tr");
