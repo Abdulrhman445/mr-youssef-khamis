@@ -249,15 +249,38 @@
       padding: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;
     }
 
-    .lessons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
+    .lessons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; margin-top: 12px; }
+    
+    /* تصميم كارت المحاضرة الاحترافي الجديد */
     .lesson-card {
-      background: var(--box-bg); border: 2px solid var(--border-color); border-radius: 14px; padding: 15px; text-align: center;
-      transition: all 0.25s ease; cursor: pointer;
+      background: var(--box-bg); border: 2px solid var(--border-color); border-radius: 14px; overflow: hidden;
+      transition: all 0.25s ease; cursor: pointer; display: flex; flex-direction: column; position: relative;
     }
-    .lesson-card:hover { transform: translateY(-3px); border-color: var(--primary-glow); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-    .lesson-card .icon { font-size: 32px; margin-bottom: 6px; }
-    .lesson-card h4 { font-size: 0.95rem; color: var(--text-main); margin-bottom: 4px; }
-    .status-pill { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+    .lesson-card:hover { transform: translateY(-4px); border-color: var(--primary-glow); box-shadow: 0 10px 25px rgba(0,0,0,0.12); }
+    
+    .lesson-thumb-wrapper {
+      width: 100%; height: 130px; background: #0f172a; position: relative; overflow: hidden;
+    }
+    .lesson-thumb-img {
+      width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;
+    }
+    .lesson-card:hover .lesson-thumb-img { transform: scale(1.05); }
+
+    .lesson-card-body { padding: 12px; text-align: center; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .lesson-card h4 { font-size: 0.95rem; color: var(--text-main); font-weight: 800; }
+    
+    /* كارت الحصة المجانية الاحترافي */
+    .lesson-card.free-lesson-card {
+      border: 2px solid #10b981;
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+    }
+    .free-ribbon {
+      position: absolute; top: 10px; left: -30px; background: linear-gradient(90deg, #10b981, #059669);
+      color: #fff; font-size: 0.7rem; font-weight: 900; padding: 2px 25px; transform: rotate(-45deg); z-index: 10;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .status-pill { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; margin-top: auto; }
     .status-locked { background: #fee2e2; color: #b91c1c; }
     .status-unlocked { background: #dcfce7; color: #15803d; }
 
@@ -799,7 +822,7 @@
             </div>
           </div>
 
-          <!-- 2. المشتركون (يظهر إيصال التحويل وصورته ورقم المحفظة بوضوح تام) -->
+          <!-- 2. المشتركون -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">💳 المشتركون، إيصالات التحويل، وتفعيل الحصص المفردة</h3>
@@ -845,7 +868,7 @@
             </div>
           </div>
 
-          <!-- 4. أسعار الحصص لكل درس على حدة وخيار المجاني (Free) -->
+          <!-- 4. أسعار الحصص لكل درس على حدة -->
           <div id="t-sec-prices" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">💰 تحديد سعر كل حصة / درس على حدة أو جعلها مجانية (Free)</h3>
@@ -918,7 +941,7 @@
             </div>
           </div>
 
-          <!-- 7. رفع المحاضرات -->
+          <!-- 7. رفع المحاضرات (مع إمكانية إضافة صورة مصغرة مخصصة أو استخدام التلقائية من يوتيوب) -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
@@ -945,6 +968,10 @@
                 <div class="input-field">
                   <label>سعر هذه الحصة (بالجنيه - اجعلها 0 لتكون مجانية Free):</label>
                   <input type="number" id="teacher-v-price" placeholder="مثال: 50 أو 0" value="50" min="0" required>
+                </div>
+                <div class="input-field">
+                  <label>رابط صورة مصغرة مخصصة (اختياري - لو سيبته فارغ سيتم أخذها أوتوماتيكياً من يوتيوب):</label>
+                  <input type="url" id="teacher-v-thumb" placeholder="https://example.com/image.jpg">
                 </div>
                 <div class="input-field">
                   <label>نوع المصدر:</label>
@@ -1378,6 +1405,22 @@
       if (url.includes("youtu.be/")) return url.replace("youtu.be/", "www.youtube.com/embed/");
       if (url.includes("shorts/")) return url.replace("shorts/", "embed/");
       return url;
+    }
+
+    // استخراج رابط الصورة المصغرة أوتوماتيكياً من رابط يوتيوب لو لم يحدد المستر صورة
+    function getYoutubeThumbnail(url) {
+      if (!url) return "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
+      let videoId = "";
+      if (url.includes("embed/")) {
+        videoId = url.split("embed/")[1].split("?")[0];
+      } else if (url.includes("watch?v=")) {
+        videoId = url.split("watch?v=")[1].split("&")[0];
+      } else if (url.includes("youtu.be/")) {
+        videoId = url.split("youtu.be/")[1].split("?")[0];
+      } else if (url.includes("shorts/")) {
+        videoId = url.split("shorts/")[1].split("?")[0];
+      }
+      return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
     }
 
     const authSection = document.getElementById("auth-section");
@@ -1860,7 +1903,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض المحاضرات للطالب (مع التحقق من المجاني Free أو المفتوح حصرياً)
+    // عرض المحاضرات للطالب مع الكارت الاحترافي الجديد والصورة المصغرة وشريط الـ FREE
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -1878,16 +1921,25 @@
       sortedLessons.forEach((lesson) => {
         const isFree = lesson.isFree === true || lesson.price === 0;
         const isUnlocked = isFree || (student.unlockedLessons && student.unlockedLessons.includes(lesson.id));
+        const thumbImg = lesson.thumbnailUrl || getYoutubeThumbnail(lesson.videoUrl);
+
         const card = document.createElement("div");
-        card.className = "lesson-card";
+        card.className = isFree ? "lesson-card free-lesson-card" : "lesson-card";
+        
         card.innerHTML = `
-          <div class="icon" style="font-size:32px; margin-bottom:6px;">${isUnlocked ? "🔓" : "🔒"}</div>
-          <h4>${lesson.videoTitle || "محاضرة الأسبوع"}</h4>
-          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">${student.grade}</p>
-          <p style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold); margin-bottom:6px;">السعر: ${isFree ? '<span style="color:var(--success);">مجاني (Free)</span>' : (lesson.price || 50) + ' جنيه'}</p>
-          <span class="status-pill ${isUnlocked ? 'status-unlocked' : 'status-locked'}">
-            ${isUnlocked ? 'مفعل ومتاح للمشاهدة' : 'تتطلب كود شحن أو تفعيل لهذه الحصة'}
-          </span>
+          ${isFree ? '<div class="free-ribbon">FREE</div>' : ''}
+          <div class="lesson-thumb-wrapper">
+            <img src="${thumbImg}" alt="${lesson.videoTitle}" class="lesson-thumb-img" onerror="this.src='https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80'">
+          </div>
+          <div class="lesson-card-body">
+            <h4>${lesson.videoTitle || "محاضرة الأسبوع"}</h4>
+            <p style="font-size:0.8rem; font-weight:bold; color:${isFree ? '#059669' : 'var(--accent-gold)'}; margin-top:2px;">
+              ${isFree ? 'مجاني بالكامل (بلا ليميت)' : (lesson.price || 50) + ' جنيه'}
+            </p>
+            <span class="status-pill ${isUnlocked ? 'status-unlocked' : 'status-locked'}">
+              ${isUnlocked ? 'مفتاح ومتاح للمشاهدة' : 'تتطلب تفعيل هذه الحصة'}
+            </span>
+          </div>
         `;
 
         card.addEventListener("click", () => {
@@ -2063,7 +2115,6 @@
 
       const isFree = lesson.isFree === true || lesson.price === 0;
 
-      // الحصص المجانية لا تحسب ضمن الـ 3 مشاهدات
       if (!isFree && currentViews >= 3) {
         alert("⚠️ لقد استنفدت الحد الأقصى للمشاهدات (3 مرات). يرجى التواصل مع المستر لفك وتصفير المشاهدات.");
         return;
@@ -2910,6 +2961,7 @@
       const grade = document.getElementById("teacher-v-grade").value;
       const title = document.getElementById("teacher-v-title").value.trim();
       const price = parseInt(document.getElementById("teacher-v-price").value) || 50;
+      const customThumb = document.getElementById("teacher-v-thumb").value.trim();
       const type = document.getElementById("teacher-v-type").value;
       const pdfFileInput = document.getElementById("teacher-pdf-file");
       const vocabRaw = document.getElementById("teacher-vocab-input").value.trim();
@@ -2925,11 +2977,14 @@
           curr[grade] = curr[grade] ? [curr[grade]] : [];
         }
         
+        const finalThumb = customThumb || (type === 'youtube' ? getYoutubeThumbnail(videoUrl) : '');
+
         const newLesson = {
           id: "les_" + Date.now(),
           videoTitle: title,
           price: price,
           isFree: price === 0,
+          thumbnailUrl: finalThumb,
           videoType: type,
           videoUrl: videoUrl,
           pdfData: pdfData,
@@ -3111,7 +3166,7 @@
       });
     }
 
-    // جدول المشتركون (يظهر إيصال التحويل، وعند التفعيل يفتح حصة الطالب المعنية فقط)
+    // جدول المشتركون
     function renderTeacherPayments() {
       const students = getStudents();
       const tbody = document.getElementById("teacher-payments-table");
@@ -3129,7 +3184,7 @@
           <td><button class="btn btn-accent btn-sm" type="button" onclick="resetStudentViews(${idx})">🔄 تصفير</button></td>
           <td><span class="${isUnlocked ? 'status-badge-active' : 'status-badge-pending'}">${isUnlocked ? 'مفعلة حصة' : 'في الانتظار'}</span></td>
           <td><button class="btn btn-primary btn-sm" type="button" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td>
-          <td><button class="btn btn-success btn-sm" type="button" onclick="toggleStudentPayment(${idx})">${isUnlocked ? 'إلغاء' : 'تفعيل الحصة'}</button></td>
+          <td><button class="btn btn-success btn-sm" type="button" onclick="toggleStudentPayment(${idx})">${isUnlocked ? 'إلغاء التفعيل' : 'تفعيل الحصة'}</button></td>
           <td><button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByTeacher(${idx})">🗑️ حذف</button></td>
         `;
         tbody.appendChild(tr);
@@ -3182,7 +3237,6 @@
     document.getElementById("btn-close-parent-modal").addEventListener("click", () => document.getElementById("parent-dashboard-modal").classList.add("hidden"));
     document.getElementById("btn-close-details-modal").addEventListener("click", () => document.getElementById("student-full-details-modal").classList.add("hidden"));
 
-    // عند تفعيل المستر للطالب، يتم فتح الحصة المعلقة التي طلبها فقط بشكل فردي
     window.toggleStudentPayment = function(idx) {
       const students = getStudents();
       const student = students[idx];
@@ -3201,7 +3255,7 @@
         if (lessonToOpen && !student.unlockedLessons.includes(lessonToOpen)) {
           student.unlockedLessons.push(lessonToOpen);
         }
-        alert(`✅ تم تفعيل وفتح الحصة للطالب (${student.name}) بنجاح!`);
+        alert(`✅ تم تفعيل وفتح الحصة المحددة للطالب (${student.name}) بنجاح!`);
       } else {
         student.unlockedLessons = [];
         alert(`⚠️ تم إلغاء تفعيل الحصة عن الطالب (${student.name}).`);
