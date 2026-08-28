@@ -919,7 +919,7 @@
             </div>
           </div>
 
-          <!-- 7. رفع المحاضرات (تضاف للأرشيف بأعلى القائمة) -->
+          <!-- 7. رفع المحاضرات -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
@@ -1156,7 +1156,7 @@
       </div>
     </div>
 
-    <!-- نافذة وضع ولي الأمر الذكي (Parent Dashboard View) -->
+    <!-- نافذة وضع ولي الأمر الذكي -->
     <div id="parent-dashboard-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:650px;">
         <h3 class="box-title" style="color:var(--accent-gold);">👨‍👩‍👦 لوحة متابعة ولي الأمر الذكية</h3>
@@ -1374,7 +1374,6 @@
       "الصف الأول الإعدادي": 75, "الصف الثاني الإعدادي": 75, "الصف الثالث الإعدادي": 80
     };
 
-    // هيكل الأرشيف كقائمة محاضرات لكل صف بحيث يظهر الأحدث أولاً
     const defaultCurriculum = {
       "الصف الأول الابتدائي": [
         {
@@ -1461,13 +1460,11 @@
           document.getElementById("announcement-text").innerText = cloudCache.announcement;
         }
 
-        if (!teacherDashboard.classList.contains("hidden")) {
-          loadTeacherPanel();
-        } else if (currentActiveStudent && !studentDashboard.classList.contains("hidden")) {
+        if (currentActiveStudent) {
           const updated = cloudCache.students.find(s => s.code === currentActiveStudent.code);
           if (updated) {
             currentActiveStudent = updated;
-            loadStudentDashboard(updated);
+            localStorage.setItem("yk_active_student_code", updated.code);
           }
         }
       }
@@ -1507,6 +1504,36 @@
     let generatedParentOTP = null;
     let videoWatchTrackTimer = null;
     let hasCountedThisSession = false;
+
+    // استعادة جلسة الدخول التلقائية عند عمل Refresh للمنصة (عدم الخروج أبداً)
+    window.addEventListener("load", () => {
+      const savedCode = localStorage.getItem("yk_active_student_code");
+      const savedRole = localStorage.getItem("yk_active_role");
+
+      if (savedRole === "teacher") {
+        authSection.classList.add("hidden");
+        teacherDashboard.classList.remove("hidden");
+        loadTeacherPanel();
+        updateAuthNavState(true);
+      } else if (savedRole === "dev") {
+        authSection.classList.add("hidden");
+        devDashboard.classList.remove("hidden");
+        loadDevPanel();
+        updateAuthNavState(true);
+      } else if (savedCode) {
+        // ننتظر قليلاً لتحميل بيانات الكلاود
+        setTimeout(() => {
+          const students = getStudents();
+          const student = students.find(s => s.code === savedCode);
+          if (student) {
+            authSection.classList.add("hidden");
+            studentDashboard.classList.remove("hidden");
+            loadStudentDashboard(student);
+            updateAuthNavState(true);
+          }
+        }, 800);
+      }
+    });
 
     function updateAuthNavState(isLoggedIn) {
       const drawerAuthBtn = document.getElementById("drawer-btn-auth");
@@ -1575,12 +1602,8 @@
 
     document.getElementById("drawer-btn-auth").addEventListener("click", () => {
       closeNavDrawer();
-      if (currentActiveStudent) {
+      if (currentActiveStudent || localStorage.getItem("yk_active_role")) {
         document.getElementById("std-logout").click();
-      } else if (!teacherDashboard.classList.contains("hidden")) {
-        document.getElementById("teacher-logout").click();
-      } else if (!devDashboard.classList.contains("hidden")) {
-        document.getElementById("dev-logout").click();
       } else {
         studentDashboard.classList.add("hidden");
         teacherDashboard.classList.add("hidden");
@@ -1720,7 +1743,7 @@
       tabLogin.click();
       document.getElementById("login-identifier").value = name;
       document.getElementById("login-credential").value = code;
-      systemMsg.innerText = "🎉 تم إنشاء الحساب بنجاح وتخزينه سحابياً! حصلت على 50 XP ترحيبية.";
+      systemMsg.innerText = "🎉 تم إنشاء وحفظ حسابك بنجاح! يمكنك الدخول الآن.";
       systemMsg.style.color = "var(--success)";
     });
 
@@ -1730,6 +1753,7 @@
       const credential = document.getElementById("login-credential").value.trim();
 
       if (identifier === DEV_CREDENTIALS.email && credential === DEV_CREDENTIALS.pass) {
+        localStorage.setItem("yk_active_role", "dev");
         authSection.classList.add("hidden");
         devDashboard.classList.remove("hidden");
         loadDevPanel();
@@ -1739,6 +1763,7 @@
       }
 
       if (identifier === TEACHER_CREDENTIALS.email && credential === TEACHER_CREDENTIALS.pass) {
+        localStorage.setItem("yk_active_role", "teacher");
         authSection.classList.add("hidden");
         teacherDashboard.classList.remove("hidden");
         loadTeacherPanel();
@@ -1764,6 +1789,9 @@
           student.deviceId = currentDevice;
           saveStudents(students);
         }
+
+        localStorage.setItem("yk_active_student_code", student.code);
+        localStorage.removeItem("yk_active_role");
 
         authSection.classList.add("hidden");
         studentDashboard.classList.remove("hidden");
@@ -1917,7 +1945,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض جميع محاضرات الأرشيف للصف، بحيث يظهر الأحدث أولاً
+    // عرض كافة محاضرات الأرشيف للطالب مرتبة من الأحدث إلى الأقدم
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -1929,10 +1957,9 @@
         return;
       }
 
-      // عكس الترتيب بحيث الأحدث يظهر في البداية
       const sortedLessons = [...lessonsArr].reverse();
 
-      sortedLessons.forEach((lesson, index) => {
+      sortedLessons.forEach((lesson) => {
         const card = document.createElement("div");
         card.className = "lesson-card";
         card.innerHTML = `
@@ -1940,7 +1967,7 @@
           <h4>${lesson.videoTitle || "محاضرة الأسبوع"}</h4>
           <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">${student.grade}</p>
           <span class="status-pill ${student.paid ? 'status-unlocked' : 'status-locked'}">
-            ${student.paid ? 'مفعل ومتاح للأرشيف' : 'محاضرة جديدة - تتطلب اشتراك/كود'}
+            ${student.paid ? 'مفعل ومتاح للاختيار والاطلاع' : 'تتطلب اشتراك أو كود شحن'}
           </span>
         `;
 
@@ -2096,7 +2123,6 @@
 
     let activeVideoElForTimestamp = null;
 
-    // مشغل الحصة مع احتساب المشاهدة بعد نصف وقت الفيديو
     function openLessonPlayer(student, lesson) {
       const students = getStudents();
       const sIdx = students.findIndex(s => s.code === student.code);
@@ -2150,7 +2176,7 @@
             hasCountedThisSession = true;
             incrementStudentViewCount(student.code);
           }
-        }, 180000); // 3 دقائق تعادل نصف الوقت التقديري
+        }, 180000);
       }
 
       document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views || 0} / 3`;
@@ -2914,7 +2940,6 @@
       });
     }
 
-    // رفع محاضرة جديدة وإضافتها لتظهر في أعلى الأرشيف
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -2942,7 +2967,7 @@
           questions: []
         };
 
-        curr[grade].push(newLesson); // تضاف للأرشيف
+        curr[grade].push(newLesson);
         saveCurriculum(curr);
         alert(`✅ تم نشر المحاضرة الجديدة لـ (${grade}) وأضيفت لأعلى الأرشيف بنجاح!`);
         document.getElementById("form-manage-video").reset();
@@ -3003,7 +3028,6 @@
         return;
       }
 
-      // إضافة الأسئلة لأحدث محاضرة في الأرشيف
       const latestLesson = curr[grade][curr[grade].length - 1];
       latestLesson.quizDuration = duration;
       if (!latestLesson.questions) latestLesson.questions = [];
@@ -3025,7 +3049,7 @@
 
       latestLesson.questions.push(newQ);
       saveCurriculum(curr);
-      alert(`✅ تم حفظ السؤال ونموذج الإجابة الفوري للمحاضرة الأخيرة!`);
+      alert(`✅ تم حفظ السؤال ونموذج الإجابة للمحاضرة الأخيرة!`);
       document.getElementById("teacher-q-text").value = "";
       document.getElementById("teacher-essay-correct-text").value = "";
     });
@@ -3135,7 +3159,6 @@
       });
     }
 
-    // جدول المشتركون والتحكم في تصفير وفك الـ 3 مشاهدات
     function renderTeacherPayments() {
       const students = getStudents();
       const tbody = document.getElementById("teacher-payments-table");
@@ -3442,6 +3465,8 @@
       isExamActive = false;
       if (watermarkInterval) clearInterval(watermarkInterval);
       if (quizTimerInterval) clearInterval(quizTimerInterval);
+      localStorage.removeItem("yk_active_student_code");
+      localStorage.removeItem("yk_active_role");
       currentActiveStudent = null;
       updateAuthNavState(false);
       studentDashboard.classList.add("hidden");
@@ -3450,6 +3475,7 @@
     });
 
     document.getElementById("teacher-logout").addEventListener("click", () => {
+      localStorage.removeItem("yk_active_role");
       teacherDashboard.classList.add("hidden");
       authSection.classList.remove("hidden");
       updateAuthNavState(false);
@@ -3457,6 +3483,7 @@
     });
 
     document.getElementById("dev-logout").addEventListener("click", () => {
+      localStorage.removeItem("yk_active_role");
       devDashboard.classList.add("hidden");
       authSection.classList.remove("hidden");
       updateAuthNavState(false);
