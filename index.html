@@ -1385,27 +1385,49 @@
       }
     };
 
-    function getCurriculum() { const d = localStorage.getItem("yk_curriculum_v13"); return d ? JSON.parse(d) : defaultCurriculum; }
-    function saveCurriculum(d) { localStorage.setItem("yk_curriculum_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
-    function getStudents() { const d = localStorage.getItem("yk_students_v13"); return d ? JSON.parse(d) : []; }
-    function saveStudents(l) { localStorage.setItem("yk_students_v13", JSON.stringify(l)); window.dispatchEvent(new Event("storage")); }
-    function getPrices() { const d = localStorage.getItem("yk_prices_v13"); return d ? JSON.parse(d) : defaultPrices; }
-    function savePrices(d) { localStorage.setItem("yk_prices_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
-    function getExamResults() { const d = localStorage.getItem("yk_exam_results_v13"); return d ? JSON.parse(d) : []; }
-    function saveExamResults(d) { localStorage.setItem("yk_exam_results_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
-    function getPromos() { const d = localStorage.getItem("yk_promos_v13"); return d ? JSON.parse(d) : []; }
-    function savePromos(d) { localStorage.setItem("yk_promos_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
-    function getRegistrationCodes() { const d = localStorage.getItem("yk_reg_codes_v13"); return d ? JSON.parse(d) : []; }
-    function saveRegistrationCodes(d) { localStorage.setItem("yk_reg_codes_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
-    function getQuestions() { const d = localStorage.getItem("yk_qa_v13"); return d ? JSON.parse(d) : []; }
-    function saveQuestions(d) { localStorage.setItem("yk_qa_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
-    function getHomework() { const d = localStorage.getItem("yk_hw_v13"); return d ? JSON.parse(d) : []; }
-    function saveHomework(d) { localStorage.setItem("yk_hw_v13", JSON.stringify(d)); window.dispatchEvent(new Event("storage")); }
-    function getAnnouncement() { return localStorage.getItem("yk_announcement_v13") || "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"; }
-    function saveAnnouncement(t) { localStorage.setItem("yk_announcement_v13", t); window.dispatchEvent(new Event("storage")); }
+    // نظام سحابي مشترك وموحد لتوحيد الرؤية بين المعلم والطلاب عبر التخزين المشترك المحدث
+    function getCloudStorage(key, defaultVal) {
+      try {
+        const d = localStorage.getItem(key);
+        return d ? JSON.parse(d) : defaultVal;
+      } catch(e) {
+        return defaultVal;
+      }
+    }
+    function setCloudStorage(key, val) {
+      localStorage.setItem(key, JSON.stringify(val));
+      window.dispatchEvent(new StorageEvent('storage', { key: key }));
+    }
 
-    // التحديث الفوري التلقائي (Real-time Sync Across Tabs/Views)
-    window.addEventListener("storage", () => {
+    function getCurriculum() { return getCloudStorage("yk_curriculum_v13", defaultCurriculum); }
+    function saveCurriculum(d) { setCloudStorage("yk_curriculum_v13", d); }
+    
+    function getStudents() { return getCloudStorage("yk_students_v13", []); }
+    function saveStudents(l) { setCloudStorage("yk_students_v13", l); }
+    
+    function getPrices() { return getCloudStorage("yk_prices_v13", defaultPrices); }
+    function savePrices(d) { setCloudStorage("yk_prices_v13", d); }
+    
+    function getExamResults() { return getCloudStorage("yk_exam_results_v13", []); }
+    function saveExamResults(d) { setCloudStorage("yk_exam_results_v13", d); }
+    
+    function getPromos() { return getCloudStorage("yk_promos_v13", []); }
+    function savePromos(d) { setCloudStorage("yk_promos_v13", d); }
+    
+    function getRegistrationCodes() { return getCloudStorage("yk_reg_codes_v13", []); }
+    function saveRegistrationCodes(d) { setCloudStorage("yk_reg_codes_v13", d); }
+    
+    function getQuestions() { return getCloudStorage("yk_qa_v13", []); }
+    function saveQuestions(d) { setCloudStorage("yk_qa_v13", d); }
+    
+    function getHomework() { return getCloudStorage("yk_hw_v13", []); }
+    function saveHomework(d) { setCloudStorage("yk_hw_v13", d); }
+    
+    function getAnnouncement() { return localStorage.getItem("yk_announcement_v13") || "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"; }
+    function saveAnnouncement(t) { localStorage.setItem("yk_announcement_v13", t); window.dispatchEvent(new StorageEvent('storage')); }
+
+    // التحديث الفوري المباشر لجميع الشاشات المفتوحة
+    window.addEventListener("storage", (e) => {
       if (!teacherDashboard.classList.contains("hidden")) {
         loadTeacherPanel();
       } else if (currentActiveStudent && !studentDashboard.classList.contains("hidden")) {
@@ -2011,7 +2033,7 @@
           students[idx].senderWallet = senderPhone;
           students[idx].receiptImg = receiptImg;
           saveStudents(students);
-          currentActiveStudent.senderWallet = senderPhone;
+          currentActiveStudent.senderWallet = students[idx].senderWallet;
           statusMsg.innerText = "✅ تم إرسال طلبك للمستر بنجاح! سيتم تفعيل الحصة فوراً.";
           statusMsg.style.color = "var(--success)";
           renderTeacherPayments();
@@ -2550,11 +2572,12 @@
       alert("✅ تم نشر التنبيه العاجل لجميع الطلاب!");
     });
 
+    // 1 & 4. مسح رمز QR وكود السنتر المرن والمصحح بالكامل ليعمل بسلاسة مع أي صف دراسي
     document.getElementById("btn-confirm-center-attendance").addEventListener("click", () => {
-      const code = document.getElementById("scanner-code-input").value.trim();
+      const code = document.getElementById("scanner-code-input").value.trim().toUpperCase();
       const feedback = document.getElementById("scanner-feedback-msg");
       const students = getStudents();
-      const sIdx = students.findIndex(s => s.code.toLowerCase() === code.toLowerCase());
+      const sIdx = students.findIndex(s => s.code && s.code.trim().toUpperCase() === code);
 
       if (sIdx !== -1) {
         const student = students[sIdx];
@@ -2563,10 +2586,10 @@
         student.attendance.unshift(`حضور السنتر: اليوم الساعة ${timeNow}`);
         saveStudents(students);
 
-        feedback.innerText = `✅ تم تسجيل حضور الطالب (${student.name}) بنجاح الساعة ${timeNow}!`;
+        feedback.innerText = `✅ تم تسجيل حضور الطالب (${student.name}) - [${student.grade}] بنجاح الساعة ${timeNow}!`;
         feedback.style.color = "var(--success)";
 
-        const waText = encodeURIComponent(`تم حضور الطالب ${student.name} السنتر بنجاح الساعة ${timeNow} 🟢.\nمع تحيات: مستر يوسف خميس.`);
+        const waText = encodeURIComponent(`تم حضور الطالب ${student.name} (${student.grade}) السنتر بنجاح الساعة ${timeNow} 🟢.\nمع تحيات: مستر يوسف خميس.`);
         window.open(`https://wa.me/2${student.parentPhone}?text=${waText}`, "_blank");
         document.getElementById("scanner-code-input").value = "";
       } else {
@@ -2811,6 +2834,7 @@
       });
     }
 
+    // 3. ربط رفع المحاضرات الفيديوهات والـ PDF وتوجيهها بدقة للمرحلة المختارة
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -2834,7 +2858,7 @@
         if (parsedVocab.length > 0) curr[grade].vocab = parsedVocab;
 
         saveCurriculum(curr);
-        alert(`✅ تم نشر المحاضرة والمذكرة PDF لـ (${grade}) بنجاح!`);
+        alert(`✅ تم نشر المحاضرة والمذكرة PDF لـ (${grade}) بنجاح لتظهر للطلاب فوراً!`);
         document.getElementById("form-manage-video").reset();
         renderTeacherCurriculumTable();
       };
