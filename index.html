@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
   
-  <!-- ربط مكتبات Firebase السحابية للـ Real-time Sync -->
+  <!-- ربط مكتبات Firebase السحابية للـ Real-time Sync الحقيقي -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
@@ -1340,9 +1340,9 @@
   </div>
 
   <script>
-    // إعدادات Firebase السحابية الحقيقية (Realtime Database مجاني لربط المستر بالطلاب أونلاين)
+    // تم ربط قاعدة بيانات Firebase الخاصة بمستر يوسف سحابياً
     const firebaseConfig = {
-      databaseURL: "https://mr-youssef-academy-default-rtdb.firebaseio.com/"
+      databaseURL: "https://mr-youssef-academy-default-rtdb.firebaseio.com"
     };
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
@@ -1398,7 +1398,6 @@
       }
     };
 
-    // نظام جفظ وحفظ سحابي مباشر عبر Firebase لضمان رؤية البيانات للجميع في نفس اللحظة
     let cloudCache = {
       curriculum: defaultCurriculum,
       students: [],
@@ -1407,7 +1406,8 @@
       promos: [],
       regCodes: [],
       qa: [],
-      hw: []
+      hw: [],
+      announcement: "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"
     };
 
     function getCurriculum() { return cloudCache.curriculum || defaultCurriculum; }
@@ -1437,7 +1437,7 @@
     function getAnnouncement() { return cloudCache.announcement || "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"; }
     function saveAnnouncement(t) { cloudCache.announcement = t; rdb.ref('announcement').set(t); }
 
-    // الاستماع الفوري لكل تغيير من قاعدة البيانات السحابية (Real-time Listeners)
+    // مزامنة حية ولحظية لكل الأجهزة عبر الـ Firebase
     rdb.ref('/').on('value', (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -1455,7 +1455,6 @@
           document.getElementById("announcement-text").innerText = cloudCache.announcement;
         }
 
-        // تحديث الشاشة المفتوحة حالياً فور حدوث أي تعديل سحابي
         if (!teacherDashboard.classList.contains("hidden")) {
           loadTeacherPanel();
         } else if (currentActiveStudent && !studentDashboard.classList.contains("hidden")) {
@@ -1663,7 +1662,6 @@
       systemMsg.innerText = "";
     });
 
-    // 5. حفظ بيانات الطالب فوراً في النظام السحابي العام
     formStudentSignup.addEventListener("submit", (e) => {
       e.preventDefault();
       const name = document.getElementById("signup-name").value.trim();
@@ -1714,7 +1712,7 @@
       tabLogin.click();
       document.getElementById("login-identifier").value = name;
       document.getElementById("login-credential").value = code;
-      systemMsg.innerText = "🎉 تم إنشاء الحساب بنجاح! حصلت على 50 XP ترحيبية.";
+      systemMsg.innerText = "🎉 تم إنشاء الحساب بنجاح وتخزينه سحابياً! حصلت على 50 XP ترحيبية.";
       systemMsg.style.color = "var(--success)";
     });
 
@@ -1911,7 +1909,6 @@
       renderStudentCoursesList(student);
     }
 
-    // 3. عرض المحاضرات والروابط المرفوعة للمرحلة التي اختارها المستر بدقة
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -2012,7 +2009,6 @@
       }
     }
 
-    // 4. تفعيل كروت الشحن الفورية لأي صف دراسي بشكل سحابي سليم
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
       const inputCode = document.getElementById("input-promo-code").value.trim().toUpperCase();
       let promos = getPromos();
@@ -2047,7 +2043,6 @@
       }
     });
 
-    // 2. إرسال طلب الدفع ليظهر للمستر فوراً على المنصة
     document.getElementById("btn-request-activation").addEventListener("click", () => {
       const senderPhone = document.getElementById("pay-sender-phone").value.trim();
       const fileInput = document.getElementById("pay-receipt-file");
@@ -2067,7 +2062,7 @@
           students[idx].receiptImg = receiptImg;
           saveStudents(students);
           currentActiveStudent.senderWallet = senderPhone;
-          statusMsg.innerText = "✅ تم إرسال طلب الدفع للمستر بنجاح وسيظهر لديه في لوحة التحكم فوراً!";
+          statusMsg.innerText = "✅ تم إرسال طلب التفعيل سحابياً للمستر وسيظهر لديه في لوحة التحكم فوراً!";
           statusMsg.style.color = "var(--success)";
         }
       };
@@ -2605,7 +2600,6 @@
       alert("✅ تم نشر التنبيه العاجل لجميع الطلاب!");
     });
 
-    // 1 & 4. مسح QR الحضور وأكواد السنتر السحابية الموثوقة
     document.getElementById("btn-confirm-center-attendance").addEventListener("click", () => {
       const code = document.getElementById("scanner-code-input").value.trim().toUpperCase();
       const feedback = document.getElementById("scanner-feedback-msg");
@@ -3400,34 +3394,6 @@
       authSection.classList.remove("hidden");
       updateAuthNavState(false);
       tabLogin.click();
-    });
-
-    async function fetchLessonsFromGoogleSheet() {
-      const sheetApiUrl = "https://script.google.com/macros/s/AKfycbxUnT0EIwVjEx8jNY9d6y8KOsNj-W9lSiOAu_I112Tcalvb4zO1PlpsF_wX7SANQGzH0Q/exec";
-      try {
-        const response = await fetch(sheetApiUrl);
-        const data = await response.json();
-        console.log("تم سحب البيانات من الشيت بنجاح:", data);
-        if (data && data.length > 0) {
-          const curr = getCurriculum();
-          data.forEach(item => {
-            if (item.title && item.url) {
-              const targetGrade = "الصف الأول الابتدائي";
-              if (!curr[targetGrade]) curr[targetGrade] = { questions: [] };
-              curr[targetGrade].videoTitle = item.title;
-              curr[targetGrade].videoUrl = item.url;
-              curr[targetGrade].videoType = item.type === "pdf" ? "pdf" : "youtube";
-            }
-          });
-          saveCurriculum(curr);
-        }
-      } catch (error) {
-        console.error("خطأ أثناء سحب البيانات من جوجل شيت:", error);
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      fetchLessonsFromGoogleSheet();
     });
   </script>
 </body>
