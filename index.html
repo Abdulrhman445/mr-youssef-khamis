@@ -557,7 +557,7 @@
           <!-- شاشة الدفع -->
           <div id="payment-gate-box" class="payment-gate-box hidden anime-slide-up">
             <div class="lock-icon">🔒</div>
-            <h3>هذه المحاضرة تتطلب تفعيل كود الشحن أو التحويل الإلكتروني لهذه الحصة فقط</h3>
+            <h3>هذه المحاضرة تتطلب تفعيل كود الشحن أو إرسال إيصال التحويل لهذه الحصة فقط</h3>
             <p class="price-tag">سعر الحصة المخصص لهذا الدرس: <strong id="display-lesson-price">0</strong> جنيه مصري</p>
             
             <div class="quick-code-box">
@@ -799,7 +799,7 @@
             </div>
           </div>
 
-          <!-- 2. المشتركون (مع عرض صورة الإيصال ورقم المحفظة للمستر وتفعيل الحصة المعنية فقط) -->
+          <!-- 2. المشتركون (يظهر إيصال التحويل وصورته ورقم المحفظة بوضوح تام) -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">💳 المشتركون، إيصالات التحويل، وتفعيل الحصص المفردة</h3>
@@ -845,10 +845,10 @@
             </div>
           </div>
 
-          <!-- 4. أسعار الحصص لكل درس على حدة -->
+          <!-- 4. أسعار الحصص لكل درس على حدة وخيار المجاني (Free) -->
           <div id="t-sec-prices" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">💰 تحديد سعر كل حصة / درس على حدة لكل صف دراسي</h3>
+              <h3 class="box-title">💰 تحديد سعر كل حصة / درس على حدة أو جعلها مجانية (Free)</h3>
               <div id="teacher-prices-container"></div>
             </div>
           </div>
@@ -943,8 +943,8 @@
                   <input type="text" id="teacher-v-title" placeholder="مثال: Unit 1 - Grammar" required>
                 </div>
                 <div class="input-field">
-                  <label>سعر هذه الحصة (بالجنيه):</label>
-                  <input type="number" id="teacher-v-price" placeholder="مثال: 50" value="50" min="0" required>
+                  <label>سعر هذه الحصة (بالجنيه - اجعلها 0 لتكون مجانية Free):</label>
+                  <input type="number" id="teacher-v-price" placeholder="مثال: 50 أو 0" value="50" min="0" required>
                 </div>
                 <div class="input-field">
                   <label>نوع المصدر:</label>
@@ -1860,7 +1860,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض المحاضرات للطالب مع التحقق من فتح الحصة بشكل فردي حصرياً
+    // عرض المحاضرات للطالب (مع التحقق من المجاني Free أو المفتوح حصرياً)
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -1876,22 +1876,22 @@
       const sortedLessons = [...lessonsArr].reverse();
 
       sortedLessons.forEach((lesson) => {
-        // الحصة تكون مفعلة فقط إذا كانت ضمن مصفوفة الحصص المفتوحة للطالب
-        const isLessonUnlocked = student.unlockedLessons && student.unlockedLessons.includes(lesson.id);
+        const isFree = lesson.isFree === true || lesson.price === 0;
+        const isUnlocked = isFree || (student.unlockedLessons && student.unlockedLessons.includes(lesson.id));
         const card = document.createElement("div");
         card.className = "lesson-card";
         card.innerHTML = `
-          <div class="icon" style="font-size:32px; margin-bottom:6px;">${isLessonUnlocked ? "🔓" : "🔒"}</div>
+          <div class="icon" style="font-size:32px; margin-bottom:6px;">${isUnlocked ? "🔓" : "🔒"}</div>
           <h4>${lesson.videoTitle || "محاضرة الأسبوع"}</h4>
           <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">${student.grade}</p>
-          <p style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold); margin-bottom:6px;">السعر: ${lesson.price || 50} جنيه</p>
-          <span class="status-pill ${isLessonUnlocked ? 'status-unlocked' : 'status-locked'}">
-            ${isLessonUnlocked ? 'مفعلة ومتاحة للمشاهدة' : 'تتطلب تفعيل هذه الحصة فقط'}
+          <p style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold); margin-bottom:6px;">السعر: ${isFree ? '<span style="color:var(--success);">مجاني (Free)</span>' : (lesson.price || 50) + ' جنيه'}</p>
+          <span class="status-pill ${isUnlocked ? 'status-unlocked' : 'status-locked'}">
+            ${isUnlocked ? 'مفعل ومتاح للمشاهدة' : 'تتطلب كود شحن أو تفعيل لهذه الحصة'}
           </span>
         `;
 
         card.addEventListener("click", () => {
-          if (!isLessonUnlocked) {
+          if (!isUnlocked) {
             document.getElementById("student-courses-catalog").classList.add("hidden");
             document.getElementById("payment-gate-box").classList.remove("hidden");
             if (btnBackCatalog) btnBackCatalog.classList.remove("hidden");
@@ -2016,7 +2016,6 @@
       }
     });
 
-    // إرسال طلب التحويل الإلكتروني مع صورة الإيصال ليراها المستر في لوحته
     document.getElementById("btn-request-activation").addEventListener("click", () => {
       const senderPhone = document.getElementById("pay-sender-phone").value.trim();
       const fileInput = document.getElementById("pay-receipt-file");
@@ -2062,7 +2061,10 @@
       const sIdx = students.findIndex(s => s.code === student.code);
       const currentViews = students[sIdx].views || 0;
 
-      if (currentViews >= 3) {
+      const isFree = lesson.isFree === true || lesson.price === 0;
+
+      // الحصص المجانية لا تحسب ضمن الـ 3 مشاهدات
+      if (!isFree && currentViews >= 3) {
         alert("⚠️ لقد استنفدت الحد الأقصى للمشاهدات (3 مرات). يرجى التواصل مع المستر لفك وتصفير المشاهدات.");
         return;
       }
@@ -2090,12 +2092,14 @@
         vContainer.appendChild(videoEl);
         activeVideoElForTimestamp = videoEl;
 
-        videoEl.ontimeupdate = () => {
-          if (!hasCountedThisSession && videoEl.duration > 0 && videoEl.currentTime >= (videoEl.duration / 2)) {
-            hasCountedThisSession = true;
-            incrementStudentViewCount(student.code);
-          }
-        };
+        if (!isFree) {
+          videoEl.ontimeupdate = () => {
+            if (!hasCountedThisSession && videoEl.duration > 0 && videoEl.currentTime >= (videoEl.duration / 2)) {
+              hasCountedThisSession = true;
+              incrementStudentViewCount(student.code);
+            }
+          };
+        }
       } else if (lesson.videoUrl) {
         const iframe = document.createElement("iframe");
         iframe.id = "main-yt-iframe";
@@ -2104,16 +2108,18 @@
         iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
         vContainer.appendChild(iframe);
 
-        if (videoWatchTrackTimer) clearTimeout(videoWatchTrackTimer);
-        videoWatchTrackTimer = setTimeout(() => {
-          if (!hasCountedThisSession) {
-            hasCountedThisSession = true;
-            incrementStudentViewCount(student.code);
-          }
-        }, 180000);
+        if (!isFree) {
+          if (videoWatchTrackTimer) clearTimeout(videoWatchTrackTimer);
+          videoWatchTrackTimer = setTimeout(() => {
+            if (!hasCountedThisSession) {
+              hasCountedThisSession = true;
+              incrementStudentViewCount(student.code);
+            }
+          }, 180000);
+        }
       }
 
-      document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views || 0} / 3`;
+      document.getElementById("views-count-badge").innerText = isFree ? "👁️ مشاهدات مجانية (بلا حدود)" : `👁️ المشاهدات: ${students[sIdx].views || 0} / 3`;
 
       document.getElementById("btn-vid-forward").onclick = () => {
         if (activeVideoElForTimestamp) activeVideoElForTimestamp.currentTime += 5;
@@ -2616,7 +2622,7 @@
 
       const grades = Object.keys(curr);
       if (grades.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً. ابدأ برفع محاضرة جديدة.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً. ابدأ برفع محاضرة جديدة.</td></tr>";
         return;
       }
 
@@ -2628,7 +2634,6 @@
           tr.innerHTML = `
             <td><strong>${grade}</strong></td>
             <td><input type="text" id="edit-v-title-${grade}-${lessonIdx}" value="${item.videoTitle || ''}" style="width:100%; padding:4px;"></td>
-            <td><input type="number" id="edit-v-price-${grade}-${lessonIdx}" value="${item.price || 50}" style="width:70px; padding:4px;" min="0"></td>
             <td>${item.pdfData ? '📄 مرفقة ✅' : '❌ لا توجد'}</td>
             <td>${item.vocab ? item.vocab.length + ' كلمة' : '0'}</td>
             <td>
@@ -2645,13 +2650,11 @@
 
     window.saveCurriculumTitleEdit = function(grade, lessonIdx) {
       const newTitle = document.getElementById(`edit-v-title-${grade}-${lessonIdx}`).value.trim();
-      const newPrice = parseInt(document.getElementById(`edit-v-price-${grade}-${lessonIdx}`).value) || 50;
       const curr = getCurriculum();
       if (curr[grade] && curr[grade][lessonIdx]) {
         curr[grade][lessonIdx].videoTitle = newTitle;
-        curr[grade][lessonIdx].price = newPrice;
         saveCurriculum(curr);
-        alert(`✅ تم تحديث بيانات المحاضرة بنجاح!`);
+        alert(`✅ تم تحديث عنوان المحاضرة!`);
         renderTeacherCurriculumTable();
       }
     };
@@ -2725,6 +2728,10 @@
     };
 
     function renderTeacherPrices() {
+      renderTeacherPricesUI();
+    }
+
+    function renderTeacherPricesUI() {
       const container = document.getElementById("teacher-prices-container");
       if (!container) return;
       container.innerHTML = "";
@@ -2742,7 +2749,7 @@
           
           const table = document.createElement("table");
           table.className = "custom-table";
-          table.innerHTML = `<thead><tr><th>عنوان الحصة</th><th>السعر الحالي</th><th>تعديل السعر</th></tr></thead><tbody id="price-tbody-${grade.replace(/\s+/g, '_')}"></tbody>`;
+          table.innerHTML = `<thead><tr><th>عنوان الحصة</th><th>السعر الحالي (جنيه)</th><th>تعديل السعر والمجاني</th></tr></thead><tbody id="price-tbody-${grade.replace(/\s+/g, '_')}"></tbody>`;
           gradeBox.appendChild(table);
           container.appendChild(gradeBox);
 
@@ -2751,11 +2758,14 @@
             const tr = document.createElement("tr");
             tr.innerHTML = `
               <td><strong>${lesson.videoTitle}</strong></td>
-              <td><strong style="color:var(--accent-gold);">${lesson.price || 50} ج.م</strong></td>
+              <td><strong style="color:var(--accent-gold);">${lesson.isFree ? 'مجاني (Free)' : (lesson.price || 50) + ' ج.م'}</strong></td>
               <td>
-                <div style="display:flex; gap:6px;">
-                  <input type="number" id="lesson-price-${grade}-${lIdx}" value="${lesson.price || 50}" min="0" style="width:90px; padding:4px;">
-                  <button class="btn btn-success btn-sm" onclick="saveLessonPrice('${grade}', ${lIdx})">حفظ السعر</button>
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <input type="number" id="lesson-price-${grade}-${lIdx}" value="${lesson.price || 50}" min="0" style="width:80px; padding:4px;">
+                  <label style="display:flex; align-items:center; gap:4px; font-size:0.8rem; cursor:pointer;">
+                    <input type="checkbox" id="lesson-free-${grade}-${lIdx}" ${lesson.isFree ? 'checked' : ''} style="width:auto;"> مجاني
+                  </label>
+                  <button class="btn btn-success btn-sm" onclick="saveLessonPriceAndFree('${grade}', ${lIdx})">حفظ</button>
                 </div>
               </td>
             `;
@@ -2769,14 +2779,16 @@
       }
     }
 
-    window.saveLessonPrice = function(grade, lessonIdx) {
+    window.saveLessonPriceAndFree = function(grade, lessonIdx) {
       const newPrice = parseInt(document.getElementById(`lesson-price-${grade}-${lessonIdx}`).value) || 50;
+      const isFree = document.getElementById(`lesson-free-${grade}-${lessonIdx}`).checked;
       const curr = getCurriculum();
       if (curr[grade] && curr[grade][lessonIdx]) {
         curr[grade][lessonIdx].price = newPrice;
+        curr[grade][lessonIdx].isFree = isFree;
         saveCurriculum(curr);
-        alert(`✅ تم تحديث سعر هذه الحصة ليصبح: ${newPrice} ج.م!`);
-        renderTeacherPrices();
+        alert(`✅ تم تحديث بيانات الحصة بنجاح!`);
+        renderTeacherPricesUI();
       }
     };
 
@@ -2917,6 +2929,7 @@
           id: "les_" + Date.now(),
           videoTitle: title,
           price: price,
+          isFree: price === 0,
           videoType: type,
           videoUrl: videoUrl,
           pdfData: pdfData,
@@ -2929,6 +2942,7 @@
         alert(`✅ تم نشر المحاضرة بنجاح لـ (${grade}) وستظهر للطلاب فوراً!`);
         document.getElementById("form-manage-video").reset();
         renderTeacherCurriculumTable();
+        renderTeacherPricesUI();
       };
 
       const processPdfAndSave = (videoUrl) => {
@@ -3097,7 +3111,7 @@
       });
     }
 
-    // جدول المشتركون (يعرض صورة الإيصال ورقم المحفظة، وعند تفعيل المستر يتم فتح الحصة المحددة للطالب فقط)
+    // جدول المشتركون (يظهر إيصال التحويل، وعند التفعيل يفتح حصة الطالب المعنية فقط)
     function renderTeacherPayments() {
       const students = getStudents();
       const tbody = document.getElementById("teacher-payments-table");
@@ -3168,7 +3182,7 @@
     document.getElementById("btn-close-parent-modal").addEventListener("click", () => document.getElementById("parent-dashboard-modal").classList.add("hidden"));
     document.getElementById("btn-close-details-modal").addEventListener("click", () => document.getElementById("student-full-details-modal").classList.add("hidden"));
 
-    // عند تفعيل المستر للطالب، يتم فتح الحصة التي طلبها فقط بشكل فردي
+    // عند تفعيل المستر للطالب، يتم فتح الحصة المعلقة التي طلبها فقط بشكل فردي
     window.toggleStudentPayment = function(idx) {
       const students = getStudents();
       const student = students[idx];
