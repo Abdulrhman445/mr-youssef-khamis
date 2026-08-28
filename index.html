@@ -919,7 +919,7 @@
             </div>
           </div>
 
-          <!-- 7. رفع المحاضرات -->
+          <!-- 7. رفع المحاضرات (فارغة نظيفة تماماً ولا تعرض سوى ما يضيفه المستر) -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
@@ -940,7 +940,7 @@
                 </div>
                 <div class="input-field">
                   <label>عنوان المحاضرة:</label>
-                  <input type="text" id="teacher-v-title" placeholder="مثال: Unit 2 - Past Simple" required>
+                  <input type="text" id="teacher-v-title" placeholder="مثال: Unit 1 - Grammar" required>
                 </div>
                 <div class="input-field">
                   <label>نوع المصدر:</label>
@@ -1374,34 +1374,8 @@
       "الصف الأول الإعدادي": 75, "الصف الثاني الإعدادي": 75, "الصف الثالث الإعدادي": 80
     };
 
-    const defaultCurriculum = {
-      "الصف الأول الابتدائي": [
-        {
-          id: "les_1",
-          videoType: "youtube", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-          videoTitle: "المحاضرة 1: الحروف وأساسيات الصوتيات Alphabet Basics",
-          pdfData: "", quizDuration: 10,
-          vocab: [{ word: "Cat", meaning: "قطة" }, { word: "Dog", meaning: "كلب" }],
-          questions: [
-            { type: "mcq", question: "1. Which letter comes after 'A'?", options: ["C", "B", "D", "E"], correctIndex: 1 },
-            { type: "essay", question: "2. Write the small form of letter (B):", correctText: "b" }
-          ]
-        }
-      ],
-      "الصف الثالث الإعدادي": [
-        {
-          id: "les_2",
-          videoType: "youtube", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-          videoTitle: "المحاضرة 1: Prep 3 - Around Town Grammar",
-          pdfData: "", quizDuration: 15,
-          vocab: [{ word: "Botanical garden", meaning: "حديقة نباتية" }, { word: "Aquarium", meaning: "متحف الأحياء المائية" }],
-          questions: [
-            { type: "mcq", question: "1. The train to Alexandria _____ at 7:00 AM.", options: ["leaves", "leave", "is leaving", "left"], correctIndex: 0 },
-            { type: "essay", question: "2. Mention a place you can visit around town:", correctText: "museum" }
-          ]
-        }
-      ]
-    };
+    // جعل المحاضرات الافتراضية فارغة تماماً بحيث لا يظهر سوى ما يرفعه المستر بنفسه
+    const defaultCurriculum = {};
 
     let cloudCache = {
       curriculum: defaultCurriculum,
@@ -1415,7 +1389,7 @@
       announcement: "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"
     };
 
-    function getCurriculum() { return cloudCache.curriculum || defaultCurriculum; }
+    function getCurriculum() { return cloudCache.curriculum || {}; }
     function saveCurriculum(d) { cloudCache.curriculum = d; rdb.ref('curriculum').set(d); }
 
     function getStudents() { return cloudCache.students || []; }
@@ -1446,7 +1420,7 @@
     rdb.ref('/').on('value', (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        cloudCache.curriculum = data.curriculum || defaultCurriculum;
+        cloudCache.curriculum = data.curriculum || {};
         cloudCache.students = data.students || [];
         cloudCache.prices = data.prices || defaultPrices;
         cloudCache.results = data.results || [];
@@ -1465,6 +1439,7 @@
           if (updated) {
             currentActiveStudent = updated;
             localStorage.setItem("yk_active_student_code", updated.code);
+            loadStudentDashboard(updated);
           }
         }
       }
@@ -1505,7 +1480,7 @@
     let videoWatchTrackTimer = null;
     let hasCountedThisSession = false;
 
-    // استعادة جلسة الدخول التلقائية عند عمل Refresh للمنصة (عدم الخروج أبداً)
+    // استعادة الجلسة عند عمل Refresh للمنصة لضمان عدم الخروج أبداً
     window.addEventListener("load", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
       const savedRole = localStorage.getItem("yk_active_role");
@@ -1521,7 +1496,6 @@
         loadDevPanel();
         updateAuthNavState(true);
       } else if (savedCode) {
-        // ننتظر قليلاً لتحميل بيانات الكلاود
         setTimeout(() => {
           const students = getStudents();
           const student = students.find(s => s.code === savedCode);
@@ -1531,7 +1505,7 @@
             loadStudentDashboard(student);
             updateAuthNavState(true);
           }
-        }, 800);
+        }, 600);
       }
     });
 
@@ -1945,7 +1919,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض كافة محاضرات الأرشيف للطالب مرتبة من الأحدث إلى الأقدم
+    // عرض كافة محاضرات الأرشيف الخاصة بصف الطالب مرتبة بحيث يظهر الأحدث أولاً
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -1967,7 +1941,7 @@
           <h4>${lesson.videoTitle || "محاضرة الأسبوع"}</h4>
           <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">${student.grade}</p>
           <span class="status-pill ${student.paid ? 'status-unlocked' : 'status-locked'}">
-            ${student.paid ? 'مفعل ومتاح للاختيار والاطلاع' : 'تتطلب اشتراك أو كود شحن'}
+            ${student.paid ? 'مفعل ومتاح للاختيار' : 'تتطلب اشتراك أو كود شحن فوري'}
           </span>
         `;
 
@@ -2701,7 +2675,13 @@
       tbody.innerHTML = "";
       const curr = getCurriculum();
 
-      Object.keys(curr).forEach(grade => {
+      const grades = Object.keys(curr);
+      if (grades.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً.</td></tr>";
+        return;
+      }
+
+      grades.forEach(grade => {
         const lessonsArr = curr[grade] || [];
         lessonsArr.forEach((item, lessonIdx) => {
           const tr = document.createElement("tr");
@@ -2738,6 +2718,7 @@
         const curr = getCurriculum();
         if (curr[grade]) {
           curr[grade].splice(lessonIdx, 1);
+          if (curr[grade].length === 0) delete curr[grade];
           saveCurriculum(curr);
           alert(`✅ تم مسح المحاضرة بنجاح.`);
           renderTeacherCurriculumTable();
@@ -2940,6 +2921,7 @@
       });
     }
 
+    // رفع محاضرة جديدة وإضافتها للأرشيف لتظهر للطالب فوراً
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -2969,7 +2951,7 @@
 
         curr[grade].push(newLesson);
         saveCurriculum(curr);
-        alert(`✅ تم نشر المحاضرة الجديدة لـ (${grade}) وأضيفت لأعلى الأرشيف بنجاح!`);
+        alert(`✅ تم نشر المحاضرة الجديدة لـ (${grade}) وأضيفت للأرشيف بنجاح!`);
         document.getElementById("form-manage-video").reset();
         renderTeacherCurriculumTable();
       };
