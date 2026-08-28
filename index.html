@@ -253,7 +253,7 @@
 
     .lessons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; margin-top: 12px; }
     
-    /* تصميم كارت المحاضرة الاحترافي الجديد */
+    /* تصميم كارت المحاضرة الاحترافي والأنميشن */
     .lesson-card {
       background: var(--box-bg); border: 2px solid var(--border-color); border-radius: 14px; overflow: hidden;
       transition: all 0.25s ease; cursor: pointer; display: flex; flex-direction: column; position: relative;
@@ -550,7 +550,7 @@
       <div id="leaderboard-cards-container" class="lessons-grid"></div>
     </div>
 
-    <!-- لوحة تحكم الطالب -->
+    <!-- لوحة تحكم الطالب المبسطة والمرتبة في قائمة جانبية خفيفة -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
       <aside class="adaptive-sidebar" id="std-sidebar-panel">
         <div class="sidebar-user-header">
@@ -628,7 +628,7 @@
           <div id="student-lesson-viewer" class="dash-box hidden anime-fade-in">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap:wrap; gap:8px;">
               <h3 id="std-video-title" class="box-title" style="margin: 0;">عنوان المحاضرة</h3>
-              <span id="views-count-badge" class="views-badge">👁️ المشاهدات: 0 / 3</span>
+              <span id="views-count-badge" class="views-badge">👁️ المشاهدات: 0 / 5</span>
             </div>
             
             <div id="video-timestamps-bar" class="video-control-bar" style="margin-bottom:10px;">
@@ -665,14 +665,14 @@
 
             <div style="display:flex; gap:8px; margin-top:15px; flex-wrap:wrap;">
               <button id="btn-open-vocab-modal" class="btn btn-primary btn-sm" type="button">🗂️ الكلمات</button>
-              <button id="btn-open-homework-modal" class="btn btn-success btn-sm" type="button">📤 تسليم الواجب (متعدد الصور / PDF)</button>
+              <button id="btn-open-homework-modal" class="btn btn-success btn-sm" type="button">📤 تسليم الواجب (صور متعددة / PDF)</button>
               <button id="btn-open-quiz-modal" class="btn btn-danger btn-sm hidden" type="button">📝 اختبار الحصة (مرة واحدة)</button>
             </div>
 
             <div id="pdf-viewer-section" class="pdf-box hidden" style="margin-top: 20px;">
               <h4>📖 مذكرة الشرح والواجب (PDF)</h4>
               <iframe id="std-pdf-frame" src="" width="100%" height="450" frameborder="0"></iframe>
-              <a id="download-pdf-btn" href="" download class="btn btn-primary btn-sm" style="margin-top:10px;">📥 تنزيل ملف المذكرة على جهازك</a>
+              <a id="download-pdf-btn" href="" download class="btn btn-primary btn-sm" style="margin-top:10px;">📥 تنزيل ملف المذكرة على جهازك (PDF)</a>
             </div>
 
             <div class="qa-section" style="margin-top: 25px;">
@@ -706,9 +706,9 @@
           </div>
         </section>
 
-        <!-- 3. الامتحانات -->
+        <!-- 3. الامتحانات (بشرط الاجتياز 60% وإشعارات ولي الأمر الذكية) -->
         <section id="section-exams" class="std-content-tab hidden anime-fade-in">
-          <h2 class="box-title">📝 سجل الاختبارات والدرجات (متاحة لمرة واحدة)</h2>
+          <h2 class="box-title">📝 سجل الاختبارات والدرجات (تتطلب اجتياز 60% فأعلى)</h2>
           <div class="grid-2col">
             <div class="dash-box">
               <h3 class="box-title">⏳ اختبارات مطلوب أداؤها</h3>
@@ -818,19 +818,17 @@
             </div>
           </div>
 
-          <!-- 2. ماسح الحضور بـ QR وكاميرا الجوال + إدخال الكود يدوياً -->
+          <!-- 2. ماسح الحضور بالكاميرا الحية والـ QR والكود اليدوي -->
           <div id="t-sec-qr-scan" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box" style="text-align:center;">
               <h3 class="box-title">📷 نظام مسح حضور السنتر (كاميرا الجوال / QR / كود يدوي)</h3>
               <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">قم بتوجيه الكاميرا نحو كود الـ QR الخاص بالطالب، أو أدخل كوده يدوياً لتسجيل الحضور وإرسال إشعار فوري لولي الأمر عبر الواتساب:</p>
               
-              <!-- إدخال كود يدوي -->
               <div style="display:flex; gap:8px; max-width:400px; margin:0 auto 15px;">
                 <input type="text" id="scanner-code-input" placeholder="أدخل كود الطالب (مثال: YK-xxxxxx)">
                 <button id="btn-confirm-center-attendance" class="btn btn-success btn-sm" type="button">تسجيل 🟢</button>
               </div>
 
-              <!-- مشغل الكاميرا الحية -->
               <div style="max-width:350px; margin:0 auto; background:#000; border-radius:12px; overflow:hidden; padding:5px;">
                 <div id="reader" style="width:100%;"></div>
               </div>
@@ -844,7 +842,7 @@
           <!-- 3. المشتركون والإيصالات -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">💳 المشتركون، مراجعة إيصالات التحويل، وتفعيل الحصص</h3>
+              <h3 class="box-title">💳 المشتركون، إيصالات التحويل، وتفعيل الحصص المفردة</h3>
               <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
@@ -898,7 +896,7 @@
           <!-- 6. كروت شحن الحصص -->
           <div id="t-sec-promos" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">🎟️ توليد كروت شحن الحصص (تفعل فيديو واحد فقط)</h3>
+              <h3 class="box-title">🎟️ توليد كروت شحن الحصص (تفعل فيديو واحد فقط المرتبط بالكرت)</h3>
               <div class="grid-2col">
                 <select id="promo-grade-select">
                   <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
@@ -925,7 +923,7 @@
           <!-- 7. أكواد تسجيل السنتر الحصرية -->
           <div id="t-sec-student-codes" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">🪪 توليد وربط أكواد تسجيل السنتر الحصرية بالأسماء</h3>
+              <h3 class="box-title">🪪 توليد وربط أكواد تسجيل السنتر (لكل طالب كود حصري باسمه)</h3>
               <div class="grid-2col" style="margin-bottom:12px;">
                 <input type="text" id="exclusive-student-name" placeholder="اسم الطالب الثلاثي">
                 <select id="exclusive-student-grade">
@@ -958,7 +956,7 @@
             </div>
           </div>
 
-          <!-- 8. رفع المحاضرات (مع تحديد السعر 0 للمجاني وصورة مصغرة مخصصة أو تلقائية) -->
+          <!-- 8. رفع المحاضرات (مع جعل السعر 0 للمجاني التلقائي) -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
@@ -1006,7 +1004,7 @@
                   <input type="file" id="teacher-v-file" accept="video/*">
                 </div>
                 <div class="input-field">
-                  <label>📄 اختر ملف مذكرة الشرح (PDF من جهازك):</label>
+                  <label>📄 اختر ملف مذكرة الشرح (PDF من جهازك - سيظهر للطالب لتنزيله):</label>
                   <input type="file" id="teacher-pdf-file" accept="application/pdf">
                 </div>
                 <div class="input-field">
@@ -1037,10 +1035,10 @@
             </div>
           </div>
 
-          <!-- 8. بنك الأسئلة -->
+          <!-- 8. بنك الأسئلة (تحديد هل هو امتحان أو واجب وربطه بالمحاضرة المحددة) -->
           <div id="t-sec-quiz" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">📝 بنك الأسئلة، الاختبارات، ونموذج إجابة الواجب</h3>
+              <h3 class="box-title">📝 بنك الأسئلة، الاختبارات، ونموذج إجابة الواجب المخصص</h3>
               <form id="form-manage-quiz">
                 <div class="input-field">
                   <label>الصف الدراسي:</label>
@@ -1056,6 +1054,17 @@
                     <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
                     <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
                   </select>
+                </div>
+                <div class="input-field">
+                  <label>اختر نوع النشر:</label>
+                  <select id="teacher-q-category">
+                    <option value="exam">امتحان دوري (يُحل لمرة واحدة)</option>
+                    <option value="homework">واجب منزلي (يُنزل كملف PDF ويُرسل حله كصور)</option>
+                  </select>
+                </div>
+                <div class="input-field">
+                  <label>اسم الامتحان أو الواجب:</label>
+                  <input type="text" id="teacher-q-title-name" placeholder="مثال: امتحان Unit 1 الشامل" required>
                 </div>
                 <div class="input-field">
                   <label>⏱️ مدة الامتحان (بالدقائق):</label>
@@ -1080,7 +1089,7 @@
                     <input type="text" id="t-opt-3" placeholder="الاختيار 4">
                   </div>
                   <div class="input-field" style="margin-top: 10px;">
-                    <label>الاختيار الصحيح:</label>
+                    <label>الاختيار الصحيح (للتصحيح الآلي):</label>
                     <select id="teacher-q-correct">
                       <option value="0">الاختيار 1</option>
                       <option value="1">الاختيار 2</option>
@@ -1094,14 +1103,14 @@
                   <input type="text" id="teacher-essay-correct-text" placeholder="اكتب الإجابة النموذجية">
                 </div>
                 <div class="btn-group-row">
-                  <button type="submit" class="btn btn-success">➕ إضافة السؤال للبنك ونموذج التصحيح</button>
-                  <button type="button" id="btn-clear-quiz" class="btn btn-danger btn-sm">حذف كافة أسئلة الصف</button>
+                  <button type="submit" class="btn btn-success">➕ إضافة السؤال ونشر الامتحان/الواجب</button>
+                  <button type="button" id="btn-clear-quiz" class="btn btn-danger btn-sm">حذف الأسئلة</button>
                 </div>
               </form>
             </div>
           </div>
 
-          <!-- 9. تصدير نتائج Excel لكل صف على حدة -->
+          <!-- 9. تصدير Excel لكل صف على حدة -->
           <div id="t-sec-results" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -1194,7 +1203,7 @@
       </div>
     </div>
 
-    <!-- نافذة عرض صور الواجب للطالب أو للمستر -->
+    <!-- نافذة عرض صور الواجب للمستر وتصحيحها -->
     <div id="view-hw-images-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:700px; text-align:center;">
         <h3 class="box-title">📄 معاينة صور الواجب المقدمة</h3>
@@ -1218,7 +1227,7 @@
             <div><span>📚 الصف الدراسي:</span> <strong id="det-grade"></strong></div>
             <div><span>🔑 كود السنتر:</span> <code id="det-code" class="code-pill"></code></div>
             <div><span>📱 هاتف الطالب:</span> <strong id="det-phone"></strong></div>
-            <div><span>👨‍👩‍👦 ولي الأمر:</span> <strong id="det-parent-phone"></strong></div>
+            <div><span>👨‍👩‍👦 هاتف ولي الأمر:</span> <strong id="det-parent-phone"></strong></div>
             <div><span>⚡ نقاط XP:</span> <strong id="det-xp" style="color:var(--accent-gold);"></strong></div>
             <div><span>💳 حالة الاشتراك:</span> <strong id="det-paid"></strong></div>
             <div><span>🔒 بصمة الجهاز:</span> <small><code id="det-device"></code></small></div>
@@ -1445,16 +1454,6 @@
       if (url.includes("youtu.be/")) return url.replace("youtu.be/", "www.youtube.com/embed/");
       if (url.includes("shorts/")) return url.replace("shorts/", "embed/");
       return url;
-    }
-
-    function getYoutubeThumbnail(url) {
-      if (!url) return "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
-      let videoId = "";
-      if (url.includes("embed/")) videoId = url.split("embed/")[1].split("?")[0];
-      else if (url.includes("watch?v=")) videoId = url.split("watch?v=")[1].split("&")[0];
-      else if (url.includes("youtu.be/")) videoId = url.split("youtu.be/")[1].split("?")[0];
-      else if (url.includes("shorts/")) videoId = url.split("shorts/")[1].split("?")[0];
-      return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
     }
 
     const authSection = document.getElementById("auth-section");
@@ -1852,7 +1851,6 @@
     const btnSideOpenHw = document.getElementById("btn-side-open-hw");
     if (btnSideOpenHw) {
       btnSideOpenHw.addEventListener("click", () => {
-        renderInteractiveHomeworkModal();
         document.getElementById("homework-modal").classList.remove("hidden");
       });
     }
@@ -1938,7 +1936,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض المحاضرات للطالب مع الكارت الاحترافي والمميز للحصص المجانية (Free)
+    // عرض المحاضرات للطالب مع التصميم الاحترافي والـ FREE الكرت اللامع
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -2018,6 +2016,7 @@
       });
     }
 
+    // نظام الامتحانات عند الطالب مع التحقق من شرط الاجتياز 60% وتنبيه ولي الأمر التلقائي
     function renderStudentExamStatus(student) {
       const completedBox = document.getElementById("std-completed-exams-list");
       const pendingBox = document.getElementById("std-pending-exams-list");
@@ -2039,21 +2038,25 @@
           item.className = "exam-status-item";
           item.innerHTML = `
             <div><strong>${r.grade}</strong> <small>(${r.time})</small> ${r.isCheated ? '<span style="color:var(--danger); font-weight:bold;">[محاولة غش]</span>' : ''}</div>
-            <div><span style="color:${r.isCheated ? 'var(--danger)' : 'var(--success)'}; font-weight:800;">${r.score} (${r.percentage})</span></div>
+            <div><span style="color:${r.isCheated ? 'var(--danger)' : 'var(--success)'}; font-weight:800;">${r.score} (${r.percentage}) - ${r.status}</span></div>
           `;
           completedBox.appendChild(item);
         });
       }
 
-      if (hasQuiz && myResults.length === 0) {
+      // الطالب لا يمكنه حل الامتحان إلا إذا كان مشتركاً في هذه الحصة
+      const isLatestUnlocked = student.paid || student.isFree || (student.unlockedLessons && student.unlockedLessons.includes(latestLesson.id));
+      if (hasQuiz && myResults.length === 0 && isLatestUnlocked) {
         const item = document.createElement("div");
         item.className = "exam-status-item";
         item.style.borderColor = "var(--primary-glow)";
         item.innerHTML = `
-          <div><strong>📝 اختبار: ${latestLesson.videoTitle || "محاضرة الأسبوع"}</strong></div>
-          <div><button class="btn btn-primary btn-sm" type="button" onclick="document.querySelector('.side-nav-btn[data-tab=\\'tab-courses\\']').click();">دخول الاختبار</button></div>
+          <div><strong>📝 امتحان: ${latestLesson.videoTitle || "محاضرة الأسبوع"}</strong></div>
+          <div><button class="btn btn-primary btn-sm" type="button" onclick="openExamModalForLatest()">دخول الامتحان</button></div>
         `;
         pendingBox.appendChild(item);
+      } else if (hasQuiz && myResults.length === 0 && !isLatestUnlocked) {
+        pendingBox.innerHTML = "<p style='color:var(--danger); font-size:0.85rem;'>⚠️ الامتحان مرتبط بحصة تتطلب اشتراكاً أو تفعيل أولاً.</p>";
       } else if (hasQuiz && myResults.length > 0) {
         pendingBox.innerHTML = "<p style='color:var(--success); font-size:0.85rem;'>✅ أتممت امتحان هذه الحصة بنجاح.</p>";
       } else {
@@ -2061,7 +2064,27 @@
       }
     }
 
-    // تسليم الواجب المتعدد (صور كشكول أو PDF)
+    window.openExamModalForLatest = function() {
+      let lessonsArr = getCurriculum()[currentActiveStudent.grade] || [];
+      if (!Array.isArray(lessonsArr)) lessonsArr = lessonsArr ? [lessonsArr] : [];
+      const latestLesson = lessonsArr.length > 0 ? lessonsArr[lessonsArr.length - 1] : {};
+      currentExamQuestions = latestLesson.questions || [];
+      const duration = latestLesson.quizDuration || 10;
+
+      if (currentExamQuestions.length === 0) {
+        alert("لا توجد أسئلة في هذا الامتحان.");
+        return;
+      }
+
+      isExamActive = true;
+      cheatWarningsCount = 0;
+      document.getElementById("anti-cheat-alert").classList.remove("hidden");
+      document.getElementById("quiz-popup-modal").classList.remove("hidden");
+      renderQuizQuestions(currentExamQuestions);
+      startQuizTimer(duration);
+    };
+
+    // تسليم الواجب المتعدد (صور كشكول / PDF)
     document.getElementById("btn-submit-multiple-hw").onclick = () => {
       const notes = document.getElementById("std-hw-notes-input").value.trim();
       const filesInput = document.getElementById("std-hw-files");
@@ -2193,8 +2216,8 @@
 
       const isFree = lesson.isFree === true || lesson.price === 0;
 
-      if (!isFree && currentViews >= 3) {
-        alert("⚠️ لقد استنفدت الحد الأقصى للمشاهدات (3 مرات). يرجى التواصل مع المستر لفك وتصفير المشاهدات.");
+      if (!isFree && currentViews >= 5) {
+        alert("⚠️ لقد استنفدت الحد الأقصى للمشاهدات (5 مرات). يرجى التواصل مع المستر لفك وتصفير المشاهدات.");
         return;
       }
 
@@ -2248,7 +2271,7 @@
         }
       }
 
-      document.getElementById("views-count-badge").innerText = isFree ? "👁️ مشاهدات مجانية (بلا حدود)" : `👁️ المشاهدات: ${students[sIdx].views || 0} / 3`;
+      document.getElementById("views-count-badge").innerText = isFree ? "👁️ مشاهدات مجانية (بلا حدود)" : `👁️ المشاهدات: ${students[sIdx].views || 0} / 5`;
 
       document.getElementById("btn-vid-forward").onclick = () => {
         if (activeVideoElForTimestamp) activeVideoElForTimestamp.currentTime += 5;
@@ -2310,7 +2333,7 @@
       if (sIdx !== -1) {
         students[sIdx].views = (students[sIdx].views || 0) + 1;
         saveStudents(students);
-        document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views} / 3`;
+        document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views} / 5`;
         alert("👁️ تم تجاوز منتصف مدة الحصة، وتم احتساب هذه المشاهدة.");
       }
     }
@@ -2359,6 +2382,243 @@
       window.speechSynthesis.speak(utterance);
     });
 
+    document.getElementById("btn-open-homework-modal").addEventListener("click", () => {
+      document.getElementById("homework-modal").classList.remove("hidden");
+    });
+    document.getElementById("btn-close-hw-modal").addEventListener("click", () => {
+      document.getElementById("homework-modal").classList.add("hidden");
+    });
+
+    function renderStudentQA() {
+      const container = document.getElementById("std-qa-thread");
+      container.innerHTML = "";
+      const allQA = getQuestions().filter(q => q.studentName === currentActiveStudent.name);
+
+      allQA.forEach(qa => {
+        const div = document.createElement("div");
+        div.className = "qa-msg";
+        div.innerHTML = `
+          <p><strong>سؤالك:</strong> ${qa.question}</p>
+          ${qa.reply ? `<div class="qa-reply"><strong>رد مستر يوسف:</strong> ${qa.reply}</div>` : `<p style="color:#b45309; font-size:0.8rem; margin-top:4px;">⏳ في انتظار رد مستر يوسف...</p>`}
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    document.getElementById("btn-send-question").addEventListener("click", () => {
+      const input = document.getElementById("std-question-input");
+      const qText = input.value.trim();
+      if (!qText) return;
+
+      const allQA = getQuestions();
+      allQA.push({ id: Date.now(), studentName: currentActiveStudent.name, grade: currentActiveStudent.grade, question: qText, reply: "" });
+      saveQuestions(allQA);
+      input.value = "";
+      renderStudentQA();
+    });
+
+    window.addEventListener("blur", () => {
+      if (isExamActive) {
+        cheatWarningsCount++;
+        const alertBox = document.getElementById("anti-cheat-alert");
+        alertBox.classList.remove("hidden");
+
+        if (cheatWarningsCount >= 2) {
+          alert("🚨 تم إنهاء الامتحان تلقائياً بسبب مغادرتك المتكررة لصفحة الامتحان!");
+          finishExamDueToCheat();
+        }
+      }
+    });
+
+    function finishExamDueToCheat() {
+      if (!isExamActive) return;
+      isExamActive = false;
+      if (quizTimerInterval) clearInterval(quizTimerInterval);
+
+      const total = currentExamQuestions.length;
+      const res = document.getElementById("std-exam-result");
+      res.innerText = `🚨 تم إلغاء نتيجتك (0 من ${total}) بسبب محاولة الغش!`;
+      res.style.color = "var(--danger)";
+
+      const results = getExamResults();
+      results.unshift({
+        name: currentActiveStudent.name,
+        grade: currentActiveStudent.grade,
+        score: `0/${total}`,
+        percentage: `0%`,
+        status: "راسب (محاولة غش)",
+        isCheated: true,
+        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      });
+      saveExamResults(results);
+      renderStudentExamStatus(currentActiveStudent);
+    }
+
+    document.getElementById("btn-close-quiz-modal").addEventListener("click", () => {
+      isExamActive = false;
+      if (quizTimerInterval) clearInterval(quizTimerInterval);
+      document.getElementById("quiz-popup-modal").classList.add("hidden");
+    });
+
+    function startWatermark(student) {
+      const watermark = document.getElementById("video-watermark");
+      watermark.innerText = `${student.name} - ${student.phone}`;
+      if (watermarkInterval) clearInterval(watermarkInterval);
+      watermarkInterval = setInterval(() => {
+        watermark.style.top = `${Math.floor(Math.random() * 75) + 10}%`;
+        watermark.style.left = `${Math.floor(Math.random() * 70) + 10}%`;
+      }, 4000);
+    }
+
+    function startQuizTimer(minutes) {
+      let remainingSeconds = minutes * 60;
+      if (quizTimerInterval) clearInterval(quizTimerInterval);
+      const display = document.getElementById("timer-display");
+      quizTimerInterval = setInterval(() => {
+        remainingSeconds--;
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+        display.innerText = `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+
+        if (remainingSeconds <= 0) {
+          clearInterval(quizTimerInterval);
+          alert("⏱️ انتهى وقت الاختبار!");
+          document.getElementById("btn-submit-exam").click();
+        }
+      }, 1000);
+    }
+
+    function renderQuizQuestions(questions) {
+      const container = document.getElementById("std-quiz-list");
+      container.innerHTML = "";
+      studentAnswersObj = {};
+      document.getElementById("std-exam-result").innerText = "";
+      document.getElementById("btn-whatsapp-parent").classList.add("hidden");
+
+      questions.forEach((q, qIdx) => {
+        const card = document.createElement("div");
+        card.className = "dash-box";
+        card.style.marginBottom = "10px";
+        card.id = `std-q-box-${qIdx}`;
+
+        const title = document.createElement("p");
+        title.style.fontWeight = "bold";
+        title.style.marginBottom = "8px";
+        title.innerText = q.question;
+        card.appendChild(title);
+
+        if (q.type === "mcq") {
+          const optionsCol = document.createElement("div");
+          optionsCol.style.display = "flex";
+          optionsCol.style.flexDirection = "column";
+          optionsCol.style.gap = "6px";
+          q.options.forEach((opt, optIdx) => {
+            const btn = document.createElement("div");
+            btn.className = "side-nav-btn";
+            btn.style.border = "1px solid var(--border-color)";
+            btn.innerText = opt;
+            btn.addEventListener("click", () => {
+              card.querySelectorAll(".side-nav-btn").forEach(el => el.classList.remove("active"));
+              btn.classList.add("active");
+              studentAnswersObj[qIdx] = optIdx;
+            });
+            optionsCol.appendChild(btn);
+          });
+          card.appendChild(optionsCol);
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.placeholder = "اكتب إجابتك هنا...";
+          textarea.rows = 2;
+          textarea.addEventListener("input", (e) => { studentAnswersObj[qIdx] = e.target.value.trim().toLowerCase(); });
+          card.appendChild(textarea);
+        }
+        container.appendChild(card);
+      });
+    }
+
+    // تسليم الامتحان التلقائي مع حساب النجاح (60% فأعلى) وإرسال النتيجة بذكاء لولي الأمر
+    document.getElementById("btn-submit-exam").addEventListener("click", () => {
+      if (currentExamQuestions.length === 0) return;
+      isExamActive = false;
+      if (quizTimerInterval) clearInterval(quizTimerInterval);
+
+      const total = currentExamQuestions.length;
+      let score = 0;
+
+      currentExamQuestions.forEach((q, idx) => {
+        const card = document.getElementById(`std-q-box-${idx}`);
+        const ans = studentAnswersObj[idx];
+
+        if (q.type === "mcq") {
+          const btns = card.querySelectorAll(".side-nav-btn");
+          btns.forEach((b, bIdx) => {
+            b.style.pointerEvents = "none";
+            if (bIdx === q.correctIndex) {
+              b.style.background = "#dcfce7";
+              b.style.color = "#14532d";
+            }
+            if (ans === bIdx && ans !== q.correctIndex) {
+              b.style.background = "#fee2e2";
+              b.style.color = "#7f1d1d";
+            }
+          });
+          if (ans === q.correctIndex) score++;
+        } else {
+          if (ans && q.correctText && ans === q.correctText.toLowerCase()) score++;
+        }
+      });
+
+      const percent = Math.round((score / total) * 100);
+      let status = "راسب";
+      if (percent >= 90) status = "ممتاز ومتفوق 🌟";
+      else if (percent >= 60) status = "ناجح ✅";
+      else status = "راسب (أقل من 60%) ⚠️";
+
+      const res = document.getElementById("std-exam-result");
+      res.innerText = `🎯 نتيجتك: ${score} من ${total} (${percent}%) - ${status}`;
+      res.style.color = percent >= 60 ? "var(--success)" : "var(--danger)";
+
+      const earnedXP = percent >= 80 ? 50 : (percent >= 60 ? 30 : 10);
+      const students = getStudents();
+      const sIdx = students.findIndex(s => s.code === currentActiveStudent.code);
+      students[sIdx].xp = (students[sIdx].xp || 0) + earnedXP;
+      currentActiveStudent.xp = students[sIdx].xp;
+      saveStudents(students);
+      document.getElementById("std-sidebar-xp").innerText = `⚡ ${currentActiveStudent.xp} XP`;
+
+      const results = getExamResults();
+      results.unshift({
+        name: currentActiveStudent.name,
+        grade: currentActiveStudent.grade,
+        score: `${score}/${total}`,
+        percentage: `${percent}%`,
+        status: status,
+        isCheated: false,
+        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      });
+      saveExamResults(results);
+
+      renderStudentExamStatus(currentActiveStudent);
+
+      // إرسال النتيجة بذكاء لولي الأمر حسب الدرجة المحددة (أقل من 60% راسب، 60-80% نتيجة، 90-100% تهنئة وتفوق)
+      let parentMsgText = "";
+      if (percent < 60) {
+        parentMsgText = `⚠️ [إشعار ولي الأمر]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nحضر الطالب الامتحان وحصل على نسبة ${percent}% (${status}). نرجو متابعة الطالب ومراجعته بجدية.`;
+      } else if (percent >= 90) {
+        parentMsgText = `🌟 [تهنئة تفوق لولي الأمر]\nالسلام عليكم ولي أمر الطالب المتفوق: ${currentActiveStudent.name}\nنبارك لكم اجتياز الطالب الامتحان بنجاح باهر وحصوله على نسبة ${percent}% (${status}). فخورون به!`;
+      } else {
+        parentMsgText = `📊 [إشعار نتيجة الامتحان]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nأتم الطالب الاختبار وحصل على نتيجة: ${score}/${total} بنسبة ${percent}% (${status}).`;
+      }
+
+      window.open(`https://wa.me/2${currentActiveStudent.parentPhone}?text=${encodeURIComponent(parentMsgText)}`, "_blank");
+
+      const btnWa = document.getElementById("btn-whatsapp-parent");
+      btnWa.classList.remove("hidden");
+      btnWa.onclick = () => {
+        window.open(`https://wa.me/2${currentActiveStudent.parentPhone}?text=${encodeURIComponent(parentMsgText)}`, "_blank");
+      };
+    });
+
     function loadTeacherPanel() {
       const announcementInput = document.getElementById("teacher-announcement-input");
       if (announcementInput) announcementInput.value = getAnnouncement();
@@ -2381,7 +2641,6 @@
       alert("✅ تم نشر التنبيه العاجل لجميع الطلاب!");
     });
 
-    // تسجيل الحضور إما يدوياً أو عبر كاميرا الجوال
     document.getElementById("btn-confirm-center-attendance").addEventListener("click", () => {
       const code = document.getElementById("scanner-code-input").value.trim().toUpperCase();
       processAttendanceByCode(code);
@@ -2399,19 +2658,18 @@
         student.attendance.unshift(`حضور السنتر: اليوم الساعة ${timeNow}`);
         saveStudents(students);
 
-        feedback.innerText = `✅ تم بنجاح تسجيل حضور الطالب (${student.name}) - [${student.grade}]!`;
+        feedback.innerText = `✅ تم تسجيل حضور الطالب (${student.name}) بنجاح!`;
         feedback.style.color = "var(--success)";
 
-        const waText = encodeURIComponent(`تم حضور الطالب ${student.name} (${student.grade}) السنتر بنجاح الساعة ${timeNow} 🟢.`);
+        const waText = encodeURIComponent(`تم حضور الطالب ${student.name} السنتر بنجاح 🟢.`);
         window.open(`https://wa.me/2${student.parentPhone}?text=${waText}`, "_blank");
         document.getElementById("scanner-code-input").value = "";
       } else {
-        feedback.innerText = `❌ الكود (${code}) غير مسجل في قاعدة البيانات.`;
+        feedback.innerText = `❌ الكود (${code}) غير مسجل.`;
         feedback.style.color = "var(--danger)";
       }
     }
 
-    // تفعيل تشغيل واستشعار الكاميرا الحية لـ QR Code
     document.getElementById("btn-start-scanner").addEventListener("click", () => {
       document.getElementById("btn-start-scanner").classList.add("hidden");
       document.getElementById("btn-stop-scanner").classList.remove("hidden");
@@ -2428,7 +2686,7 @@
         },
         (errorMessage) => {}
       ).catch(err => {
-        alert("تعذر تشغيل كاميرا الجوال، يرجى إدخال الكود يدوياً.");
+        alert("تعذر تشغيل كاميرا الجوال.");
         document.getElementById("btn-start-scanner").classList.remove("hidden");
         document.getElementById("btn-stop-scanner").classList.add("hidden");
       });
@@ -2451,7 +2709,7 @@
 
       const grades = Object.keys(curr);
       if (grades.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً. ابدأ برفع محاضرة جديدة.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً.</td></tr>";
         return;
       }
 
@@ -2484,13 +2742,13 @@
       if (curr[grade] && curr[grade][lessonIdx]) {
         curr[grade][lessonIdx].videoTitle = newTitle;
         saveCurriculum(curr);
-        alert(`✅ تم تحديث عنوان المحاضرة!`);
+        alert(`✅ تم تحديث العنوان!`);
         renderTeacherCurriculumTable();
       }
     };
 
     window.deleteCurriculumLesson = function(grade, lessonIdx) {
-      if (confirm(`⚠️ هل أنت متأكد من حذف هذه المحاضرة من أرشيف (${grade})؟`)) {
+      if (confirm(`⚠️ هل أنت متأكد من حذف هذه المحاضرة؟`)) {
         const curr = getCurriculum();
         if (curr[grade]) {
           if (Array.isArray(curr[grade])) {
@@ -2585,15 +2843,16 @@
 
           const tbody = document.getElementById(`price-tbody-${grade.replace(/\s+/g, '_')}`);
           lessons.forEach((lesson, lIdx) => {
+            const isFreeChecked = lesson.isFree === true || lesson.price === 0;
             const tr = document.createElement("tr");
             tr.innerHTML = `
               <td><strong>${lesson.videoTitle}</strong></td>
-              <td><strong style="color:var(--accent-gold);">${lesson.isFree ? 'مجاني (Free)' : (lesson.price || 50) + ' ج.م'}</strong></td>
+              <td><strong style="color:var(--accent-gold);">${isFreeChecked ? 'مجاني (Free)' : (lesson.price || 50) + ' ج.م'}</strong></td>
               <td>
                 <div style="display:flex; gap:6px; align-items:center;">
                   <input type="number" id="lesson-price-${grade}-${lIdx}" value="${lesson.price || 50}" min="0" style="width:80px; padding:4px;">
                   <label style="display:flex; align-items:center; gap:4px; font-size:0.8rem; cursor:pointer;">
-                    <input type="checkbox" id="lesson-free-${grade}-${lIdx}" ${lesson.isFree ? 'checked' : ''} style="width:auto;"> مجاني
+                    <input type="checkbox" id="lesson-free-${grade}-${lIdx}" ${isFreeChecked ? 'checked' : ''} style="width:auto;"> مجاني (0)
                   </label>
                   <button class="btn btn-success btn-sm" onclick="saveLessonPriceAndFree('${grade}', ${lIdx})">حفظ</button>
                 </div>
@@ -2610,14 +2869,16 @@
     }
 
     window.saveLessonPriceAndFree = function(grade, lessonIdx) {
-      const newPrice = parseInt(document.getElementById(`lesson-price-${grade}-${lessonIdx}`).value) || 0;
-      const isFree = document.getElementById(`lesson-free-${grade}-${lessonIdx}`).checked || newPrice === 0;
+      const priceInputVal = parseInt(document.getElementById(`lesson-price-${grade}-${lessonIdx}`).value) || 0;
+      const isFreeChecked = document.getElementById(`lesson-free-${grade}-${lessonIdx}`).checked || priceInputVal === 0;
+      const finalPrice = isFreeChecked ? 0 : priceInputVal;
+
       const curr = getCurriculum();
       if (curr[grade] && curr[grade][lessonIdx]) {
-        curr[grade][lessonIdx].price = newPrice;
-        curr[grade][lessonIdx].isFree = isFree;
+        curr[grade][lessonIdx].price = finalPrice;
+        curr[grade][lessonIdx].isFree = isFreeChecked;
         saveCurriculum(curr);
-        alert(`✅ تم تحديث بيانات الحصة بنجاح!`);
+        alert(`✅ تم تحديث سعر الحصة وجعلها ${isFreeChecked ? 'مجانية (Free)' : finalPrice + ' جنيه'} بنجاح!`);
         renderTeacherPricesUI();
       }
     };
@@ -2831,24 +3092,27 @@
     document.getElementById("form-manage-quiz").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-q-grade").value;
+      const category = document.getElementById("teacher-q-category").value; // exam or homework
+      const titleName = document.getElementById("teacher-q-title-name").value.trim();
       const duration = parseInt(document.getElementById("teacher-quiz-duration").value) || 10;
       const type = document.getElementById("teacher-q-type").value;
       const qText = document.getElementById("teacher-q-text").value.trim();
 
       const curr = getCurriculum();
       if (!curr[grade] || curr[grade].length === 0) {
-        alert("⚠️ يرجى رفع محاضرة لهذا الصف أولاً قبل إضافة أسئلة لها.");
+        alert("⚠️ يرجى رفع محاضرة لهذا الصف أولاً لربط هذا الاختبار أو الواجب بها.");
         return;
       }
 
       let lessonsArr = curr[grade];
       if (!Array.isArray(lessonsArr)) lessonsArr = [lessonsArr];
       const latestLesson = lessonsArr[lessonsArr.length - 1];
+      
       latestLesson.quizDuration = duration;
       if (!latestLesson.questions) latestLesson.questions = [];
 
       const count = latestLesson.questions.length + 1;
-      const newQ = { type, question: `${count}. ${qText}` };
+      const newQ = { category, titleName, type, question: `${count}. ${qText}` };
 
       if (type === "mcq") {
         newQ.options = [
@@ -2864,7 +3128,7 @@
 
       latestLesson.questions.push(newQ);
       saveCurriculum(curr);
-      alert(`✅ تم حفظ السؤال للمحاضرة الأخيرة!`);
+      alert(`✅ تم حفظ السؤال ونشره كـ (${category === 'exam' ? 'امتحان' : 'واجب'}) للمحاضرة الأخيرة (${grade}) بنجاح!`);
       document.getElementById("teacher-q-text").value = "";
       document.getElementById("teacher-essay-correct-text").value = "";
     });
@@ -2883,11 +3147,11 @@
       }
     });
 
-    // تصدير إكسل لكل صف على حدة حسب اختيار المستر
+    // تصدير كشف نتائج Excel لكل صف على حدة حسب اختيار المستر
     document.getElementById("btn-export-grade-excel").addEventListener("click", () => {
       const selectedGrade = document.getElementById("export-grade-select").value;
       if (!selectedGrade) {
-        alert("⚠️ يرجى اختيار الصف الدراسي أولاً لتنزيل تقرير إكسل الخاص به.");
+        alert("⚠️ يرجى اختيار الصف الدراسي أولاً لتصدير تقرير الإكسل الخاص به.");
         return;
       }
 
@@ -2911,7 +3175,7 @@
         if (myRes.length > 0) {
           const latest = myRes[0];
           score = latest.score; percent = latest.percentage; status = latest.status;
-          bgColor = status.includes("ناجح") ? "#dcfce7" : "#fee2e2";
+          bgColor = status.includes("ناجح") || status.includes("ممتاز") ? "#dcfce7" : "#fee2e2";
         }
         htmlTable += `
           <tr style="background-color:${bgColor}; height:30px;">
@@ -2924,7 +3188,7 @@
       const blob = new Blob(["\uFEFF" + htmlTable], { type: "application/vnd.ms-excel;charset=utf-8;" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `نتائج_${selectedGrade.replace(/\s+/g, '_')}.xls`;
+      a.download = `نتائج_طلاب_${selectedGrade.replace(/\s+/g, '_')}.xls`;
       a.click();
     });
 
@@ -2935,17 +3199,17 @@
       tbody.innerHTML = "";
       results.forEach(r => {
         const tr = document.createElement("tr");
-        const isPassed = (r.status === "ناجح" || parseInt(r.percentage) >= 50) && !r.isCheated;
+        const isPassed = (r.status.includes("ناجح") || r.status.includes("ممتاز") || parseInt(r.percentage) >= 60) && !r.isCheated;
         tr.innerHTML = `
           <td><strong>${r.name}</strong></td><td>${r.grade}</td><td>${r.score}</td><td><strong>${r.percentage}</strong></td>
-          <td><span class="${isPassed ? 'status-badge-active' : 'status-badge-pending'}" style="${!isPassed ? 'background:#fee2e2; color:#b91c1c;' : ''}">${isPassed ? 'ناجح ✅' : 'راسب ⚠️'}</span></td>
+          <td><span class="${isPassed ? 'status-badge-active' : 'status-badge-pending'}" style="${!isPassed ? 'background:#fee2e2; color:#b91c1c;' : ''}">${r.status}</span></td>
           <td>${r.isCheated ? '🚨 غش' : 'سليم'}</td><td>${r.time}</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    // جدول المشتركون (مع فتح الإيصال في نافذة جديدة عند الضغط عليه وتفعيل الحصة المعنية فقط)
+    // جدول المشتركون
     function renderTeacherPayments() {
       const students = getStudents();
       const tbody = document.getElementById("teacher-payments-table");
@@ -2959,7 +3223,7 @@
           <td><strong>${s.name}</strong></td>
           <td>${s.grade}</td>
           <td>${receiptHtml}</td>
-          <td><span class="badge-score-pill">${s.views || 0} / 3 مشاهدات</span></td>
+          <td><span class="badge-score-pill">${s.views || 0} / 5 مشاهدات</span></td>
           <td><button class="btn btn-accent btn-sm" type="button" onclick="resetStudentViews(${idx})">🔄 تصفير</button></td>
           <td><span class="${isUnlocked ? 'status-badge-active' : 'status-badge-pending'}">${isUnlocked ? 'مفعلة حصة' : 'في الانتظار'}</span></td>
           <td><button class="btn btn-primary btn-sm" type="button" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td>
@@ -2990,7 +3254,7 @@
       document.getElementById("det-xp").innerText = `${s.xp || 0} XP`;
       document.getElementById("det-paid").innerText = (s.unlockedLessons && s.unlockedLessons.length > 0) ? "مفعل ✅" : "غير مفعل ❌";
       document.getElementById("det-device").innerText = s.deviceId || "غير مقفل";
-      document.getElementById("det-views").innerText = `${s.views || 0} / 3`;
+      document.getElementById("det-views").innerText = `${s.views || 0} / 5`;
       document.getElementById("student-full-details-modal").classList.remove("hidden");
     };
 
@@ -3001,13 +3265,13 @@
       document.getElementById("p-name").innerText = s.name;
       document.getElementById("p-grade").innerText = s.grade;
       document.getElementById("p-attendance").innerText = s.attendance ? s.attendance[0] : "مسجل بالسنتر";
-      document.getElementById("p-views").innerText = `${s.views || 0} / 3 مشاهدات`;
+      document.getElementById("p-views").innerText = `${s.views || 0} / 5 مشاهدات`;
       const tbody = document.getElementById("parent-records-tbody");
       tbody.innerHTML = "";
       const results = getExamResults().filter(r => r.name === s.name);
       results.forEach(r => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>امتحان (${r.time})</td><td>نتيجة: ${r.score} (${r.percentage})</td>`;
+        tr.innerHTML = `<td>امتحان (${r.time})</td><td>نتيجة: ${r.score} (${r.percentage}) - ${r.status}</td>`;
         tbody.appendChild(tr);
       });
       document.getElementById("parent-dashboard-modal").classList.remove("hidden");
@@ -3102,7 +3366,7 @@
       container.innerHTML = "";
 
       if (hw.files && hw.files.length > 0) {
-        hw.files.forEach((imgSrc, i) => {
+        hw.files.forEach((imgSrc) => {
           const img = document.createElement("img");
           img.src = imgSrc;
           img.style.maxWidth = "100%";
