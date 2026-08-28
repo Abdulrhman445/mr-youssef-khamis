@@ -428,7 +428,7 @@
   </div>
 
   <div class="main-wrapper">
-    <!-- كارت المصادقة والتسجيل المقيد بأكواد السنتر الحصرية -->
+    <!-- كارت المصادقة والتسجيل -->
     <div id="auth-section" class="glass-card anime-fade-in">
       <div class="teacher-hero">
         <div class="avatar-ring">
@@ -496,8 +496,8 @@
           <input type="text" id="signup-otp-input" placeholder="أدخل كود التأكيد">
         </div>
         <div class="input-field">
-          <label>🔑 كود تسجيل السنتر الحصري (الصالب لطالب واحد فقط)</label>
-          <input type="text" id="signup-code" placeholder="أدخل كود السنتر الخاص بك (مثال: YK-xxxxxx)" required>
+          <label>🔑 كود تسجيل السنتر الحصري (المخصص لك فقط)</label>
+          <input type="text" id="signup-code" placeholder="أدخل كود السنتر (مثال: YK-xxxxxx)" required>
           <small style="color:var(--text-muted); font-size:0.75rem;">ملاحظة: الكود مرتبط باسمك حصراً ولا يمكن استخدامه من شخص آخر.</small>
         </div>
         <button type="submit" class="btn btn-success">✅ تأكيد التسجيل وإنشاء الحساب</button>
@@ -506,7 +506,7 @@
       <p id="system-msg" class="system-msg"></p>
     </div>
 
-    <!-- لوحة الشرف للأوائل المتفوقين -->
+    <!-- لوحة الشرف -->
     <div id="leaderboard-section" class="glass-card hidden anime-fade-in">
       <header class="dash-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <div>
@@ -543,7 +543,7 @@
       </aside>
 
       <main class="main-content-panel glass-card">
-        <!-- 1. المحاضرات والكورسات (تظهر محاضرات صف الطالب فقط بتبويب الأحدث أولاً) -->
+        <!-- 1. المحاضرات -->
         <section id="section-courses" class="std-content-tab active anime-fade-in">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
             <h2 class="box-title" style="margin:0;">📚 أرشيف ومحاضرات (<span id="std-courses-grade-text"></span>)</h2>
@@ -554,7 +554,7 @@
             <div id="lessons-grid-container" class="lessons-grid"></div>
           </div>
 
-          <!-- شاشة الدفع واشتراك الحصة -->
+          <!-- شاشة الدفع -->
           <div id="payment-gate-box" class="payment-gate-box hidden anime-slide-up">
             <div class="lock-icon">🔒</div>
             <h3>هذه المحاضرة تتطلب تفعيل الاشتراك أو كود شحن فوري</h3>
@@ -592,14 +592,13 @@
             </div>
           </div>
 
-          <!-- مشغل المحاضرة مع المفكرة الحية واحتساب المشاهدة بنصف الوقت -->
+          <!-- مشغل الفيديو -->
           <div id="student-lesson-viewer" class="dash-box hidden anime-fade-in">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap:wrap; gap:8px;">
               <h3 id="std-video-title" class="box-title" style="margin: 0;">عنوان المحاضرة</h3>
               <span id="views-count-badge" class="views-badge">👁️ المشاهدات: 0 / 3</span>
             </div>
             
-            <!-- فصول الفيديو (Video Timestamps) -->
             <div id="video-timestamps-bar" class="video-control-bar" style="margin-bottom:10px;">
               <span style="font-weight:bold; font-size:0.85rem; color:var(--primary-glow);">⏱️ فصول الحصة:</span>
               <button class="btn btn-sm btn-accent" onclick="seekVideoTime(0)">00:00 الكلمات</button>
@@ -612,7 +611,6 @@
               <div id="video-player-container"></div>
             </div>
 
-            <!-- أزرار التحكم السريع بالفيديو -->
             <div class="video-control-bar">
               <button id="btn-vid-backward" class="btn btn-sm btn-primary" type="button">⏪ تأخير 5 ثوانٍ</button>
               <button id="btn-vid-forward" class="btn btn-sm btn-primary" type="button">⏩ تقديم 5 ثوانٍ</button>
@@ -624,7 +622,6 @@
               </select>
             </div>
 
-            <!-- المفكرة الحية (Live Note-Taking) -->
             <div class="dash-box" style="margin-top:15px; border-color:var(--accent-gold);">
               <h4 style="color:var(--accent-gold); margin-bottom:6px;">📝 المفكرة الحية لتسجيل ملاحظات الحصة:</h4>
               <textarea id="live-notes-input" rows="3" placeholder="اكتب ملاحظاتك هنا أثناء مشاهدة الفيديو لتُحفظ تلقائياً..."></textarea>
@@ -656,7 +653,7 @@
           </div>
         </section>
 
-        <!-- 2. الملف الشخصي والـ QR Code -->
+        <!-- 2. الملف الشخصي -->
         <section id="section-profile" class="std-content-tab hidden anime-fade-in">
           <h2 class="box-title">🪪 الملف الشخصي وكود الحضور (QR Code)</h2>
           <div class="student-profile-summary-box" style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px;">
@@ -676,9 +673,9 @@
           </div>
         </section>
 
-        <!-- 3. الامتحانات (تفتح مرة واحدة فقط) -->
+        <!-- 3. الامتحانات -->
         <section id="section-exams" class="std-content-tab hidden anime-fade-in">
-          <h2 class="box-title">📝 سجل الاختبارات والدرجات (متاحة لمرة واحدة)</h2>
+          <h2 class="box-title">📝 سجل الاختبارات والدرجات</h2>
           <div class="grid-2col">
             <div class="dash-box">
               <h3 class="box-title">⏳ اختبارات مطلوب أداؤها</h3>
@@ -691,7 +688,7 @@
           </div>
         </section>
 
-        <!-- 4. الواجبات والتصحيح الفوري -->
+        <!-- 4. الواجبات -->
         <section id="section-homework" class="std-content-tab hidden anime-fade-in">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
             <h2 class="box-title" style="margin:0;">📋 جدول متابعة وتسليم الواجبات</h2>
@@ -743,7 +740,7 @@
       </main>
     </div>
 
-    <!-- لوحة تحكم المعلم (مستر يوسف خميس) -->
+    <!-- لوحة تحكم المعلم -->
     <div id="teacher-dashboard" class="glass-card hidden">
       <header class="dash-header-flex">
         <div style="display:flex; align-items:center; gap:10px;">
@@ -752,7 +749,7 @@
           </button>
           <div>
             <h2 style="font-size:1.2rem;">لوحة إدارة المعلم - مستر يوسف خميس</h2>
-            <p class="subtitle">التحكم في المناهج، أسعار الحصص، وتوليد أكواد السنتر الحصرية للطلاب</p>
+            <p class="subtitle">التحكم في المناهج، أسعار الحصص، وتوليد أكواد السنتر الحصرية</p>
           </div>
         </div>
         <button id="teacher-logout" class="btn btn-danger btn-sm" type="button">خروج المعلم</button>
@@ -788,7 +785,7 @@
             </div>
           </div>
 
-          <!-- مسح QR Code للحضور الفوري بالسنتر -->
+          <!-- مسح QR Code للحضور -->
           <div id="t-sec-qr-scan" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box" style="text-align:center;">
               <h3 class="box-title">📷 نظام مسح كود الحضور (QR Code Scanner)</h3>
@@ -802,7 +799,7 @@
             </div>
           </div>
 
-          <!-- 2. المشتركون والبيانات -->
+          <!-- 2. المشتركون -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">💳 المشتركون، التحكم في المشاهدات، وبيانات الطلاب</h3>
@@ -847,7 +844,7 @@
             </div>
           </div>
 
-          <!-- 4. أسعار الحصص الفردية -->
+          <!-- 4. أسعار الحصص -->
           <div id="t-sec-prices" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">💰 تحديد سعر كل حصة على حدة لكل صف دراسي</h3>
@@ -869,7 +866,7 @@
           <!-- 5. كروت شحن الحصص -->
           <div id="t-sec-promos" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">🎟️ توليد كروت شحن الحصص (مع الحذف والطباعة)</h3>
+              <h3 class="box-title">🎟️ توليد كروت شحن الحصص</h3>
               <div class="grid-2col">
                 <select id="promo-grade-select">
                   <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
@@ -880,7 +877,7 @@
                   <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
                   <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
                   <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                  <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+                  <option value="الصف الثالث الإعدادي" selected>الصف الثالث الإعدادي</option>
                 </select>
                 <div style="display: flex; gap: 6px; flex-wrap:wrap;">
                   <input type="number" id="promo-count-input" placeholder="عدد الكروت" min="1" max="50" value="6" style="max-width:100px;">
@@ -893,14 +890,14 @@
             </div>
           </div>
 
-          <!-- 6. أكواد تسجيل السنتر الحصرية المرتبطة بأسماء الطلاب -->
+          <!-- 6. أكواد تسجيل السنتر الحصرية المرتبطة بالأسماء -->
           <div id="t-sec-student-codes" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">🪪 توليد وربط أكواد تسجيل السنتر (لكل طالب كود حصري باسمه)</h3>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">أدخل اسم الطالب المخصص له الكود ليكون حصرياً عليه فقط:</p>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">أدخل اسم الطالب الثلاثي بدقة ليكون الكود مخصصاً له حصرياً:</p>
               
               <div class="grid-2col" style="margin-bottom:12px;">
-                <input type="text" id="exclusive-student-name" placeholder="اسم الطالب الثلاثي (مثال: خالد أحمد)">
+                <input type="text" id="exclusive-student-name" placeholder="اسم الطالب الثلاثي (مثال: خالد أحمد محمد)">
                 <select id="exclusive-student-grade">
                   <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
                   <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
@@ -931,14 +928,15 @@
             </div>
           </div>
 
-          <!-- 7. رفع المحاضرات (نظيفة ومخصصة لكل صف بدقة) -->
+          <!-- 7. رفع المحاضرات (أرشيف نظيف تماماً يظهر بداخل جدول الإدارة وفوق عند الطالب) -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
               <form id="form-manage-video">
                 <div class="input-field">
                   <label>الصف المستهدف:</label>
-                  <select id="teacher-v-grade">
+                  <select id="teacher-v-grade" required>
+                    <option value="" disabled selected>اختر الصف المستهدف</option>
                     <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
                     <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
                     <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
@@ -947,7 +945,7 @@
                     <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
                     <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
                     <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                    <option value="الصف الثالث الإعدادي" selected>الصف الثالث الإعدادي</option>
+                    <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
                   </select>
                 </div>
                 <div class="input-field">
@@ -1000,14 +998,15 @@
             </div>
           </div>
 
-          <!-- 8. بنك الأسئلة ونموذج الإجابة الفوري للواجب -->
+          <!-- 8. بنك الأسئلة -->
           <div id="t-sec-quiz" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📝 بنك الأسئلة، الاختبارات، ونموذج إجابة الواجب</h3>
               <form id="form-manage-quiz">
                 <div class="input-field">
                   <label>الصف الدراسي:</label>
-                  <select id="teacher-q-grade">
+                  <select id="teacher-q-grade" required>
+                    <option value="" disabled selected>اختر الصف</option>
                     <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
                     <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
                     <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
@@ -1016,7 +1015,7 @@
                     <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
                     <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
                     <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                    <option value="الصف الثالث الإعدادي" selected>الصف الثالث الإعدادي</option>
+                    <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
                   </select>
                 </div>
                 <div class="input-field">
@@ -1042,7 +1041,7 @@
                     <input type="text" id="t-opt-3" placeholder="الاختيار 4">
                   </div>
                   <div class="input-field" style="margin-top: 10px;">
-                    <label>الاختيار الصحيح (النموذج الذي يصحح بناءً عليه):</label>
+                    <label>الاختيار الصحيح:</label>
                     <select id="teacher-q-correct">
                       <option value="0">الاختيار 1</option>
                       <option value="1">الاختيار 2</option>
@@ -1052,8 +1051,8 @@
                   </div>
                 </div>
                 <div id="q-essay-answer-group" class="input-field hidden">
-                  <label>✍️ الإجابة النموذجية الصحيحة (للتصحيح الآلي للمقالي):</label>
-                  <input type="text" id="teacher-essay-correct-text" placeholder="اكتب الإجابة النموذجية المتوقعة">
+                  <label>✍️ الإجابة النموذجية الصحيحة:</label>
+                  <input type="text" id="teacher-essay-correct-text" placeholder="اكتب الإجابة النموذجية">
                 </div>
                 <div class="btn-group-row">
                   <button type="submit" class="btn btn-success">➕ إضافة السؤال للبنك ونموذج التصحيح</button>
@@ -1063,7 +1062,7 @@
             </div>
           </div>
 
-          <!-- 9. تصدير Excel وسجل النتائج -->
+          <!-- 9. تصدير النتائج -->
           <div id="t-sec-results" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -1103,7 +1102,7 @@
             </div>
           </div>
 
-          <!-- 10. متابعة الواجبات التفاعلية الفورية -->
+          <!-- 10. متابعة الواجبات -->
           <div id="t-sec-homework" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📝 تقارير الواجبات التفاعلية المصححة آلياً</h3>
@@ -1135,11 +1134,11 @@
       </div>
     </div>
 
-    <!-- نافذة تسليم الواجب التفاعلي الفوري للطالب -->
+    <!-- نافذة الواجب -->
     <div id="homework-modal" class="quiz-popup-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
         <h3 class="box-title">📤 الواجب التفاعلي الفوري (تصحيح آلي)</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">أجب عن الأسئلة التالية ليقوم النظام بتصحيحها وإعطائك الدرجة ونسق الـ XP فوراً بناءً على إجابات المستر:</p>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">أجب عن الأسئلة التالية:</p>
         <div id="interactive-hw-container" style="max-height:300px; overflow-y:auto; margin-bottom:10px;"></div>
         <button id="btn-submit-interactive-hw" class="btn btn-success btn-full" type="button">تسليم وتصحيح الواجب فوراً</button>
         <div id="interactive-hw-result" class="system-msg"></div>
@@ -1147,7 +1146,7 @@
       </div>
     </div>
 
-    <!-- نافذة عرض الملف الشامل لبيانات الطالب -->
+    <!-- نافذة الملف الشامل -->
     <div id="student-full-details-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:600px;">
         <h3 class="box-title">🪪 الملف الشامل وبيانات الطالب</h3>
@@ -1168,12 +1167,10 @@
       </div>
     </div>
 
-    <!-- نافذة وضع ولي الأمر الذكي -->
+    <!-- نافذة ولي الأمر -->
     <div id="parent-dashboard-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:650px;">
         <h3 class="box-title" style="color:var(--accent-gold);">👨‍👩‍👦 لوحة متابعة ولي الأمر الذكية</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">متابعة فورية لدخول الابن، مشاهدات الفيديوهات، ودرجات الاختبارات والواجبات:</p>
-        
         <div class="student-profile-summary-box" style="margin-bottom:12px;">
           <div class="profile-details-grid">
             <div><span>👤 اسم الطالب:</span> <strong id="p-name"></strong></div>
@@ -1182,45 +1179,29 @@
             <div><span>👁️ مشاهدات الفيديوهات:</span> <strong id="p-views"></strong></div>
           </div>
         </div>
-
         <h4 style="font-size:0.95rem; margin-bottom:6px;">📝 سجل درجات الكويزات والواجبات:</h4>
         <div class="table-responsive" style="max-height:220px; overflow-y:auto;">
           <table class="custom-table">
             <thead>
-              <tr>
-                <th>النوع / التاريخ</th>
-                <th>التفاصيل والنتيجة</th>
-              </tr>
+              <tr><th>النوع / التاريخ</th><th>التفاصيل والنتيجة</th></tr>
             </thead>
             <tbody id="parent-records-tbody"></tbody>
           </table>
         </div>
-
-        <button id="btn-close-parent-modal" class="btn btn-danger btn-sm btn-full" type="button" style="margin-top:15px;">إغلاق لوحة ولي الأمر</button>
+        <button id="btn-close-parent-modal" class="btn btn-danger btn-sm btn-full" type="button" style="margin-top:15px;">إغلاق</button>
       </div>
     </div>
 
-    <!-- نافذة قوالب رسائل الواتساب -->
+    <!-- نافذة الواتساب -->
     <div id="whatsapp-hub-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:500px;">
         <h3 class="box-title">📲 قوالب رسائل الواتساب لولي أمر: <span id="wa-modal-std-name" style="color:var(--primary-glow);"></span></h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">اختر القالب المطلوب للإرسال الفوري:</p>
-        
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          <button class="btn btn-danger btn-sm" type="button" onclick="sendParentTemplate('absence')">
-            ⚠️ إشعار غياب وعدم مشاهدة المحاضرة
-          </button>
-          <button class="btn btn-success btn-sm" type="button" onclick="sendParentTemplate('excellence')">
-            🌟 تهنئة بالتفوق والحصول على الدرجة النهائية
-          </button>
-          <button class="btn btn-accent btn-sm" type="button" onclick="sendParentTemplate('homework')">
-            📝 تذكير بحل وتسليم الواجب المتأخر
-          </button>
-          <button class="btn btn-primary btn-sm" type="button" onclick="sendParentTemplate('general')">
-            💬 رسالة متابعة عامة
-          </button>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+          <button class="btn btn-danger btn-sm" type="button" onclick="sendParentTemplate('absence')">⚠️ إشعار غياب وعدم مشاهدة المحاضرة</button>
+          <button class="btn btn-success btn-sm" type="button" onclick="sendParentTemplate('excellence')">🌟 تهنئة بالتفوق والحصول على الدرجة النهائية</button>
+          <button class="btn btn-accent btn-sm" type="button" onclick="sendParentTemplate('homework')">📝 تذكير بحل وتسليم الواجب المتأخر</button>
+          <button class="btn btn-primary btn-sm" type="button" onclick="sendParentTemplate('general')">💬 رسالة متابعة عامة</button>
         </div>
-
         <button id="btn-close-wa-modal" class="btn btn-danger btn-sm btn-full" type="button" style="margin-top:15px;">إغلاق</button>
       </div>
     </div>
@@ -1229,10 +1210,10 @@
     <div id="vocab-modal" class="quiz-popup-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:480px;">
         <h3 class="box-title">🗂️ بنك الكلمات الصوتية للحصة</h3>
-        <div id="flashcard-box" class="flashcard-display">
-          <div id="fc-word" class="fc-word-text">Word</div>
-          <div id="fc-meaning" class="fc-meaning-text">المعنى بالعربية</div>
-          <button id="btn-speak-word" class="btn btn-sm btn-primary" type="button" style="margin-top:10px;">🔊 استمع للنطق</button>
+        <div id="flashcard-box" class="flashcard-display" style="text-align:center; padding:15px;">
+          <div id="fc-word" class="fc-word-text" style="font-size:1.4rem; font-weight:bold; color:var(--primary-glow);">Word</div>
+          <div id="fc-meaning" class="fc-meaning-text" style="font-size:1.1rem; margin:8px 0;">المعنى بالعربية</div>
+          <button id="btn-speak-word" class="btn btn-sm btn-primary" type="button">🔊 استمع للنطق</button>
         </div>
         <div style="display:flex; justify-content:space-between; margin-top:15px;">
           <button id="btn-prev-fc" class="btn btn-primary btn-sm" type="button">السابق</button>
@@ -1243,11 +1224,11 @@
       </div>
     </div>
 
-    <!-- نافذة الاختبار الدوري (مرة واحدة فقط) -->
+    <!-- نافذة الامتحان -->
     <div id="quiz-popup-modal" class="quiz-popup-modal hidden exam-no-copy" oncopy="return false;" oncut="return false;" oncontextmenu="return false;">
       <div class="quiz-modal-content anime-slide-up">
         <div id="anti-cheat-alert" class="anti-cheat-banner hidden">
-          ⚠️ تحذير: تم رصد مغادرتك لصفحة الامتحان أو محاولة التبديل! تكرار الخروج سيؤدي إلى إنهاء الاختبار وتسليمه فوراً بنتيجة ملغاة.
+          ⚠️ تحذير: تم رصد مغادرتك لصفحة الامتحان أو محاولة التبديل! تكرار الخروج سيؤدي إلى إنهاء الاختبار وتسليمه فوراً.
         </div>
         <div class="quiz-header-flex" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <h3 id="quiz-popup-title" class="box-title">📝 الاختبار الدوري (متاح لمرة واحدة فقط)</h3>
@@ -1256,103 +1237,56 @@
         <div id="std-quiz-list" class="quiz-scroll-area"></div>
         <button id="btn-submit-exam" class="btn btn-success btn-full" type="button">تصحيح وتسليم الإجابات</button>
         <div id="std-exam-result" class="system-msg"></div>
-        <button id="btn-whatsapp-parent" class="btn btn-whatsapp btn-full hidden" type="button">
-          📲 إرسال النتيجة لولي الأمر عبر الواتساب الآلي
-        </button>
+        <button id="btn-whatsapp-parent" class="btn btn-whatsapp btn-full hidden" type="button">📲 إرسال النتيجة لولي الأمر عبر الواتساب</button>
         <button id="btn-close-quiz-modal" class="btn btn-danger btn-sm btn-full" type="button" style="margin-top: 10px;">إغلاق نافذة الاختبار</button>
       </div>
     </div>
 
-    <!-- لوحة المطور الشاملة -->
+    <!-- لوحة المطور -->
     <div id="dev-dashboard" class="glass-card hidden">
       <header class="dash-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <div>
-          <h2>🚀 لوحة المطور الشاملة (Dev Admin Console)</h2>
-          <p class="subtitle">المطور: الباشمهندس عبدالرحمن أحمد - تحكم مطلق في الأكواد والبيانات والدروع السحابية</p>
+          <h2>🚀 لوحة المطور الشاملة</h2>
+          <p class="subtitle">المطور: الباشمهندس عبدالرحمن أحمد</p>
         </div>
         <button id="dev-logout" class="btn btn-danger btn-sm" type="button">خروج المطور</button>
       </header>
-
-      <div class="dev-stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-        <div class="stat-card" style="background:var(--box-bg); padding:12px; border-radius:10px; text-align:center;">
-          <h4>إجمالي الطلاب المسجلين</h4>
-          <span id="stat-total-students" style="font-size:1.4rem; font-weight:800; color:var(--primary-glow);">0</span>
-        </div>
-        <div class="stat-card" style="background:var(--box-bg); padding:12px; border-radius:10px; text-align:center;">
-          <h4>حالة درع الحماية السحابي (Anti-Crash)</h4>
-          <span style="font-size:1rem; font-weight:800; color:var(--success);">نشط وموزع (50k+ قيد التحمل) 🛡️</span>
-        </div>
-      </div>
-
       <div class="dash-box" style="margin-bottom: 15px;">
         <h3 class="box-title">🛠️ محرر وتعديل بيانات المنصة المباشر (Live DB Editor)</h3>
         <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
           <select id="dev-data-selector" style="max-width:280px;">
-            <option value="students">👥 قاعدة بيانات الطلاب (Students DB)</option>
-            <option value="curriculum">📚 المناهج والمحاضرات والأسئلة (Curriculum)</option>
-            <option value="exclusiveCodes">🪪 أكواد السنتر الحصرية (Exclusive Codes)</option>
-            <option value="results">📊 نتائج الاختبارات (Exam Results)</option>
-            <option value="prices">💰 أسعار الحصص (Prices)</option>
-            <option value="all">🌐 النسخة الاحتياطية الكاملة (Full Backup)</option>
+            <option value="students">👥 قاعدة بيانات الطلاب</option>
+            <option value="curriculum">📚 المناهج والمحاضرات والأسئلة</option>
+            <option value="exclusiveCodes">🪪 أكواد السنتر الحصرية</option>
+            <option value="results">📊 نتائج الاختبارات</option>
+            <option value="prices">💰 أسعار الحصص</option>
+            <option value="all">🌐 النسخة الاحتياطية الكاملة</option>
           </select>
           <button id="btn-load-dev-data" class="btn btn-primary btn-sm" type="button">📥 جلب البيانات</button>
           <button id="btn-save-dev-data" class="btn btn-success btn-sm" type="button">💾 حفظ وتطبيق التعديل</button>
         </div>
         <textarea id="dev-db-editor" style="font-family:monospace; direction:ltr; width:100%; background:#0f172a; color:#38bdf8; padding:10px; border-radius:8px;" rows="8"></textarea>
       </div>
-
-      <div class="dash-box">
-        <h3 class="box-title">👥 سجل الطلاب وقفل الأجهزة</h3>
-        <div class="table-responsive">
-          <table class="custom-table">
-            <thead>
-              <tr>
-                <th>الاسم</th>
-                <th>الصف</th>
-                <th>كود السنتر</th>
-                <th>النقاط</th>
-                <th>البيانات</th>
-                <th>الجهاز</th>
-                <th>الحالة</th>
-                <th>إجراء المطور</th>
-              </tr>
-            </thead>
-            <tbody id="dev-students-table-body"></tbody>
-          </table>
-        </div>
-      </div>
     </div>
 
-    <!-- شريط السوشيال ميديا لمستر يوسف خميس -->
+    <!-- السوشيال ميديا -->
     <div class="teacher-social-bar">
-      <a href="https://www.facebook.com/share/1BhACnK8LN/" target="_blank" class="social-btn social-fb">
-        📘 فيسبوك
-      </a>
-      <a href="https://www.tiktok.com/@youssefkhames4?_r=1&_t=ZS-99EUIcA8BeO" target="_blank" class="social-btn social-tt">
-        🎵 تيك توك
-      </a>
-      <a href="https://youtube.com/@teacher-o3r?si=H2OqemWHPo_2WOFI" target="_blank" class="social-btn social-yt">
-        📺 يوتيوب
-      </a>
-      <a href="https://wa.me/201152039710" target="_blank" class="social-btn social-wa">
-        💬 واتساب
-      </a>
+      <a href="https://www.facebook.com/share/1BhACnK8LN/" target="_blank" class="social-btn social-fb">📘 فيسبوك</a>
+      <a href="https://www.tiktok.com/@youssefkhames4?_r=1&_t=ZS-99EUIcA8BeO" target="_blank" class="social-btn social-tt">🎵 تيك توك</a>
+      <a href="https://youtube.com/@teacher-o3r?si=H2OqemWHPo_2WOFI" target="_blank" class="social-btn social-yt">📺 يوتيوب</a>
+      <a href="https://wa.me/201152039710" target="_blank" class="social-btn social-wa">💬 واتساب</a>
     </div>
 
-    <!-- تذييل الصفحة -->
     <footer class="designer-footer">
       <div class="footer-badge">
         <span>✨ تم التصميم والبرمجة بواسطة: <strong>الباشمهندس عبدالرحمن أحمد</strong></span>
         <span class="dev-divider">|</span>
-        <a href="https://wa.me/201554452399" target="_blank" class="dev-contact-btn">
-          📲 لطلب وتصميم منصتك: <strong>01554452399</strong>
-        </a>
+        <a href="https://wa.me/201554452399" target="_blank" class="dev-contact-btn">📲 <strong>01554452399</strong></a>
       </div>
     </footer>
   </div>
 
   <script>
-    // ربط السحابة الخاصة بمستر يوسف عبر Firebase
     const firebaseConfig = {
       databaseURL: "https://mr-youssef-academy-default-rtdb.firebaseio.com"
     };
@@ -1393,7 +1327,7 @@
       prices: defaultPrices,
       results: [],
       promos: [],
-      exclusiveCodes: [], // تخزين الأكواد الحصرية المرتبطة بالأسماء حصرياً
+      exclusiveCodes: [],
       qa: [],
       hw: [],
       announcement: "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"
@@ -1426,7 +1360,6 @@
     function getAnnouncement() { return cloudCache.announcement || "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"; }
     function saveAnnouncement(t) { cloudCache.announcement = t; rdb.ref('announcement').set(t); }
 
-    // مزامنة حية ولحظية لكل الأجهزة عبر الـ Firebase وبدون مسح أو فقدان البيانات
     rdb.ref('/').on('value', (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -1444,7 +1377,9 @@
           document.getElementById("announcement-text").innerText = cloudCache.announcement;
         }
 
-        if (currentActiveStudent) {
+        if (!teacherDashboard.classList.contains("hidden")) {
+          loadTeacherPanel();
+        } else if (currentActiveStudent) {
           const updated = cloudCache.students.find(s => s.code === currentActiveStudent.code);
           if (updated) {
             currentActiveStudent = updated;
@@ -1490,7 +1425,6 @@
     let videoWatchTrackTimer = null;
     let hasCountedThisSession = false;
 
-    // استعادة جلسة الدخول التلقائية عند عمل Refresh لضمان عدم خروج أي مستخدم
     window.addEventListener("load", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
       const savedRole = localStorage.getItem("yk_active_role");
@@ -1677,7 +1611,6 @@
       systemMsg.innerText = "";
     });
 
-    // تسجيل الطالب مع التحقق الصارم من ارتباط الكود بالاسم حصرياً
     formStudentSignup.addEventListener("submit", (e) => {
       e.preventDefault();
       const name = document.getElementById("signup-name").value.trim();
@@ -1699,7 +1632,6 @@
         return;
       }
 
-      // التحقق من الأكواد الحصرية المולدة من المستر
       const exclusiveCodes = getExclusiveCodes();
       const matchedCodeObj = exclusiveCodes.find(c => c.code.toUpperCase() === code);
 
@@ -1710,25 +1642,24 @@
       }
 
       if (matchedCodeObj.name.toLowerCase() !== name.toLowerCase()) {
-        systemMsg.innerText = `❌ خطأ مطابقة: هذا الكود مخصص حصرياً للطالب (${matchedCodeObj.name}) فقط ولا ينطبق على اسمك!`;
+        systemMsg.innerText = `❌ خطأ مطابقة: هذا الكود مخصص حصرياً للطالب (${matchedCodeObj.name}) فقط!`;
         systemMsg.style.color = "var(--danger)";
         return;
       }
 
       if (matchedCodeObj.used) {
-        systemMsg.innerText = "⚠️ هذا الكود تم استخدامه بالفعل لتسجيل الحساب ولا يمكن إعادة استخدامه.";
+        systemMsg.innerText = "⚠️ هذا الكود تم استخدامه بالفعل.";
         systemMsg.style.color = "var(--danger)";
         return;
       }
 
       const students = getStudents();
       if (students.some(s => s.code.toLowerCase() === code.toLowerCase())) {
-        systemMsg.innerText = "⚠️ تم التسجيل بهذا الكود مسبقاً.";
+        systemMsg.innerText = "⚠️ تم التسجيل بهذه البيانات مسبقاً.";
         systemMsg.style.color = "var(--danger)";
         return;
       }
 
-      // تحديث كود السنتر كأنه مستخدم
       matchedCodeObj.used = true;
       saveExclusiveCodes(exclusiveCodes);
 
@@ -1784,7 +1715,7 @@
         const currentDevice = getDeviceFingerprint();
 
         if (student.deviceId && student.deviceId !== currentDevice) {
-          systemMsg.innerText = "⛔ تم حظر الدخول: هذا الحساب مسجل ومقفل على جهاز آخر. تواصل مع المستر لفك القفل.";
+          systemMsg.innerText = "⛔ تم حظر الدخول: هذا الحساب مسجل ومقفل على جهاز آخر.";
           systemMsg.style.color = "var(--danger)";
           return;
         }
@@ -1803,7 +1734,7 @@
         updateAuthNavState(true);
         formUnifiedLogin.reset();
       } else {
-        systemMsg.innerText = "❌ البيانات غير صحيحة، تأكد من كتابة الاسم الثلاثي وكود السنتر بدقة.";
+        systemMsg.innerText = "❌ البيانات غير صحيحة، تأكد من كتابة الاسم وكود السنتر بدقة.";
         systemMsg.style.color = "var(--danger)";
       }
     });
@@ -1949,7 +1880,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض محاضرات صف الطالب فقط وترتيبها (الأحدث أولاً)
+    // عرض المحاضرات للطالب (الأحدث أولاً)
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -1957,7 +1888,7 @@
       const lessonsArr = curriculum[student.grade] || [];
 
       if (!lessonsArr || lessonsArr.length === 0) {
-        container.innerHTML = "<p style='color:var(--text-muted); text-align:center; grid-column: 1/-1;'>لا توجد محاضرات مرفوعة لصفك الدراسي حالياً من المستر.</p>";
+        container.innerHTML = "<p style='color:var(--text-muted); text-align:center; grid-column: 1/-1;'>لا توجد محاضرات مرفوعة لصفك الدراسي حالياً.</p>";
         return;
       }
 
@@ -1971,7 +1902,7 @@
           <h4>${lesson.videoTitle || "محاضرة الأسبوع"}</h4>
           <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">${student.grade}</p>
           <span class="status-pill ${student.paid ? 'status-unlocked' : 'status-locked'}">
-            ${student.paid ? 'مفعل ومتاح للاختيار' : 'تتطلب اشتراك أو كود شحن فوري'}
+            ${student.paid ? 'مفعل ومتاح للمشاهدة' : 'تتطلب اشتراك أو كود شحن'}
           </span>
         `;
 
@@ -2048,11 +1979,11 @@
         item.style.borderColor = "var(--primary-glow)";
         item.innerHTML = `
           <div><strong>📝 اختبار: ${latestLesson.videoTitle || "محاضرة الأسبوع"}</strong></div>
-          <div><button class="btn btn-primary btn-sm" type="button" onclick="document.querySelector('.side-nav-btn[data-tab=\\'tab-courses\\']').click();">دخول الاختبار (مرة واحدة)</button></div>
+          <div><button class="btn btn-primary btn-sm" type="button" onclick="document.querySelector('.side-nav-btn[data-tab=\\'tab-courses\\']').click();">دخول الاختبار</button></div>
         `;
         pendingBox.appendChild(item);
       } else if (hasQuiz && myResults.length > 0) {
-        pendingBox.innerHTML = "<p style='color:var(--success); font-size:0.85rem;'>✅ أتممت امتحان هذه الحصة بنجاح (متاح لمرة واحدة).</p>";
+        pendingBox.innerHTML = "<p style='color:var(--success); font-size:0.85rem;'>✅ أتممت امتحان هذه الحصة بنجاح.</p>";
       } else {
         pendingBox.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لا توجد اختبارات معلقة حالياً.</p>";
       }
@@ -2088,7 +2019,7 @@
         alert("🎉 تم تفعيل الحصة بنجاح! (+30 XP) وتم فتح المحاضرة فوراً.");
         loadStudentDashboard(currentActiveStudent);
       } else {
-        alert("❌ كود الشحن غير صالح، أو تم استخدامه مسبقاً، أو غير موجود.");
+        alert("❌ كود الشحن غير صالح، أو تم استخدامه مسبقاً.");
       }
     });
 
@@ -2111,7 +2042,7 @@
           students[idx].receiptImg = receiptImg;
           saveStudents(students);
           currentActiveStudent.senderWallet = senderPhone;
-          statusMsg.innerText = "✅ تم إرسال طلب التفعيل للمستر بنجاح وسيظهر لديه في لوحة التحكم فوراً!";
+          statusMsg.innerText = "✅ تم إرسال طلب التفعيل للمستر بنجاح!";
           statusMsg.style.color = "var(--success)";
         }
       };
@@ -2186,26 +2117,13 @@
       document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views || 0} / 3`;
 
       document.getElementById("btn-vid-forward").onclick = () => {
-        if (activeVideoElForTimestamp) {
-          activeVideoElForTimestamp.currentTime += 5;
-        } else {
-          alert("💡 لتقديم فيديو YouTube اضغط مرتين على يمين الفيديو أو استخدم مشغل YouTube مباشرة.");
-        }
+        if (activeVideoElForTimestamp) activeVideoElForTimestamp.currentTime += 5;
       };
-
       document.getElementById("btn-vid-backward").onclick = () => {
-        if (activeVideoElForTimestamp) {
-          activeVideoElForTimestamp.currentTime = Math.max(0, activeVideoElForTimestamp.currentTime - 5);
-        } else {
-          alert("💡 لتأخير فيديو YouTube اضغط مرتين على يسار الفيديو أو استخدم مشغل YouTube مباشرة.");
-        }
+        if (activeVideoElForTimestamp) activeVideoElForTimestamp.currentTime = Math.max(0, activeVideoElForTimestamp.currentTime - 5);
       };
-
       document.getElementById("vid-speed-selector").onchange = (e) => {
-        const speed = parseFloat(e.target.value);
-        if (activeVideoElForTimestamp) {
-          activeVideoElForTimestamp.playbackRate = speed;
-        }
+        if (activeVideoElForTimestamp) activeVideoElForTimestamp.playbackRate = parseFloat(e.target.value);
       };
 
       document.getElementById("std-video-title").innerText = lesson.videoTitle || "محاضرة الشرح";
@@ -2258,7 +2176,7 @@
         students[sIdx].views = (students[sIdx].views || 0) + 1;
         saveStudents(students);
         document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views} / 3`;
-        alert("👁️ تم تجاوز منتصف مدة الحصة، وتم احتساب هذه المشاهدة (مرة من الـ 3 مرات المسموحة).");
+        alert("👁️ تم تجاوز منتصف مدة الحصة، وتم احتساب هذه المشاهدة.");
       }
     }
 
@@ -2267,7 +2185,7 @@
         activeVideoElForTimestamp.currentTime = seconds;
         alert(`⏩ تم الانتقال إلى التوقيت المطلوب (${seconds} ثانية)`);
       } else {
-        alert("ℹ️ الانتقال المباشر متاح لفيديوهات الرفع المباشر (Local Videos).");
+        alert("ℹ️ الانتقال المباشر متاح لفيديوهات الرفع المباشر.");
       }
     };
 
@@ -2460,7 +2378,7 @@
         alertBox.classList.remove("hidden");
 
         if (cheatWarningsCount >= 2) {
-          alert("🚨 تم إنهاء الامتحان تلقائياً بسبب مغادرتك المتكررة لصفحة الامتحان (رصد الغش والتبديل)!");
+          alert("🚨 تم إنهاء الامتحان تلقائياً بسبب مغادرتك المتكررة لصفحة الامتحان!");
           finishExamDueToCheat();
         }
       }
@@ -2473,7 +2391,7 @@
 
       const total = currentExamQuestions.length;
       const res = document.getElementById("std-exam-result");
-      res.innerText = `🚨 تم إلغاء نتيجتك (0 من ${total}) بسبب محاولة الغش ومغادرة التبويب!`;
+      res.innerText = `🚨 تم إلغاء نتيجتك (0 من ${total}) بسبب محاولة الغش!`;
       res.style.color = "var(--danger)";
 
       const results = getExamResults();
@@ -2482,7 +2400,7 @@
         grade: currentActiveStudent.grade,
         score: `0/${total}`,
         percentage: `0%`,
-        status: "راسب (محاولة غش بيومترية)",
+        status: "راسب (محاولة غش)",
         isCheated: true,
         time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
@@ -2518,7 +2436,7 @@
 
         if (remainingSeconds <= 0) {
           clearInterval(quizTimerInterval);
-          alert("⏱️ انتهى وقت الاختبار! جاري تسليم الإجابات.");
+          alert("⏱️ انتهى وقت الاختبار!");
           document.getElementById("btn-submit-exam").click();
         }
       }, 1000);
@@ -2543,18 +2461,7 @@
         title.innerText = q.question;
         card.appendChild(title);
 
-        if (q.imgUrl) {
-          const img = document.createElement("img");
-          img.src = q.imgUrl;
-          img.style.maxWidth = "100%";
-          img.style.maxHeight = "200px";
-          img.style.borderRadius = "8px";
-          img.style.marginBottom = "8px";
-          img.style.display = "block";
-          card.appendChild(img);
-        }
-
-        if (q.type === "mcq" || q.type === "img-mcq") {
+        if (q.type === "mcq") {
           const optionsCol = document.createElement("div");
           optionsCol.style.display = "flex";
           optionsCol.style.flexDirection = "column";
@@ -2595,7 +2502,7 @@
         const card = document.getElementById(`std-q-box-${idx}`);
         const ans = studentAnswersObj[idx];
 
-        if (q.type === "mcq" || q.type === "img-mcq") {
+        if (q.type === "mcq") {
           const btns = card.querySelectorAll(".side-nav-btn");
           btns.forEach((b, bIdx) => {
             b.style.pointerEvents = "none";
@@ -2687,14 +2594,14 @@
         student.attendance.unshift(`حضور السنتر: اليوم الساعة ${timeNow}`);
         saveStudents(students);
 
-        feedback.innerText = `✅ تم تسجيل حضور الطالب (${student.name}) - [${student.grade}] بنجاح الساعة ${timeNow}!`;
+        feedback.innerText = `✅ تم تسجيل حضور الطالب (${student.name}) بنجاح!`;
         feedback.style.color = "var(--success)";
 
-        const waText = encodeURIComponent(`تم حضور الطالب ${student.name} (${student.grade}) السنتر بنجاح الساعة ${timeNow} 🟢.\nمع تحيات: مستر يوسف خميس.`);
+        const waText = encodeURIComponent(`تم حضور الطالب ${student.name} السنتر بنجاح 🟢.`);
         window.open(`https://wa.me/2${student.parentPhone}?text=${waText}`, "_blank");
         document.getElementById("scanner-code-input").value = "";
       } else {
-        feedback.innerText = "❌ كود الطالب غير موجود في قاعدة بيانات السنتر.";
+        feedback.innerText = "❌ كود الطالب غير موجود.";
         feedback.style.color = "var(--danger)";
       }
     });
@@ -2781,10 +2688,8 @@
           <td><input type="text" id="mgr-score-${idx}" value="${bestScore}" style="width:75px; padding:3px;"></td>
           <td><input type="text" id="mgr-percent-${idx}" value="${bestPercent}" style="width:75px; padding:3px;"></td>
           <td>
-            <button class="btn ${isShown ? 'btn-success' : 'btn-danger'} btn-sm" onclick="toggleStudentLeaderboard(${idx})">
-              ${isShown ? 'معروض في اللوحة ✅' : 'مخفي ❌'}
-            </button>
-            <button class="btn btn-accent btn-sm" onclick="saveManualLeaderboardScore(${idx})">حفظ الدرجة</button>
+            <button class="btn ${isShown ? 'btn-success' : 'btn-danger'} btn-sm" onclick="toggleStudentLeaderboard(${idx})">${isShown ? 'معروض ✅' : 'مخفي ❌'}</button>
+            <button class="btn btn-accent btn-sm" onclick="saveManualLeaderboardScore(${idx})">حفظ</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -2805,7 +2710,7 @@
       students[idx].manualScore = score;
       students[idx].manualPercentage = percent;
       saveStudents(students);
-      alert(`✅ تم حفظ درجة التفوق للطالب (${students[idx].name})!`);
+      alert(`✅ تم حفظ درجة التفوق!`);
       renderTeacherLeaderboardMgr();
     };
 
@@ -2823,7 +2728,7 @@
           <td>
             <div style="display:flex; gap:6px;">
               <input type="number" id="price-input-${grade}" value="${prices[grade]}" min="0" style="width:90px; padding:4px;">
-              <button class="btn btn-success btn-sm" onclick="updateGradePrice('${grade}')">تحديث السعر الفردي</button>
+              <button class="btn btn-success btn-sm" onclick="updateGradePrice('${grade}')">تحديث</button>
             </div>
           </td>
         `;
@@ -2836,7 +2741,7 @@
       const prices = getPrices();
       prices[grade] = newPrice;
       savePrices(prices);
-      alert(`✅ تم تحديث سعر الحصة لـ (${grade}) ليصبح: ${newPrice} ج.م!`);
+      alert(`✅ تم تحديث سعر الحصة!`);
       renderTeacherPrices();
     };
 
@@ -2850,13 +2755,12 @@
         do {
           uniqueCode = "PR-" + Math.random().toString(36).substring(2, 7).toUpperCase();
         } while (promos.some(p => p.code === uniqueCode));
-
         promos.unshift({ code: uniqueCode, grade: grade, used: false, usedBy: "" });
       }
 
       savePromos(promos);
       renderPromosList();
-      alert(`✅ تم توليد ${count} كروت شحن حصص جديدة لـ (${grade})!`);
+      alert(`✅ تم توليد كروت الشحن بنجاح!`);
     });
 
     window.deletePromoCard = function(code) {
@@ -2867,10 +2771,9 @@
     };
 
     document.getElementById("btn-clear-all-promos").addEventListener("click", () => {
-      if (confirm("⚠️ هل أنت متأكد من رغبتك في حذف جميع كروت الشحن؟")) {
+      if (confirm("⚠️ حذف جميع كروت الشحن؟")) {
         savePromos([]);
         renderPromosList();
-        alert("✅ تم مسح جميع كروت الشحن بنجاح.");
       }
     });
 
@@ -2884,19 +2787,16 @@
         const card = document.createElement("div");
         card.className = "scratch-card-mini";
         card.innerHTML = `
-          <button class="btn-card-del" onclick="deletePromoCard('${p.code}')" title="حذف الكرت">✕</button>
+          <button class="btn-card-del" onclick="deletePromoCard('${p.code}')">✕</button>
           <h5>🌟 Mr. Youssef Academy</h5>
-          <p style="font-size:0.75rem; color:#64748b; margin:2px 0;">${p.grade}</p>
+          <p style="font-size:0.75rem; color:#64748b;">${p.grade}</p>
           <div class="card-code-val">${p.code}</div>
-          <p style="font-size:0.7rem; color:${p.used ? '#ef4444' : '#10b981'}; font-weight:bold;">
-            ${p.used ? '❌ تم الشحن' : '✅ كود صالح للتفعيل'}
-          </p>
+          <p style="font-size:0.7rem; color:${p.used ? '#ef4444' : '#10b981'}; font-weight:bold;">${p.used ? '❌ مستخدم' : '✅ صالح'}</p>
         `;
         container.appendChild(card);
       });
     }
 
-    // توليد أكواد تسجيل السنتر الحصرية المرتبطة باسم الطالب حصرياً
     document.getElementById("btn-generate-exclusive-code").addEventListener("click", () => {
       const stdName = document.getElementById("exclusive-student-name").value.trim();
       const grade = document.getElementById("exclusive-student-grade").value;
@@ -2907,8 +2807,6 @@
       }
 
       let exclusiveCodes = getExclusiveCodes();
-      
-      // التأكد أن الطالب ليس له كود مسبقاً
       if (exclusiveCodes.some(c => c.name.toLowerCase() === stdName.toLowerCase())) {
         alert(`⚠️ الطالب (${stdName}) يمتلك كود سنتر حصري مسجل مسبقاً.`);
         return;
@@ -2950,15 +2848,13 @@
           <td><strong>${c.name}</strong></td>
           <td>${c.grade}</td>
           <td><code class="code-pill" style="font-size:1rem; letter-spacing:1px;">${c.code}</code></td>
-          <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteExclusiveCode('${c.code}')">حذف</button>
-          </td>
+          <td><button class="btn btn-danger btn-sm" onclick="deleteExclusiveCode('${c.code}')">حذف</button></td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    // رفع محاضرة جديدة ومخصصة لصفها الدراسي بدقة
+    // تصحيح دالة حفظ المحاضرة وربطها بالصف بدقة تامة
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -2999,7 +2895,11 @@
           pdfReader.onload = (event) => handleSave(videoUrl, event.target.result);
           pdfReader.readAsDataURL(pdfFileInput.files[0]);
         } else {
-          handleSave(videoUrl, "");
+          let videoUrlFinal = videoUrl;
+          if (type === "youtube") {
+            videoUrlFinal = parseVideoUrl(document.getElementById("teacher-v-url").value.trim());
+          }
+          handleSave(videoUrlFinal, "");
         }
       };
 
@@ -3013,8 +2913,12 @@
           alert("⚠️ يرجى اختيار ملف الفيديو من الجهاز.");
         }
       } else {
-        const url = parseVideoUrl(document.getElementById("teacher-v-url").value.trim());
-        processPdfAndSave(url);
+        const ytUrlInput = document.getElementById("teacher-v-url").value.trim();
+        if (!ytUrlInput) {
+          alert("⚠️ يرجى إدخال رابط يوتيوب صالح.");
+          return;
+        }
+        processPdfAndSave(parseVideoUrl(ytUrlInput));
       }
     });
 
@@ -3068,7 +2972,7 @@
 
       latestLesson.questions.push(newQ);
       saveCurriculum(curr);
-      alert(`✅ تم حفظ السؤال ونموذج الإجابة للمحاضرة الأخيرة!`);
+      alert(`✅ تم حفظ السؤال للمحاضرة الأخيرة!`);
       document.getElementById("teacher-q-text").value = "";
       document.getElementById("teacher-essay-correct-text").value = "";
     });
@@ -3099,61 +3003,34 @@
         <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
         <head><meta charset="utf-8"/></head>
         <body dir="rtl">
-        <h2 style="text-align:center; color:#1e3a8a;">كشف تقرير نتائج واختبارات الطلاب - أكاديمية مستر يوسف خميس (${selectedGrade === 'all' ? 'جميع المراحل' : selectedGrade})</h2>
+        <h2 style="text-align:center; color:#1e3a8a;">كشف تقرير نتائج واختبارات الطلاب (${selectedGrade === 'all' ? 'جميع المراحل' : selectedGrade})</h2>
         <table border="1" style="border-collapse:collapse; width:100%; font-family:Cairo, sans-serif; text-align:center;">
           <tr style="background-color:#1e3a8a; color:#ffffff; font-weight:bold; height:35px;">
-            <th>اسم الطالب</th>
-            <th>الصف الدراسي</th>
-            <th>كود السنتر</th>
-            <th>هاتف الطالب</th>
-            <th>هاتف ولي الأمر</th>
-            <th>حالة الاشتراك</th>
-            <th>الدرجة</th>
-            <th>النسبة المئوية</th>
-            <th>النتيجة</th>
-            <th>ملاحظة الغش</th>
+            <th>اسم الطالب</th><th>الصف</th><th>كود السنتر</th><th>هاتف الطالب</th><th>هاتف ولي الأمر</th><th>الحالة</th><th>الدرجة</th><th>النسبة</th><th>النتيجة</th>
           </tr>
       `;
 
       filteredStudents.forEach(s => {
         const myRes = allResults.filter(r => r.name === s.name);
-        let score = "لم يمتحن";
-        let percent = "0%";
-        let status = "غير متاح";
-        let cheatNote = "سليم";
-        let bgColor = "#ffffff";
-
+        let score = "لم يمتحن", percent = "0%", status = "غير متاح", bgColor = "#ffffff";
         if (myRes.length > 0) {
           const latest = myRes[0];
-          score = latest.score;
-          percent = latest.percentage;
-          status = latest.status || (parseInt(percent) >= 50 ? "ناجح" : "راسب");
-          cheatNote = latest.isCheated ? "محاولة غش بيومترية 🚨" : "سليم ✅";
+          score = latest.score; percent = latest.percentage; status = latest.status;
           bgColor = status.includes("ناجح") ? "#dcfce7" : "#fee2e2";
         }
-
         htmlTable += `
           <tr style="background-color:${bgColor}; height:30px;">
-            <td><strong>${s.name}</strong></td>
-            <td>${s.grade}</td>
-            <td>${s.code}</td>
-            <td>${s.phone}</td>
-            <td>${s.parentPhone}</td>
-            <td>${s.paid ? 'مفعل ✅' : 'غير مفعل ❌'}</td>
-            <td><strong>${score}</strong></td>
-            <td>${percent}</td>
-            <td style="font-weight:bold; color:${status.includes('ناجح') ? '#15803d' : '#b91c1c'};">${status}</td>
-            <td>${cheatNote}</td>
+            <td><strong>${s.name}</strong></td><td>${s.grade}</td><td>${s.code}</td><td>${s.phone}</td><td>${s.parentPhone}</td>
+            <td>${s.paid ? 'مفعل' : 'غير مفعل'}</td><td><strong>${score}</strong></td><td>${percent}</td><td>${status}</td>
           </tr>
         `;
       });
-
       htmlTable += `</table></body></html>`;
 
       const blob = new Blob(["\uFEFF" + htmlTable], { type: "application/vnd.ms-excel;charset=utf-8;" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `كشف_نتائج_${selectedGrade.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.xls`;
+      a.download = `نتائج_الطلاب_${selectedGrade}.xls`;
       a.click();
     });
 
@@ -3166,13 +3043,9 @@
         const tr = document.createElement("tr");
         const isPassed = (r.status === "ناجح" || parseInt(r.percentage) >= 50) && !r.isCheated;
         tr.innerHTML = `
-          <td><strong>${r.name}</strong></td>
-          <td>${r.grade}</td>
-          <td>${r.score}</td>
-          <td><strong>${r.percentage}</strong></td>
+          <td><strong>${r.name}</strong></td><td>${r.grade}</td><td>${r.score}</td><td><strong>${r.percentage}</strong></td>
           <td><span class="${isPassed ? 'status-badge-active' : 'status-badge-pending'}" style="${!isPassed ? 'background:#fee2e2; color:#b91c1c;' : ''}">${isPassed ? 'ناجح ✅' : 'راسب ⚠️'}</span></td>
-          <td>${r.isCheated ? '<span style="color:var(--danger); font-weight:bold;">🚨 محاولة غش بيومترية</span>' : '<span style="color:var(--success);">سليم</span>'}</td>
-          <td>${r.time}</td>
+          <td>${r.isCheated ? '🚨 غش' : 'سليم'}</td><td>${r.time}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -3189,27 +3062,11 @@
           <td><strong>${s.name}</strong></td>
           <td>${s.grade}</td>
           <td><span class="badge-score-pill">${s.views || 0} / 3 مشاهدات</span></td>
-          <td>
-            <button class="btn btn-accent btn-sm" type="button" onclick="resetStudentViews(${idx})">
-              🔄 تصفير/فك المشاهدات
-            </button>
-          </td>
+          <td><button class="btn btn-accent btn-sm" type="button" onclick="resetStudentViews(${idx})">🔄 تصفير</button></td>
           <td><span class="${s.paid ? 'status-badge-active' : 'status-badge-pending'}">${s.paid ? 'مفعلة' : 'في الانتظار'}</span></td>
-          <td>
-            <button class="btn btn-primary btn-sm" type="button" onclick="openStudentFullDetailsModal(${idx})">
-              🔍 الملف الشامل
-            </button>
-          </td>
-          <td>
-            <button class="btn btn-success btn-sm" type="button" onclick="toggleStudentPayment(${idx})">
-              ${s.paid ? 'إلغاء التفعيل' : 'تفعيل الحصة'}
-            </button>
-          </td>
-          <td>
-            <button class="btn btn-whatsapp btn-sm" type="button" onclick="openWhatsAppHubModal(${idx})">
-              📲 واتساب
-            </button>
-          </td>
+          <td><button class="btn btn-primary btn-sm" type="button" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td>
+          <td><button class="btn btn-success btn-sm" type="button" onclick="toggleStudentPayment(${idx})">${s.paid ? 'إلغاء' : 'تفعيل'}</button></td>
+          <td><button class="btn btn-whatsapp btn-sm" type="button" onclick="openWhatsAppHubModal(${idx})">📲 واتساب</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -3219,7 +3076,7 @@
       const students = getStudents();
       students[idx].views = 0;
       saveStudents(students);
-      alert(`✅ تم تصفير مشاهدات الطالب (${students[idx].name}) ليتمكن من مشاهدة الحصة من جديد.`);
+      alert(`✅ تم تصفير مشاهدات الطالب (${students[idx].name}).`);
       renderTeacherPayments();
     };
 
@@ -3227,17 +3084,15 @@
       const students = getStudents();
       const s = students[idx];
       if (!s) return;
-
       document.getElementById("det-name").innerText = s.name || "—";
       document.getElementById("det-grade").innerText = s.grade || "—";
       document.getElementById("det-code").innerText = s.code || "—";
       document.getElementById("det-phone").innerText = s.phone || "—";
       document.getElementById("det-parent-phone").innerText = s.parentPhone || "—";
       document.getElementById("det-xp").innerText = `${s.xp || 0} XP`;
-      document.getElementById("det-paid").innerText = s.paid ? "مفعل ومسدد ✅" : "غير مفعل ❌";
+      document.getElementById("det-paid").innerText = s.paid ? "مفعل ✅" : "غير مفعل ❌";
       document.getElementById("det-device").innerText = s.deviceId || "غير مقفل";
       document.getElementById("det-views").innerText = `${s.views || 0} / 3`;
-
       document.getElementById("student-full-details-modal").classList.remove("hidden");
     };
 
@@ -3245,43 +3100,23 @@
       const students = getStudents();
       const s = students[idx];
       if (!s) return;
-
       document.getElementById("p-name").innerText = s.name;
       document.getElementById("p-grade").innerText = s.grade;
       document.getElementById("p-attendance").innerText = s.attendance ? s.attendance[0] : "مسجل بالسنتر";
       document.getElementById("p-views").innerText = `${s.views || 0} / 3 مشاهدات`;
-
       const tbody = document.getElementById("parent-records-tbody");
       tbody.innerHTML = "";
-
       const results = getExamResults().filter(r => r.name === s.name);
-      const homeworks = getHomework().filter(h => h.studentName === s.name);
-
-      if (results.length === 0 && homeworks.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='2' style='text-align:center; color:var(--text-muted);'>لا توجد اختبارات أو واجبات مسجلة بعد.</td></tr>";
-      } else {
-        results.forEach(r => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `<td>امتحان دوري (${r.time})</td><td>نتيجة: ${r.score} (${r.percentage}) - ${r.status}</td>`;
-          tbody.appendChild(tr);
-        });
-        homeworks.forEach(h => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `<td>تسليم واجب (${h.time})</td><td>الحالة: ${h.status} | الدرجة: ${h.score || 'قيد المراجعة'}</td>`;
-          tbody.appendChild(tr);
-        });
-      }
-
+      results.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>امتحان (${r.time})</td><td>نتيجة: ${r.score} (${r.percentage})</td>`;
+        tbody.appendChild(tr);
+      });
       document.getElementById("parent-dashboard-modal").classList.remove("hidden");
     };
 
-    document.getElementById("btn-close-parent-modal").addEventListener("click", () => {
-      document.getElementById("parent-dashboard-modal").classList.add("hidden");
-    });
-
-    document.getElementById("btn-close-details-modal").addEventListener("click", () => {
-      document.getElementById("student-full-details-modal").classList.add("hidden");
-    });
+    document.getElementById("btn-close-parent-modal").addEventListener("click", () => document.getElementById("parent-dashboard-modal").classList.add("hidden"));
+    document.getElementById("btn-close-details-modal").addEventListener("click", () => document.getElementById("student-full-details-modal").classList.add("hidden"));
 
     window.toggleStudentPayment = function(idx) {
       const students = getStudents();
@@ -3291,31 +3126,17 @@
     };
 
     window.openWhatsAppHubModal = function(idx) {
-      const students = getStudents();
-      selectedStudentForWhatsApp = students[idx];
+      selectedStudentForWhatsApp = getStudents()[idx];
       document.getElementById("wa-modal-std-name").innerText = selectedStudentForWhatsApp.name;
       document.getElementById("whatsapp-hub-modal").classList.remove("hidden");
     };
 
-    document.getElementById("btn-close-wa-modal").addEventListener("click", () => {
-      document.getElementById("whatsapp-hub-modal").classList.add("hidden");
-    });
+    document.getElementById("btn-close-wa-modal").addEventListener("click", () => document.getElementById("whatsapp-hub-modal").classList.add("hidden"));
 
-    window.sendParentTemplate = function(templateType) {
+    window.sendParentTemplate = function(type) {
       if (!selectedStudentForWhatsApp) return;
       const s = selectedStudentForWhatsApp;
-      let text = "";
-
-      if (templateType === 'absence') {
-        text = `السلام عليكم ورحمة الله وبركاته،\nولي أمر الطالب المحترم: ${s.name}\nنحيط سيادتكم علماً بأن الطالب تغيب عن حضور ومشاهدة محاضرة اللغة الإنجليزية لهذا الأسبوع لـ (${s.grade}).\nيرجى حث الطالب على المتابعة وعدم التراكم.\nمع تحيات: مستر يوسف خميس.`;
-      } else if (templateType === 'excellence') {
-        text = `🎉 بشرى سارة وتكريم تفوق 🎉\nالسلام عليكم ورحمة الله،\nولي أمر الطالب المتفوق: ${s.name}\nيسعدنا إبلاغكم بحصول الطالب على أعلى الدرجات والتميز في مادة اللغة الإنجليزية لـ (${s.grade}).\nفخورون بمستواه ونتمنى له دوام الصدارة 🌟\nمع تحيات: مستر يوسف خميس.`;
-      } else if (templateType === 'homework') {
-        text = `السلام عليكم ورحمة الله وبركاته،\nولي أمر الطالب: ${s.name}\nنود تذكير سيادتكم بضرورة تسليم وحل واجب الحصة المتأخر على المنصة ليتمكن مستر يوسف من تصحيحه ومنحه نقاط الـ XP.\nمع خالص التقدير: مستر يوسف خميس.`;
-      } else {
-        text = `السلام عليكم ورحمة الله وبركاته،\nولي أمر الطالب: ${s.name}\nمتابعة دورية من أكاديمية مستر يوسف خميس للغة الإنجليزية لـ (${s.grade}). نرجو المتابعة المستمرة لمستوى الطالب عبر المنصة.\nمع تحيات: مستر يوسف خميس.`;
-      }
-
+      let text = `متابعة من أكاديمية مستر يوسف للطالب: ${s.name}`;
       window.open(`https://wa.me/2${s.parentPhone}?text=${encodeURIComponent(text)}`, "_blank");
     };
 
@@ -3323,17 +3144,9 @@
       const tbody = document.getElementById("teacher-hw-table");
       if (!tbody) return;
       tbody.innerHTML = "";
-      const allHW = getHomework();
-
-      allHW.forEach((hw) => {
+      getHomework().forEach(hw => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><strong>${hw.studentName}</strong></td>
-          <td>${hw.grade}</td>
-          <td>${hw.time}</td>
-          <td><strong style="color:var(--success);">${hw.score || '—'}</strong></td>
-          <td><span class="status-badge-active">${hw.status}</span></td>
-        `;
+        tr.innerHTML = `<td><strong>${hw.studentName}</strong></td><td>${hw.grade}</td><td>${hw.time}</td><td><strong>${hw.score || '—'}</strong></td><td><span class="status-badge-active">${hw.status}</span></td>`;
         tbody.appendChild(tr);
       });
     }
@@ -3343,24 +3156,15 @@
       if (!container) return;
       container.innerHTML = "";
       const allQA = getQuestions();
-
       if (allQA.length === 0) {
         container.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لا توجد استفسارات حالياً.</p>";
         return;
       }
-
       allQA.forEach((qa, idx) => {
         const div = document.createElement("div");
         div.className = "qa-msg";
         div.style.marginBottom = "8px";
-        div.innerHTML = `
-          <p><strong>الطالب:</strong> ${qa.studentName} (${qa.grade})</p>
-          <p><strong>السؤال:</strong> ${qa.question}</p>
-          <div style="display:flex; gap:6px; margin-top:6px;">
-            <input type="text" id="t-reply-input-${idx}" placeholder="اكتب ردك..." value="${qa.reply || ''}">
-            <button class="btn btn-primary btn-sm" type="button" onclick="replyToQA(${idx})">إرسال الرد</button>
-          </div>
-        `;
+        div.innerHTML = `<p><strong>الطالب:</strong> ${qa.studentName} (${qa.grade})</p><p><strong>السؤال:</strong> ${qa.question}</p><div style="display:flex; gap:6px; margin-top:6px;"><input type="text" id="t-reply-input-${idx}" placeholder="اكتب ردك..." value="${qa.reply || ''}"><button class="btn btn-primary btn-sm" type="button" onclick="replyToQA(${idx})">إرسال</button></div>`;
         container.appendChild(div);
       });
     }
@@ -3370,38 +3174,19 @@
       const allQA = getQuestions();
       allQA[idx].reply = reply;
       saveQuestions(allQA);
-      alert("✅ تم إرسال الرد للطالب!");
+      alert("✅ تم إرسال الرد!");
       renderTeacherQA();
     };
 
     function loadDevPanel() {
       const students = getStudents();
       document.getElementById("stat-total-students").innerText = students.length;
-
       const tbody = document.getElementById("dev-students-table-body");
       if (!tbody) return;
       tbody.innerHTML = "";
       students.forEach((s, idx) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><strong>${s.name}</strong></td>
-          <td>${s.grade}</td>
-          <td><code>${s.code}</code></td>
-          <td>
-            <input type="number" id="dev-std-xp-${idx}" value="${s.xp || 0}" style="width:70px; display:inline-block; padding:3px; font-weight:bold;">
-            <button class="btn btn-accent btn-sm" onclick="devUpdateStudentXP(${idx})">تعديل</button>
-          </td>
-          <td>
-            <button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${idx})">🔍 التفاصيل</button>
-          </td>
-          <td><small><code>${s.deviceId || "غير مقفل"}</code></small></td>
-          <td><span class="${s.paid ? 'status-badge-active' : 'status-badge-pending'}">${s.paid ? 'مفعل' : 'غير مفعل'}</span></td>
-          <td>
-            <button class="btn btn-primary btn-sm" type="button" onclick="resetStudentDevice(${idx})">فك القفل</button>
-            <button class="btn btn-success btn-sm" type="button" onclick="devToggleStudentPaid(${idx})">${s.paid ? 'إلغاء' : 'تفعيل'}</button>
-            <button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByDev(${idx})">حذف</button>
-          </td>
-        `;
+        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}</td><td><code>${s.code}</code></td><td><input type="number" id="dev-std-xp-${idx}" value="${s.xp || 0}" style="width:70px;"><button class="btn btn-accent btn-sm" onclick="devUpdateStudentXP(${idx})">تعديل</button></td><td><button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td><td><small><code>${s.deviceId || "غير مقفل"}</code></small></td><td><span class="${s.paid ? 'status-badge-active' : 'status-badge-pending'}">${s.paid ? 'مفعل' : 'غير مفعل'}</span></td><td><button class="btn btn-primary btn-sm" type="button" onclick="resetStudentDevice(${idx})">فك القفل</button> <button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByDev(${idx})">حذف</button></td>`;
         tbody.appendChild(tr);
       });
     }
@@ -3411,14 +3196,7 @@
       const students = getStudents();
       students[idx].xp = newXP;
       saveStudents(students);
-      alert(`✅ تم تحديث نقاط XP للطالب (${students[idx].name}) إلى ${newXP} XP!`);
-      loadDevPanel();
-    };
-
-    window.devToggleStudentPaid = function(idx) {
-      const students = getStudents();
-      students[idx].paid = !students[idx].paid;
-      saveStudents(students);
+      alert(`✅ تم تحديث نقاط XP!`);
       loadDevPanel();
     };
 
@@ -3426,13 +3204,13 @@
       const students = getStudents();
       students[idx].deviceId = "";
       saveStudents(students);
-      alert(`✅ تم فك قفل الجهاز للطالب (${students[idx].name}).`);
+      alert(`✅ تم فك قفل الجهاز.`);
       loadDevPanel();
     };
 
     window.deleteStudentByDev = function(idx) {
       const students = getStudents();
-      if (confirm(`حذف الطالب (${students[idx].name}) نهائياً من النظام؟`)) {
+      if (confirm(`حذف الطالب نهائياً؟`)) {
         students.splice(idx, 1);
         saveStudents(students);
         loadDevPanel();
@@ -3443,26 +3221,18 @@
       const selected = document.getElementById("dev-data-selector").value;
       const editor = document.getElementById("dev-db-editor");
       let dataToLoad = {};
-
       if (selected === "students") dataToLoad = getStudents();
       else if (selected === "curriculum") dataToLoad = getCurriculum();
       else if (selected === "exclusiveCodes") dataToLoad = getExclusiveCodes();
       else if (selected === "results") dataToLoad = getExamResults();
       else if (selected === "prices") dataToLoad = getPrices();
-      else if (selected === "all") {
-        dataToLoad = {
-          students: getStudents(), curriculum: getCurriculum(), exclusiveCodes: getExclusiveCodes(),
-          results: getExamResults(), prices: getPrices(), announcement: getAnnouncement()
-        };
-      }
-
+      else if (selected === "all") dataToLoad = { students: getStudents(), curriculum: getCurriculum(), exclusiveCodes: getExclusiveCodes(), results: getExamResults(), prices: getPrices() };
       editor.value = JSON.stringify(dataToLoad, null, 2);
     });
 
     document.getElementById("btn-save-dev-data").addEventListener("click", () => {
       const selected = document.getElementById("dev-data-selector").value;
       const editor = document.getElementById("dev-db-editor");
-      
       try {
         const parsedData = JSON.parse(editor.value);
         if (selected === "students") saveStudents(parsedData);
@@ -3474,12 +3244,11 @@
           if (parsedData.students) saveStudents(parsedData.students);
           if (parsedData.curriculum) saveCurriculum(parsedData.curriculum);
           if (parsedData.exclusiveCodes) saveExclusiveCodes(parsedData.exclusiveCodes);
-          if (parsedData.results) saveExamResults(parsedData.results);
         }
         alert("✅ تم حفظ وتطبيق التعديل بنجاح!");
         loadDevPanel();
       } catch (err) {
-        alert("❌ خطأ في تنسيق كود JSON!");
+        alert("❌ خطأ في تنسيق JSON!");
       }
     });
 
@@ -3499,7 +3268,6 @@
     document.getElementById("teacher-logout").addEventListener("click", () => {
       localStorage.removeItem("yk_active_role");
       teacherDashboard.classList.add("hidden");
-      authSection.classList.add("hidden");
       authSection.classList.remove("hidden");
       updateAuthNavState(false);
       tabLogin.click();
