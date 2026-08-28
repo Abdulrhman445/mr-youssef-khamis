@@ -428,7 +428,7 @@
   </div>
 
   <div class="main-wrapper">
-    <!-- كارت المصادقة والتسجيل المقيد بأكواد السنتر -->
+    <!-- كارت المصادقة والتسجيل المقيد بأكواد السنتر الحصرية -->
     <div id="auth-section" class="glass-card anime-fade-in">
       <div class="teacher-hero">
         <div class="avatar-ring">
@@ -443,7 +443,7 @@
 
       <div class="tabs-nav">
         <button id="tab-login" class="tab-btn active" type="button">تسجيل الدخول</button>
-        <button id="tab-signup" class="tab-btn" type="button">حساب طالب جديد (بكود السنتر)</button>
+        <button id="tab-signup" class="tab-btn" type="button">حساب طالب جديد (بكود السنتر الحصري)</button>
       </div>
 
       <form id="unified-login-form" class="auth-form anime-slide-up">
@@ -460,7 +460,7 @@
 
       <form id="student-signup-form" class="auth-form hidden anime-slide-up">
         <div class="input-field">
-          <label>👤 اسم الطالب بالكامل (ثلاثي)</label>
+          <label>👤 اسم الطالب بالكامل (ثلاثي مطابق لكارت السنتر)</label>
           <input type="text" id="signup-name" placeholder="مثال: أحمد محمد علي" required>
         </div>
         <div class="input-field">
@@ -496,8 +496,9 @@
           <input type="text" id="signup-otp-input" placeholder="أدخل كود التأكيد">
         </div>
         <div class="input-field">
-          <label>🔑 كود تسجيل السنتر (إجباري من مستر يوسف)</label>
-          <input type="text" id="signup-code" placeholder="أدخل كود السنتر الفرعي (مثال: YK-xxxxxx)" required>
+          <label>🔑 كود تسجيل السنتر الحصري (الصالب لطالب واحد فقط)</label>
+          <input type="text" id="signup-code" placeholder="أدخل كود السنتر الخاص بك (مثال: YK-xxxxxx)" required>
+          <small style="color:var(--text-muted); font-size:0.75rem;">ملاحظة: الكود مرتبط باسمك حصراً ولا يمكن استخدامه من شخص آخر.</small>
         </div>
         <button type="submit" class="btn btn-success">✅ تأكيد التسجيل وإنشاء الحساب</button>
       </form>
@@ -542,7 +543,7 @@
       </aside>
 
       <main class="main-content-panel glass-card">
-        <!-- 1. المحاضرات والكورسات والأرشيف (عرض الأحدث أولاً) -->
+        <!-- 1. المحاضرات والكورسات (تظهر محاضرات صف الطالب فقط بتبويب الأحدث أولاً) -->
         <section id="section-courses" class="std-content-tab active anime-fade-in">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
             <h2 class="box-title" style="margin:0;">📚 أرشيف ومحاضرات (<span id="std-courses-grade-text"></span>)</h2>
@@ -591,7 +592,7 @@
             </div>
           </div>
 
-          <!-- مشغل المحاضرة مع المفكرة الحية ونظام الـ 3 مشاهدات الذكي (بعد نصف الوقت) -->
+          <!-- مشغل المحاضرة مع المفكرة الحية واحتساب المشاهدة بنصف الوقت -->
           <div id="student-lesson-viewer" class="dash-box hidden anime-fade-in">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap:wrap; gap:8px;">
               <h3 id="std-video-title" class="box-title" style="margin: 0;">عنوان المحاضرة</h3>
@@ -751,7 +752,7 @@
           </button>
           <div>
             <h2 style="font-size:1.2rem;">لوحة إدارة المعلم - مستر يوسف خميس</h2>
-            <p class="subtitle">التحكم في المناهج، أسعار الحصص، نموذج إجابة الواجب الفوري، ومسح QR الحضور</p>
+            <p class="subtitle">التحكم في المناهج، أسعار الحصص، وتوليد أكواد السنتر الحصرية للطلاب</p>
           </div>
         </div>
         <button id="teacher-logout" class="btn btn-danger btn-sm" type="button">خروج المعلم</button>
@@ -766,7 +767,7 @@
             <button class="side-nav-btn" data-ttab="t-tab-leaderboard-mgr" type="button">🏆 إدارة لوحة الشرف</button>
             <button class="side-nav-btn" data-ttab="t-tab-prices" type="button">💰 أسعار الحصص الفردية</button>
             <button class="side-nav-btn" data-ttab="t-tab-promos" type="button">🎟️ كروت شحن الحصص</button>
-            <button class="side-nav-btn" data-ttab="t-tab-student-codes" type="button">🪪 أكواد تسجيل السنتر</button>
+            <button class="side-nav-btn" data-ttab="t-tab-student-codes" type="button">🪪 أكواد تسجيل السنتر الحصرية</button>
             <button class="side-nav-btn" data-ttab="t-tab-video" type="button">📹 رفع وتعديل المحاضرات</button>
             <button class="side-nav-btn" data-ttab="t-tab-quiz" type="button">✍️ بنك الأسئلة ونموذج الواجب</button>
             <button class="side-nav-btn" data-ttab="t-tab-results" type="button">📊 تصدير Excel والنتائج</button>
@@ -892,12 +893,15 @@
             </div>
           </div>
 
-          <!-- 6. أكواد تسجيل السنتر -->
+          <!-- 6. أكواد تسجيل السنتر الحصرية المرتبطة بأسماء الطلاب -->
           <div id="t-sec-student-codes" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">🪪 توليد كروت أكواد تسجيل الطلاب الجدد للسنتر (مطلوبة للتسجيل)</h3>
-              <div class="grid-2col">
-                <select id="std-code-grade-select">
+              <h3 class="box-title">🪪 توليد وربط أكواد تسجيل السنتر (لكل طالب كود حصري باسمه)</h3>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">أدخل اسم الطالب المخصص له الكود ليكون حصرياً عليه فقط:</p>
+              
+              <div class="grid-2col" style="margin-bottom:12px;">
+                <input type="text" id="exclusive-student-name" placeholder="اسم الطالب الثلاثي (مثال: خالد أحمد)">
+                <select id="exclusive-student-grade">
                   <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
                   <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
                   <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
@@ -906,20 +910,28 @@
                   <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
                   <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
                   <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                  <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+                  <option value="الصف الثالث الإعدادي" selected>الصف الثالث الإعدادي</option>
                 </select>
-                <div style="display: flex; gap: 6px; flex-wrap:wrap;">
-                  <input type="number" id="std-code-count-input" placeholder="عدد الأكواد" min="1" max="50" value="6" style="max-width:100px;">
-                  <button id="btn-generate-std-codes" class="btn btn-accent btn-sm" type="button">توليد جديدة</button>
-                  <button onclick="window.print()" class="btn btn-primary btn-sm" type="button">🖨️ طباعة</button>
-                  <button id="btn-clear-all-std-codes" class="btn btn-danger btn-sm" type="button">🗑️ حذف الكل</button>
-                </div>
               </div>
-              <div id="printable-std-codes-container" class="printable-cards-grid"></div>
+              <button id="btn-generate-exclusive-code" class="btn btn-success btn-full" type="button">➕ توليد كود حصري مخصص لهذا الطالب</button>
+              
+              <div class="table-responsive" style="margin-top:15px;">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>اسم الطالب المخصص</th>
+                      <th>الصف</th>
+                      <th>الكود الحصري</th>
+                      <th>إجراء</th>
+                    </tr>
+                  </thead>
+                  <tbody id="teacher-exclusive-codes-table"></tbody>
+                </table>
+              </div>
             </div>
           </div>
 
-          <!-- 7. رفع المحاضرات (فارغة نظيفة تماماً ولا تعرض سوى ما يضيفه المستر) -->
+          <!-- 7. رفع المحاضرات (نظيفة ومخصصة لكل صف بدقة) -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
@@ -935,7 +947,7 @@
                     <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
                     <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
                     <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                    <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+                    <option value="الصف الثالث الإعدادي" selected>الصف الثالث الإعدادي</option>
                   </select>
                 </div>
                 <div class="input-field">
@@ -1004,7 +1016,7 @@
                     <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
                     <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
                     <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                    <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+                    <option value="الصف الثالث الإعدادي" selected>الصف الثالث الإعدادي</option>
                   </select>
                 </div>
                 <div class="input-field">
@@ -1278,6 +1290,7 @@
           <select id="dev-data-selector" style="max-width:280px;">
             <option value="students">👥 قاعدة بيانات الطلاب (Students DB)</option>
             <option value="curriculum">📚 المناهج والمحاضرات والأسئلة (Curriculum)</option>
+            <option value="exclusiveCodes">🪪 أكواد السنتر الحصرية (Exclusive Codes)</option>
             <option value="results">📊 نتائج الاختبارات (Exam Results)</option>
             <option value="prices">💰 أسعار الحصص (Prices)</option>
             <option value="all">🌐 النسخة الاحتياطية الكاملة (Full Backup)</option>
@@ -1374,16 +1387,13 @@
       "الصف الأول الإعدادي": 75, "الصف الثاني الإعدادي": 75, "الصف الثالث الإعدادي": 80
     };
 
-    // جعل المحاضرات الافتراضية فارغة تماماً بحيث لا يظهر سوى ما يرفعه المستر بنفسه
-    const defaultCurriculum = {};
-
     let cloudCache = {
-      curriculum: defaultCurriculum,
+      curriculum: {},
       students: [],
       prices: defaultPrices,
       results: [],
       promos: [],
-      regCodes: [],
+      exclusiveCodes: [], // تخزين الأكواد الحصرية المرتبطة بالأسماء حصرياً
       qa: [],
       hw: [],
       announcement: "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"
@@ -1404,8 +1414,8 @@
     function getPromos() { return cloudCache.promos || []; }
     function savePromos(d) { cloudCache.promos = d; rdb.ref('promos').set(d); }
 
-    function getRegistrationCodes() { return cloudCache.regCodes || []; }
-    function saveRegistrationCodes(d) { cloudCache.regCodes = d; rdb.ref('regCodes').set(d); }
+    function getExclusiveCodes() { return cloudCache.exclusiveCodes || []; }
+    function saveExclusiveCodes(d) { cloudCache.exclusiveCodes = d; rdb.ref('exclusiveCodes').set(d); }
 
     function getQuestions() { return cloudCache.qa || []; }
     function saveQuestions(d) { cloudCache.qa = d; rdb.ref('qa').set(d); }
@@ -1416,19 +1426,19 @@
     function getAnnouncement() { return cloudCache.announcement || "📢 مرحباً بكم في منصة مستر يوسف خميس للغة الإنجليزية!"; }
     function saveAnnouncement(t) { cloudCache.announcement = t; rdb.ref('announcement').set(t); }
 
-    // مزامنة حية ولحظية لكل الأجهزة عبر الـ Firebase
+    // مزامنة حية ولحظية لكل الأجهزة عبر الـ Firebase وبدون مسح أو فقدان البيانات
     rdb.ref('/').on('value', (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        cloudCache.curriculum = data.curriculum || {};
-        cloudCache.students = data.students || [];
-        cloudCache.prices = data.prices || defaultPrices;
-        cloudCache.results = data.results || [];
-        cloudCache.promos = data.promos || [];
-        cloudCache.regCodes = data.regCodes || [];
-        cloudCache.qa = data.qa || [];
-        cloudCache.hw = data.hw || [];
-        cloudCache.announcement = data.announcement || "";
+        if (data.curriculum) cloudCache.curriculum = data.curriculum;
+        if (data.students) cloudCache.students = data.students;
+        if (data.prices) cloudCache.prices = data.prices;
+        if (data.results) cloudCache.results = data.results;
+        if (data.promos) cloudCache.promos = data.promos;
+        if (data.exclusiveCodes) cloudCache.exclusiveCodes = data.exclusiveCodes;
+        if (data.qa) cloudCache.qa = data.qa;
+        if (data.hw) cloudCache.hw = data.hw;
+        if (data.announcement) cloudCache.announcement = data.announcement;
 
         if (document.getElementById("announcement-text") && cloudCache.announcement) {
           document.getElementById("announcement-text").innerText = cloudCache.announcement;
@@ -1480,7 +1490,7 @@
     let videoWatchTrackTimer = null;
     let hasCountedThisSession = false;
 
-    // استعادة الجلسة عند عمل Refresh للمنصة لضمان عدم الخروج أبداً
+    // استعادة جلسة الدخول التلقائية عند عمل Refresh لضمان عدم خروج أي مستخدم
     window.addEventListener("load", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
       const savedRole = localStorage.getItem("yk_active_role");
@@ -1505,7 +1515,7 @@
             loadStudentDashboard(student);
             updateAuthNavState(true);
           }
-        }, 600);
+        }, 700);
       }
     });
 
@@ -1667,13 +1677,14 @@
       systemMsg.innerText = "";
     });
 
+    // تسجيل الطالب مع التحقق الصارم من ارتباط الكود بالاسم حصرياً
     formStudentSignup.addEventListener("submit", (e) => {
       e.preventDefault();
       const name = document.getElementById("signup-name").value.trim();
       const grade = document.getElementById("signup-grade").value;
       const phone = document.getElementById("signup-phone").value.trim();
       const parentPhone = document.getElementById("signup-parent-phone").value.trim();
-      const code = document.getElementById("signup-code").value.trim();
+      const code = document.getElementById("signup-code").value.trim().toUpperCase();
       const enteredOtp = document.getElementById("signup-otp-input").value.trim();
 
       if (!isValidEgyptianPhone(phone) || !isValidEgyptianPhone(parentPhone)) {
@@ -1688,19 +1699,38 @@
         return;
       }
 
-      const codeInput = code.trim().toUpperCase();
-      if (!codeInput.startsWith("YK-")) {
-        systemMsg.innerText = "❌ كود السنتر غير صحيح أو يجب أن يبدأ بـ YK-";
+      // التحقق من الأكواد الحصرية المולدة من المستر
+      const exclusiveCodes = getExclusiveCodes();
+      const matchedCodeObj = exclusiveCodes.find(c => c.code.toUpperCase() === code);
+
+      if (!matchedCodeObj) {
+        systemMsg.innerText = "❌ هذا الكود غير موجود أو غير معتمد من مستر يوسف.";
+        systemMsg.style.color = "var(--danger)";
+        return;
+      }
+
+      if (matchedCodeObj.name.toLowerCase() !== name.toLowerCase()) {
+        systemMsg.innerText = `❌ خطأ مطابقة: هذا الكود مخصص حصرياً للطالب (${matchedCodeObj.name}) فقط ولا ينطبق على اسمك!`;
+        systemMsg.style.color = "var(--danger)";
+        return;
+      }
+
+      if (matchedCodeObj.used) {
+        systemMsg.innerText = "⚠️ هذا الكود تم استخدامه بالفعل لتسجيل الحساب ولا يمكن إعادة استخدامه.";
         systemMsg.style.color = "var(--danger)";
         return;
       }
 
       const students = getStudents();
       if (students.some(s => s.code.toLowerCase() === code.toLowerCase())) {
-        systemMsg.innerText = "⚠️ هذا الكود تم استخدامه بالفعل لتسجيل حساب آخر.";
+        systemMsg.innerText = "⚠️ تم التسجيل بهذا الكود مسبقاً.";
         systemMsg.style.color = "var(--danger)";
         return;
       }
+
+      // تحديث كود السنتر كأنه مستخدم
+      matchedCodeObj.used = true;
+      saveExclusiveCodes(exclusiveCodes);
 
       const currentDevice = getDeviceFingerprint();
       students.push({
@@ -1717,7 +1747,7 @@
       tabLogin.click();
       document.getElementById("login-identifier").value = name;
       document.getElementById("login-credential").value = code;
-      systemMsg.innerText = "🎉 تم إنشاء وحفظ حسابك بنجاح! يمكنك الدخول الآن.";
+      systemMsg.innerText = "🎉 تم إنشاء حسابك بنجاح! يمكنك الدخول الآن.";
       systemMsg.style.color = "var(--success)";
     });
 
@@ -1773,7 +1803,7 @@
         updateAuthNavState(true);
         formUnifiedLogin.reset();
       } else {
-        systemMsg.innerText = "❌ البيانات غير صحيحة، تأكد من كتابة الاسم وكود السنتر بدقة.";
+        systemMsg.innerText = "❌ البيانات غير صحيحة، تأكد من كتابة الاسم الثلاثي وكود السنتر بدقة.";
         systemMsg.style.color = "var(--danger)";
       }
     });
@@ -1919,7 +1949,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض كافة محاضرات الأرشيف الخاصة بصف الطالب مرتبة بحيث يظهر الأحدث أولاً
+    // عرض محاضرات صف الطالب فقط وترتيبها (الأحدث أولاً)
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -1927,7 +1957,7 @@
       const lessonsArr = curriculum[student.grade] || [];
 
       if (!lessonsArr || lessonsArr.length === 0) {
-        container.innerHTML = "<p style='color:var(--text-muted); text-align:center; grid-column: 1/-1;'>لا توجد محاضرات مرفوعة لصفك الدراسي حالياً.</p>";
+        container.innerHTML = "<p style='color:var(--text-muted); text-align:center; grid-column: 1/-1;'>لا توجد محاضرات مرفوعة لصفك الدراسي حالياً من المستر.</p>";
         return;
       }
 
@@ -2629,7 +2659,7 @@
       renderTeacherLeaderboardMgr();
       renderTeacherPrices();
       renderPromosList();
-      renderRegistrationCodesList();
+      renderExclusiveCodesMgr();
       renderTeacherCurriculumTable();
       renderTeacherResults();
       renderTeacherHomework();
@@ -2677,7 +2707,7 @@
 
       const grades = Object.keys(curr);
       if (grades.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً. ابدأ برفع محاضرة جديدة.</td></tr>";
         return;
       }
 
@@ -2826,7 +2856,7 @@
 
       savePromos(promos);
       renderPromosList();
-      alert(`✅ تم توليد ${count} كروت شحن فريدة جديدة لـ (${grade}) وربطها سحابياً!`);
+      alert(`✅ تم توليد ${count} كروت شحن حصص جديدة لـ (${grade})!`);
     });
 
     window.deletePromoCard = function(code) {
@@ -2866,62 +2896,69 @@
       });
     }
 
-    document.getElementById("btn-generate-std-codes").addEventListener("click", () => {
-      const grade = document.getElementById("std-code-grade-select").value;
-      const count = parseInt(document.getElementById("std-code-count-input").value) || 6;
-      const regCodes = getRegistrationCodes();
+    // توليد أكواد تسجيل السنتر الحصرية المرتبطة باسم الطالب حصرياً
+    document.getElementById("btn-generate-exclusive-code").addEventListener("click", () => {
+      const stdName = document.getElementById("exclusive-student-name").value.trim();
+      const grade = document.getElementById("exclusive-student-grade").value;
 
-      for (let i = 0; i < count; i++) {
-        let uniqueCode = "";
-        do {
-          uniqueCode = "YK-" + Math.floor(100000 + Math.random() * 900000);
-        } while (regCodes.some(c => c.code === uniqueCode));
-
-        regCodes.unshift({ code: uniqueCode, grade });
+      if (!stdName) {
+        alert("⚠️ يرجى إدخال اسم الطالب الثلاثي لتوليد كود حصري مخصص له.");
+        return;
       }
 
-      saveRegistrationCodes(regCodes);
-      renderRegistrationCodesList();
-      alert(`✅ تم توليد ${count} كروت تسجيل سنتر سحابية جديدة لـ (${grade})!`);
+      let exclusiveCodes = getExclusiveCodes();
+      
+      // التأكد أن الطالب ليس له كود مسبقاً
+      if (exclusiveCodes.some(c => c.name.toLowerCase() === stdName.toLowerCase())) {
+        alert(`⚠️ الطالب (${stdName}) يمتلك كود سنتر حصري مسجل مسبقاً.`);
+        return;
+      }
+
+      let uniqueCode = "YK-" + Math.floor(100000 + Math.random() * 900000);
+      while (exclusiveCodes.some(c => c.code === uniqueCode)) {
+        uniqueCode = "YK-" + Math.floor(100000 + Math.random() * 900000);
+      }
+
+      exclusiveCodes.unshift({ code: uniqueCode, name: stdName, grade, used: false });
+      saveExclusiveCodes(exclusiveCodes);
+      document.getElementById("exclusive-student-name").value = "";
+      renderExclusiveCodesMgr();
+      alert(`✅ تم توليد الكود الحصري (${uniqueCode}) للطالب (${stdName}) بنجاح!`);
     });
 
-    window.deleteStdRegCode = function(code) {
-      let regCodes = getRegistrationCodes();
-      regCodes = regCodes.filter(c => c.code !== code);
-      saveRegistrationCodes(regCodes);
-      renderRegistrationCodesList();
+    window.deleteExclusiveCode = function(code) {
+      let codes = getExclusiveCodes();
+      codes = codes.filter(c => c.code !== code);
+      saveExclusiveCodes(codes);
+      renderExclusiveCodesMgr();
     };
 
-    document.getElementById("btn-clear-all-std-codes").addEventListener("click", () => {
-      if (confirm("⚠️ هل أنت متأكد من رغبتك في حذف جميع كروت تسجيل السنتر؟")) {
-        saveRegistrationCodes([]);
-        renderRegistrationCodesList();
-        alert("✅ تم مسح جميع كروت تسجيل السنتر بنجاح.");
+    function renderExclusiveCodesMgr() {
+      const tbody = document.getElementById("teacher-exclusive-codes-table");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+      const codes = getExclusiveCodes();
+
+      if (codes.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:var(--text-muted);'>لا توجد أكواد حصرية مولدة بعد.</td></tr>";
+        return;
       }
-    });
 
-    function renderRegistrationCodesList() {
-      const container = document.getElementById("printable-std-codes-container");
-      if (!container) return;
-      container.innerHTML = "";
-      const regCodes = getRegistrationCodes();
-
-      regCodes.forEach(c => {
-        const card = document.createElement("div");
-        card.className = "scratch-card-mini";
-        card.style.borderColor = "#10b981";
-        card.innerHTML = `
-          <button class="btn-card-del" onclick="deleteStdRegCode('${c.code}')" title="حذف الكرت">✕</button>
-          <h5>🪪 كارت تسجيل سنتر</h5>
-          <p style="font-size:0.75rem; color:#64748b; margin:2px 0;">${c.grade}</p>
-          <div class="card-code-val" style="color:#059669; background:#dcfce7; border-color:#86efac;">${c.code}</div>
-          <p style="font-size:0.7rem; color:#1e293b;">إجباري لدخول الطالب للمنصة</p>
+      codes.forEach(c => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${c.name}</strong></td>
+          <td>${c.grade}</td>
+          <td><code class="code-pill" style="font-size:1rem; letter-spacing:1px;">${c.code}</code></td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteExclusiveCode('${c.code}')">حذف</button>
+          </td>
         `;
-        container.appendChild(card);
+        tbody.appendChild(tr);
       });
     }
 
-    // رفع محاضرة جديدة وإضافتها للأرشيف لتظهر للطالب فوراً
+    // رفع محاضرة جديدة ومخصصة لصفها الدراسي بدقة
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -2951,7 +2988,7 @@
 
         curr[grade].push(newLesson);
         saveCurriculum(curr);
-        alert(`✅ تم نشر المحاضرة الجديدة لـ (${grade}) وأضيفت للأرشيف بنجاح!`);
+        alert(`✅ تم نشر المحاضرة بنجاح لـ (${grade}) وستظهر للطلاب فوراً!`);
         document.getElementById("form-manage-video").reset();
         renderTeacherCurriculumTable();
       };
@@ -3409,12 +3446,13 @@
 
       if (selected === "students") dataToLoad = getStudents();
       else if (selected === "curriculum") dataToLoad = getCurriculum();
+      else if (selected === "exclusiveCodes") dataToLoad = getExclusiveCodes();
       else if (selected === "results") dataToLoad = getExamResults();
       else if (selected === "prices") dataToLoad = getPrices();
       else if (selected === "all") {
         dataToLoad = {
-          students: getStudents(), curriculum: getCurriculum(), results: getExamResults(),
-          prices: getPrices(), announcement: getAnnouncement()
+          students: getStudents(), curriculum: getCurriculum(), exclusiveCodes: getExclusiveCodes(),
+          results: getExamResults(), prices: getPrices(), announcement: getAnnouncement()
         };
       }
 
@@ -3429,11 +3467,13 @@
         const parsedData = JSON.parse(editor.value);
         if (selected === "students") saveStudents(parsedData);
         else if (selected === "curriculum") saveCurriculum(parsedData);
+        else if (selected === "exclusiveCodes") saveExclusiveCodes(parsedData);
         else if (selected === "results") saveExamResults(parsedData);
         else if (selected === "prices") savePrices(parsedData);
         else if (selected === "all") {
           if (parsedData.students) saveStudents(parsedData.students);
           if (parsedData.curriculum) saveCurriculum(parsedData.curriculum);
+          if (parsedData.exclusiveCodes) saveExclusiveCodes(parsedData.exclusiveCodes);
           if (parsedData.results) saveExamResults(parsedData.results);
         }
         alert("✅ تم حفظ وتطبيق التعديل بنجاح!");
@@ -3459,6 +3499,7 @@
     document.getElementById("teacher-logout").addEventListener("click", () => {
       localStorage.removeItem("yk_active_role");
       teacherDashboard.classList.add("hidden");
+      authSection.classList.add("hidden");
       authSection.classList.remove("hidden");
       updateAuthNavState(false);
       tabLogin.click();
