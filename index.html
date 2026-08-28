@@ -532,7 +532,7 @@
         </div>
 
         <nav class="sidebar-menu">
-          <button class="side-nav-btn active" data-tab="tab-courses" type="button">📚 المحاضرات</button>
+          <button class="side-nav-btn active" data-tab="tab-courses" type="button">📚 المحاضرات والأرشيف</button>
           <button class="side-nav-btn" data-tab="tab-profile" type="button">🪪 بياناتي والـ QR</button>
           <button class="side-nav-btn" data-tab="tab-exams" type="button">📝 الامتحانات</button>
           <button class="side-nav-btn" data-tab="tab-homework" type="button">📋 الواجبات</button>
@@ -542,10 +542,10 @@
       </aside>
 
       <main class="main-content-panel glass-card">
-        <!-- 1. المحاضرات والكورسات -->
+        <!-- 1. المحاضرات والكورسات والأرشيف -->
         <section id="section-courses" class="std-content-tab active anime-fade-in">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-            <h2 class="box-title" style="margin:0;">📚 محاضرات (<span id="std-courses-grade-text"></span>)</h2>
+            <h2 class="box-title" style="margin:0;">📚 أرشيف ومحاضرات (<span id="std-courses-grade-text"></span>)</h2>
             <button id="std-back-to-catalog-btn" class="btn btn-primary btn-sm hidden" type="button">↩️ قائمة المحاضرات</button>
           </div>
 
@@ -553,10 +553,10 @@
             <div id="lessons-grid-container" class="lessons-grid"></div>
           </div>
 
-          <!-- شاشة الدفع -->
+          <!-- شاشة الدفع واشتراك الحصة -->
           <div id="payment-gate-box" class="payment-gate-box hidden anime-slide-up">
             <div class="lock-icon">🔒</div>
-            <h3>هذه المحاضرة تتطلب تفعيل الاشتراك</h3>
+            <h3>هذه المحاضرة جديدة وتتطلب تفعيل الاشتراك</h3>
             <p class="price-tag">سعر الحصة المخصص لهذا الدرس: <strong id="display-lesson-price">0</strong> جنيه مصري</p>
             
             <div class="quick-code-box">
@@ -591,7 +591,7 @@
             </div>
           </div>
 
-          <!-- مشغل المحاضرة مع المفكرة الحية وفصول الفيديو -->
+          <!-- مشغل المحاضرة مع المفكرة الحية ونظام الـ 3 مشاهدات الذكي -->
           <div id="student-lesson-viewer" class="dash-box hidden anime-fade-in">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap:wrap; gap:8px;">
               <h3 id="std-video-title" class="box-title" style="margin: 0;">عنوان المحاضرة</h3>
@@ -801,23 +801,22 @@
             </div>
           </div>
 
-          <!-- 2. المشتركون والبيانات -->
+          <!-- 2. المشتركون والبيانات وفك المشاهدات للطالب -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">💳 المشتركون، عرض بيانات الطالب، والرسائل</h3>
+              <h3 class="box-title">💳 المشتركون، التحكم في المشاهدات، وبيانات الطلاب</h3>
               <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
                     <tr>
                       <th>اسم الطالب</th>
                       <th>الصف</th>
-                      <th>المحفظة</th>
-                      <th>الإيصال</th>
+                      <th>المشاهدات الحالية</th>
+                      <th>إعادة تعيين المشاهدات (فك الحظر)</th>
                       <th>الحالة</th>
-                      <th>البيانات الشاملة</th>
+                      <th>الملف الشامل</th>
                       <th>إجراء الاشتراك</th>
-                      <th>رسائل الواتساب 📲</th>
-                      <th>التقرير الشهري</th>
+                      <th>واتساب 📲</th>
                     </tr>
                   </thead>
                   <tbody id="teacher-payments-table"></tbody>
@@ -923,7 +922,7 @@
           <!-- 7. رفع المحاضرات -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة</h3>
+              <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
               <form id="form-manage-video">
                 <div class="input-field">
                   <label>الصف المستهدف:</label>
@@ -966,7 +965,7 @@
                   <label>🗂️ كلمات الحصة والترجمة (كلمة : ترجمة في كل سطر):</label>
                   <textarea id="teacher-vocab-input" rows="2" placeholder="Book : كتاب&#10;Teacher : معلم"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary btn-full">حفظ ونشر المحتوى</button>
+                <button type="submit" class="btn btn-primary btn-full">حفظ ونشر المحتوى للأرشيف</button>
               </form>
             </div>
 
@@ -1232,14 +1231,14 @@
       </div>
     </div>
 
-    <!-- نافذة الاختبار الدوري مع الحماية البيومترية لمنع الغش -->
+    <!-- نافذة الاختبار الدوري مع الحماية البيومترية لمنع الغش (مرة واحدة فقط) -->
     <div id="quiz-popup-modal" class="quiz-popup-modal hidden exam-no-copy" oncopy="return false;" oncut="return false;" oncontextmenu="return false;">
       <div class="quiz-modal-content anime-slide-up">
         <div id="anti-cheat-alert" class="anti-cheat-banner hidden">
           ⚠️ تحذير: تم رصد مغادرتك لصفحة الامتحان أو محاولة التبديل! تكرار الخروج سيؤدي إلى إنهاء الاختبار وتسليمه فوراً بنتيجة ملغاة.
         </div>
         <div class="quiz-header-flex" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h3 id="quiz-popup-title" class="box-title">📝 الاختبار الدوري (مؤمن بيومترياً)</h3>
+          <h3 id="quiz-popup-title" class="box-title">📝 الاختبار الدوري (متاح لمرة واحدة فقط)</h3>
           <div id="quiz-timer-badge" class="views-badge" style="background:#fee2e2; color:#b91c1c;">⏱️ <span id="timer-display">10:00</span></div>
         </div>
         <div id="std-quiz-list" class="quiz-scroll-area"></div>
@@ -1340,7 +1339,7 @@
   </div>
 
   <script>
-    // تم ربط قاعدة بيانات Firebase الخاصة بمستر يوسف سحابياً
+    // ربط السحابة الخاصة بمستر يوسف عبر Firebase
     const firebaseConfig = {
       databaseURL: "https://mr-youssef-academy-default-rtdb.firebaseio.com"
     };
@@ -1499,6 +1498,8 @@
     let isExamActive = false;
     let cheatWarningsCount = 0;
     let generatedParentOTP = null;
+    let videoWatchTrackTimer = null;
+    let hasCountedThisSession = false;
 
     function updateAuthNavState(isLoggedIn) {
       const drawerAuthBtn = document.getElementById("drawer-btn-auth");
@@ -1909,11 +1910,17 @@
       renderStudentCoursesList(student);
     }
 
+    // عرض الأرشيف والمحاضرات مع توفرها دائماً للطالب
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
       const curriculum = getCurriculum();
-      const content = curriculum[student.grade] || { videoTitle: "لم يتم رفع محاضرة لهذا الصف بعد" };
+      const content = curriculum[student.grade];
+
+      if (!content || !content.videoUrl) {
+        container.innerHTML = "<p style='color:var(--text-muted); text-align:center; grid-column: 1/-1;'>لا توجد محاضرات مرفوعة لصفك الدراسي حالياً.</p>";
+        return;
+      }
 
       const card = document.createElement("div");
       card.className = "lesson-card";
@@ -1922,15 +1929,11 @@
         <h4>${content.videoTitle || "محاضرة الأسبوع"}</h4>
         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">${student.grade}</p>
         <span class="status-pill ${student.paid ? 'status-unlocked' : 'status-locked'}">
-          ${student.paid ? 'محتوى متاح للمشاهدة' : 'محاضرة مدفوعة (اضغط للاشتراك)'}
+          ${student.paid ? 'محتوى مفعل ومتاح للأرشيف' : 'محاضرة جديدة - تتطلب اشتراك أو كود شحن'}
         </span>
       `;
 
       card.addEventListener("click", () => {
-        if (!content.videoUrl) {
-          alert("⚠️ لم يقم المستر برفع فيديو لهذه المحاضرة بعد.");
-          return;
-        }
         if (!student.paid) {
           document.getElementById("student-courses-catalog").classList.add("hidden");
           document.getElementById("payment-gate-box").classList.remove("hidden");
@@ -1995,15 +1998,18 @@
         });
       }
 
-      if (hasQuiz) {
+      // الامتحان يفتح مرة واحدة فقط، فإذا امتحن لا يظهر له زر دخول الامتحان مجدداً
+      if (hasQuiz && myResults.length === 0) {
         const item = document.createElement("div");
         item.className = "exam-status-item";
         item.style.borderColor = "var(--primary-glow)";
         item.innerHTML = `
           <div><strong>📝 اختبار: ${curr.videoTitle || "محاضرة الأسبوع"}</strong></div>
-          <div><button class="btn btn-primary btn-sm" type="button" onclick="document.querySelector('.side-nav-btn[data-tab=\\'tab-courses\\']').click(); openLessonPlayer(currentActiveStudent);">دخول الاختبار</button></div>
+          <div><button class="btn btn-primary btn-sm" type="button" onclick="document.querySelector('.side-nav-btn[data-tab=\\'tab-courses\\']').click(); openLessonPlayer(currentActiveStudent);">دخول الامتحان (مرة واحدة)</button></div>
         `;
         pendingBox.appendChild(item);
+      } else if (hasQuiz && myResults.length > 0) {
+        pendingBox.innerHTML = "<p style='color:var(--success); font-size:0.85rem;'>✅ أتممت امتحان هذه الحصة بنجاح (متاح لمرة واحدة).</p>";
       } else {
         pendingBox.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لا توجد اختبارات معلقة لصفك الدراسي حالياً.</p>";
       }
@@ -2039,7 +2045,7 @@
         alert("🎉 تم تفعيل الحصة بنجاح! (+30 XP) وتم فتح المحاضرة فوراً.");
         loadStudentDashboard(currentActiveStudent);
       } else {
-        alert("❌ كود شحن غير صالح، أو تم استخدامه مسبقاً، أو غير موجود.");
+        alert("❌ كود الشحن غير صالح، أو تم استخدامه مسبقاً، أو غير موجود.");
       }
     });
 
@@ -2062,7 +2068,7 @@
           students[idx].receiptImg = receiptImg;
           saveStudents(students);
           currentActiveStudent.senderWallet = senderPhone;
-          statusMsg.innerText = "✅ تم إرسال طلب التفعيل سحابياً للمستر وسيظهر لديه في لوحة التحكم فوراً!";
+          statusMsg.innerText = "✅ تم إرسال طلب التفعيل للمستر بنجاح وسيظهر لديه في لوحة التحكم فوراً!";
           statusMsg.style.color = "var(--success)";
         }
       };
@@ -2078,21 +2084,16 @@
 
     let activeVideoElForTimestamp = null;
 
+    // مشغل الحصة مع نظام احتساب الـ 3 مشاهدات الذكي (بعد نصف الوقت)
     function openLessonPlayer(student) {
       const students = getStudents();
       const sIdx = students.findIndex(s => s.code === student.code);
       const currentViews = students[sIdx].views || 0;
 
       if (currentViews >= 3) {
-        alert("⚠️ لقد استنفدت الحد الأقصى للمشاهدات (3 مرات). تواصل مع المستر.");
+        alert("⚠️ لقد استنفدت الحد الأقصى للمشاهدات (3 مرات). يرجى التواصل مع المستر لفك وإعادة تعيين المشاهدات.");
         return;
       }
-
-      students[sIdx].views = currentViews + 1;
-      saveStudents(students);
-      student.views = students[sIdx].views;
-
-      document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${student.views} / 3`;
 
       document.getElementById("student-courses-catalog").classList.add("hidden");
       document.getElementById("payment-gate-box").classList.add("hidden");
@@ -2108,6 +2109,7 @@
       vContainer.innerHTML = "";
 
       activeVideoElForTimestamp = null;
+      hasCountedThisSession = false;
 
       if (content.videoType === "local" && content.videoUrl) {
         const videoEl = document.createElement("video");
@@ -2118,6 +2120,14 @@
         videoEl.controlsList = "nodownload";
         vContainer.appendChild(videoEl);
         activeVideoElForTimestamp = videoEl;
+
+        // تتبع نصف مدة الفيديو المحلي لاحتساب المشاهدة
+        videoEl.ontimeupdate = () => {
+          if (!hasCountedThisSession && videoEl.duration > 0 && videoEl.currentTime >= (videoEl.duration / 2)) {
+            hasCountedThisSession = true;
+            incrementStudentViewCount(student.code);
+          }
+        };
       } else if (content.videoUrl) {
         const iframe = document.createElement("iframe");
         iframe.id = "main-yt-iframe";
@@ -2125,7 +2135,18 @@
         iframe.setAttribute("allowfullscreen", "true");
         iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
         vContainer.appendChild(iframe);
+
+        // لفيديوهات يوتيوب نحتسب المشاهدة بمرور نصف الوقت التقديري (مثلاً 5 دقائق أو عند النصف)
+        if (videoWatchTrackTimer) clearTimeout(videoWatchTrackTimer);
+        videoWatchTrackTimer = setTimeout(() => {
+          if (!hasCountedThisSession) {
+            hasCountedThisSession = true;
+            incrementStudentViewCount(student.code);
+          }
+        }, 180000); // 3 دقائق تفاعل تعتبر منتصف الحصة وتحسب مرة
       }
+
+      document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views || 0} / 3`;
 
       document.getElementById("btn-vid-forward").onclick = () => {
         if (activeVideoElForTimestamp) {
@@ -2181,11 +2202,28 @@
 
       const quizBtn = document.getElementById("btn-open-quiz-modal");
       currentExamQuestions = content.questions || [];
-      if (currentExamQuestions.length > 0) quizBtn.classList.remove("hidden");
-      else quizBtn.classList.add("hidden");
+      const myResults = getExamResults().filter(r => r.name === student.name);
+      
+      // الامتحان يفتح مرة واحدة ولا يفتح إذا تم أداؤه مسبقاً
+      if (currentExamQuestions.length > 0 && myResults.length === 0) {
+        quizBtn.classList.remove("hidden");
+      } else {
+        quizBtn.classList.add("hidden");
+      }
 
       currentVocabList = content.vocab || [];
       renderStudentQA();
+    }
+
+    function incrementStudentViewCount(studentCode) {
+      const students = getStudents();
+      const sIdx = students.findIndex(s => s.code === studentCode);
+      if (sIdx !== -1) {
+        students[sIdx].views = (students[sIdx].views || 0) + 1;
+        saveStudents(students);
+        document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views} / 3`;
+        alert("👁️ تم تجاوز نصف مدة الحصة، وتم احتساب هذه المشاهدة (مرة من الـ 3 مرات المسموحة).");
+      }
     }
 
     window.seekVideoTime = function(seconds) {
@@ -2889,7 +2927,7 @@
         if (parsedVocab.length > 0) curr[grade].vocab = parsedVocab;
 
         saveCurriculum(curr);
-        alert(`✅ تم نشر المحاضرة والمذكرة PDF لـ (${grade}) بنجاح ووصلت لجميع الطلاب فوراً!`);
+        alert(`✅ تم نشر المحاضرة والمذكرة PDF لـ (${grade}) للأرشيف ووصلت للطلاب فوراً!`);
         document.getElementById("form-manage-video").reset();
         renderTeacherCurriculumTable();
       };
@@ -3076,6 +3114,7 @@
       });
     }
 
+    // جدول المشتركون وإمكانية فك أو إعادة تعيين مشاهدات الطالب ليعيد الحصة من جديد
     function renderTeacherPayments() {
       const students = getStudents();
       const tbody = document.getElementById("teacher-payments-table");
@@ -3086,8 +3125,12 @@
         tr.innerHTML = `
           <td><strong>${s.name}</strong></td>
           <td>${s.grade}</td>
-          <td><code>${s.senderWallet || "لم يرسل"}</code></td>
-          <td>${s.receiptImg ? `<a href="${s.receiptImg}" target="_blank" style="color:#2563eb; font-weight:bold;">🖼️ عرض الإيصال</a>` : "لا يوجد"}</td>
+          <td><span class="badge-score-pill">${s.views || 0} / 3 مشاهدات</span></td>
+          <td>
+            <button class="btn btn-accent btn-sm" type="button" onclick="resetStudentViews(${idx})">
+              🔄 تصفير/فك المشاهدات
+            </button>
+          </td>
           <td><span class="${s.paid ? 'status-badge-active' : 'status-badge-pending'}">${s.paid ? 'مفعلة' : 'في الانتظار'}</span></td>
           <td>
             <button class="btn btn-primary btn-sm" type="button" onclick="openStudentFullDetailsModal(${idx})">
@@ -3101,18 +3144,22 @@
           </td>
           <td>
             <button class="btn btn-whatsapp btn-sm" type="button" onclick="openWhatsAppHubModal(${idx})">
-              📲 رسائل الواتساب
-            </button>
-          </td>
-          <td>
-            <button class="btn btn-accent btn-sm" type="button" onclick="openMonthlyReportModal(${idx})">
-              📄 التقرير الشهري
+              📲 واتساب
             </button>
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
+
+    // دالة تحكم المستر لفك وإعادة تعيين مشاهدات الطالب
+    window.resetStudentViews = function(idx) {
+      const students = getStudents();
+      students[idx].views = 0;
+      saveStudents(students);
+      alert(`✅ تم تصفير مشاهدات الطالب (${students[idx].name}) ليتمكن من مشاهدة الحصة من جديد.`);
+      renderTeacherPayments();
+    };
 
     window.openStudentFullDetailsModal = function(idx) {
       const students = getStudents();
