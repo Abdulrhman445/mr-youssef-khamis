@@ -2321,10 +2321,11 @@
       `;
     }
 
-    // نظام الإشعارات الذكي (مع دعم الإشعارات الموجهة لصف معين)
+    // نظام الإشعارات الذكي والمزامنة الفورية مع الـ Firebase
     function renderStudentNotifications(student) {
       const listContainer = document.getElementById("notifications-list-container");
       const badgeCount = document.getElementById("notification-badge-count");
+      if (!listContainer) return;
       listContainer.innerHTML = "";
 
       let dismissed = JSON.parse(localStorage.getItem(`yk_dismissed_notifs_${student.code}`) || "[]");
@@ -2333,9 +2334,9 @@
       let rawNotifs = [];
       const now = Date.now();
 
-      // 1. إشعارات التنبيهات الموجهة لصف الطالب مع فلترة وقت انتهاء الصلاحية
+      // 1. الإشعارات والتنبيهات الموجهة لصف الطالب بدقة من لوحة المستر
       const targeted = getTargetedAnnouncements();
-      if (targeted[student.grade] && Array.isArray(targeted[student.grade])) {
+      if (targeted && targeted[student.grade] && Array.isArray(targeted[student.grade])) {
         targeted[student.grade].forEach((tAnnounce) => {
           const durationHours = tAnnounce.durationHours || 24;
           const expiresAt = tAnnounce.timestamp + (durationHours * 60 * 60 * 1000);
@@ -3271,7 +3272,7 @@
       alert("✅ تم نشر التنبيه العام لجميع الطلاب!");
     });
 
-    // إرسال إشعار فوري لصف محدد مع تحديد مدة الصلاحية الفعّالة
+    // إرسال إشعار فوري لصف محدد مع تحديد مدة الصلاحية وحفظه بالسحاب في Firebase
     document.getElementById("btn-send-push-announcement").addEventListener("click", () => {
       const targetGrade = document.getElementById("teacher-push-grade").value;
       const text = document.getElementById("teacher-push-text").value.trim();
@@ -3294,7 +3295,7 @@
 
       saveTargetedAnnouncements(targeted);
       document.getElementById("teacher-push-text").value = "";
-      alert(`🚀 تم إرسال الإشعار لطلاب (${targetGrade}) بنجاح ويبقى ظاهراً للمدة المحددة!`);
+      alert(`🚀 تم إرسال الإشعار فوراً لجرس طلاب (${targetGrade}) بنجاح وبقاؤه مفعل للمدة المحددة!`);
     });
 
     // حفظ وتحديث جدول المواعيد
