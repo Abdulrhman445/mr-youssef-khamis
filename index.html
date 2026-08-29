@@ -149,7 +149,6 @@
       display: grid; grid-template-columns: 260px 1fr; gap: 15px; align-items: start; width: 100%;
     }
 
-    /* ضبط لوحة الطالب كشاشة عريضة بدون سايدبار */
     #student-dashboard {
       grid-template-columns: 1fr;
     }
@@ -1557,23 +1556,29 @@
       }
     });
 
+    // دالة استخراج ID اليوتيوب والتحويل الدقيق ليعمل الفيديو دائماً بدون أخطاء
+    function extractYouTubeID(url) {
+      if (!url) return "";
+      const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+      return match ? match[1] : "";
+    }
+
     function parseVideoUrl(url) {
       if (!url) return "";
-      if (url.includes("embed/")) return url;
-      if (url.includes("watch?v=")) return url.replace("watch?v=", "embed/").split("&")[0];
-      if (url.includes("youtu.be/")) return url.replace("youtu.be/", "www.youtube.com/embed/");
-      if (url.includes("shorts/")) return url.replace("shorts/", "embed/");
+      const videoId = extractYouTubeID(url);
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
       return url;
     }
 
     function getYoutubeThumbnail(url) {
       if (!url) return "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
-      let videoId = "";
-      if (url.includes("embed/")) videoId = url.split("embed/")[1].split("?")[0];
-      else if (url.includes("watch?v=")) videoId = url.split("watch?v=")[1].split("&")[0];
-      else if (url.includes("youtu.be/")) videoId = url.split("youtu.be/")[1].split("?")[0];
-      else if (url.includes("shorts/")) videoId = url.split("shorts/")[1].split("?")[0];
-      return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
+      const videoId = extractYouTubeID(url);
+      if (videoId) {
+        return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      }
+      return "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
     }
 
     const authSection = document.getElementById("auth-section");
@@ -2029,7 +2034,7 @@
           students[idx].avatar = newAvatar;
           currentActiveStudent.avatar = newAvatar;
           saveStudents(students);
-          alert("✅ تم تحديث صورة البروفايل بنجاح!");
+          alert("✅ تم قص وتحديث صورة البروفايل الشخصية بدقة!");
         }
       };
       reader.readAsDataURL(file);
@@ -2831,6 +2836,9 @@
       students[sIdx].xp = (students[sIdx].xp || 0) + earnedXP;
       currentActiveStudent.xp = students[sIdx].xp;
       saveStudents(students);
+      if (document.getElementById("drawer-user-xp")) {
+        document.getElementById("drawer-user-xp").innerText = `⚡ ${currentActiveStudent.xp} XP`;
+      }
 
       const results = getExamResults();
       results.unshift({
