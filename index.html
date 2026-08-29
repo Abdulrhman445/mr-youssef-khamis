@@ -92,7 +92,6 @@
       border: 2px solid #1e1b4b;
     }
     
-    /* تصميم صندوق الإشعارات المنسدل المتطور */
     .notifications-dropdown {
       position: absolute; top: 48px; left: 0; width: 330px; max-width: 90vw; max-height: 440px; overflow-y: auto;
       background: var(--card-bg); color: var(--text-main); border-radius: 14px;
@@ -110,7 +109,6 @@
     .notif-item-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 800; padding-left: 18px; }
     .notif-item-body { font-size: 0.84rem; line-height: 1.4; color: var(--text-main); }
     
-    /* تصميم إشعار الحصة المجانية الحماسي */
     .notif-free-special {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.2)) !important;
       border: 1.5px solid #10b981 !important;
@@ -517,7 +515,7 @@
 
   <div id="drawer-overlay" class="drawer-overlay"></div>
 
-  <!-- القائمة المنسدلة (☰) التي تحتوي على كافة أقسام الطالب والملف الشخصي وتعديل الصورة بحرية تامة -->
+  <!-- القائمة المنسدلة (☰) المرتبة حسب المعايير التعليمية القياسية -->
   <div id="universal-nav-drawer" class="nav-drawer">
     <div class="nav-drawer-header">
       <div id="drawer-student-profile-header" class="hidden" style="display:flex; align-items:center; gap:10px;">
@@ -534,15 +532,19 @@
       <h3 id="drawer-generic-title" style="font-size:1.05rem;">قائمة المنصة 🌟</h3>
       <button id="btn-close-universal-drawer" class="nav-drawer-close" type="button">✕</button>
     </div>
+    
     <div class="nav-drawer-menu" id="universal-drawer-menu-container">
+      <button id="drawer-btn-home" class="side-nav-btn" type="button">🏠 الصفحة الرئيسية</button>
+      
+      <!-- ترتيب أقسام الطالب الصحيح والمتسلسل -->
       <div id="student-drawer-links" class="hidden" style="display:flex; flex-direction:column; gap:6px;">
         <button class="side-nav-btn active" data-tab="tab-courses" type="button">📚 المحاضرات والأرشيف</button>
-        <button class="side-nav-btn" data-tab="tab-profile" type="button">🪪 بياناتي والـ QR</button>
-        <button class="side-nav-btn" data-tab="tab-exams" type="button">📝 الامتحانات</button>
         <button class="side-nav-btn" data-tab="tab-homework" type="button">📋 الواجبات</button>
+        <button class="side-nav-btn" data-tab="tab-exams" type="button">📝 الامتحانات</button>
         <button class="side-nav-btn" data-tab="tab-attendance" type="button">📅 الحضور</button>
+        <button class="side-nav-btn" data-tab="tab-profile" type="button">🪪 بياناتي والـ QR</button>
       </div>
-      <button id="drawer-btn-home" class="side-nav-btn" type="button">🏠 الصفحة الرئيسية</button>
+
       <button id="drawer-btn-leaderboard" class="side-nav-btn" type="button">🏆 لوحة شرف المتفوقين</button>
       <button id="drawer-btn-theme" class="side-nav-btn" type="button">🌙 تبديل الوضع (ليلي / نهاري)</button>
       <button id="drawer-btn-auth" class="side-nav-btn" type="button">🔑 تسجيل الدخول</button>
@@ -1568,7 +1570,6 @@
       }
     });
 
-    // دالة استخراج ID اليوتيوب والتحويل الدقيق ليعمل الفيديو دائماً بدون أخطاء
     function extractYouTubeID(url) {
       if (!url) return "";
       const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
@@ -1966,10 +1967,10 @@
         document.querySelectorAll(".std-content-tab").forEach(sec => sec.classList.add("hidden"));
 
         if (targetTab === "tab-courses") document.getElementById("section-courses").classList.remove("hidden");
-        if (targetTab === "tab-profile") document.getElementById("section-profile").classList.remove("hidden");
-        if (targetTab === "tab-exams") document.getElementById("section-exams").classList.remove("hidden");
         if (targetTab === "tab-homework") document.getElementById("section-homework").classList.remove("hidden");
+        if (targetTab === "tab-exams") document.getElementById("section-exams").classList.remove("hidden");
         if (targetTab === "tab-attendance") document.getElementById("section-attendance").classList.remove("hidden");
+        if (targetTab === "tab-profile") document.getElementById("section-profile").classList.remove("hidden");
       });
     });
 
@@ -2280,7 +2281,6 @@
           <div class="notif-item-body">${n.text.replace(/\n/g, '<br>')}</div>
         `;
 
-        // زر الحذف الفردي
         const delBtn = card.querySelector(".btn-notif-delete");
         delBtn.onclick = (e) => {
           e.stopPropagation();
@@ -2290,7 +2290,6 @@
           renderStudentNotifications(student);
         };
 
-        // النقر على الإشعار للتحويل التلقائي المباشر
         card.onclick = () => {
           notificationsDropdown.classList.remove("show");
           if (n.actionCallback) n.actionCallback();
