@@ -1655,7 +1655,11 @@
         if (data.promos) cloudCache.promos = data.promos;
         if (data.exclusiveCodes) cloudCache.exclusiveCodes = data.exclusiveCodes;
         if (data.schedules) cloudCache.schedules = data.schedules;
-        if (data.targetedAnnouncements) cloudCache.targetedAnnouncements = data.targetedAnnouncements;
+        if (data.targetedAnnouncements) {
+          cloudCache.targetedAnnouncements = data.targetedAnnouncements;
+        } else {
+          cloudCache.targetedAnnouncements = {};
+        }
         if (data.qa) cloudCache.qa = data.qa;
         if (data.hw) cloudCache.hw = data.hw;
         if (data.announcement) cloudCache.announcement = data.announcement;
