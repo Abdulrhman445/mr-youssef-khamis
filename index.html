@@ -90,17 +90,30 @@
       font-size: 0.7rem; font-weight: 900; padding: 2px 6px; border-radius: 50%;
       border: 2px solid #1e1b4b;
     }
+    
+    /* تصميم صندوق الإشعارات المنسدل الاحترافي */
     .notifications-dropdown {
-      position: absolute; top: 48px; left: 0; width: 300px; max-height: 350px; overflow-y: auto;
-      background: var(--card-bg); color: var(--text-main); border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid var(--border-color);
-      z-index: 30000; padding: 12px; display: none; text-align: right;
+      position: absolute; top: 50px; left: 0; width: 330px; max-height: 420px; overflow-y: auto;
+      background: var(--card-bg); color: var(--text-main); border-radius: 14px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.35); border: 1.5px solid var(--border-color);
+      z-index: 30000; padding: 14px; display: none; text-align: right;
     }
-    .notifications-dropdown.show { display: block; }
-    .notif-item {
-      padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-size: 0.82rem; margin-bottom: 6px;
+    .notifications-dropdown.show { display: block; animation: slideUp 0.25s ease-out; }
+    
+    .notif-item-card {
+      background: var(--box-bg); border: 1px solid var(--border-color); border-radius: 10px;
+      padding: 10px 12px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px;
+      transition: all 0.2s ease;
     }
-    .notif-item:last-child { border-bottom: none; }
+    .notif-item-card:hover { border-color: var(--primary-glow); transform: translateX(-2px); }
+    .notif-item-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 800; }
+    .notif-item-body { font-size: 0.84rem; line-height: 1.4; color: var(--text-main); }
+    .notif-item-action {
+      align-self: flex-start; margin-top: 4px; background: rgba(37, 99, 235, 0.1);
+      color: var(--primary-glow); border: none; padding: 3px 8px; border-radius: 6px;
+      font-size: 0.75rem; font-weight: 800; cursor: pointer; font-family: inherit;
+    }
+    .notif-item-action:hover { background: var(--primary-glow); color: #fff; }
 
     .nav-btn-menu {
       background: rgba(255, 255, 255, 0.2); color: #fff; border: none; padding: 6px 14px;
@@ -480,7 +493,10 @@
           <span id="notification-badge-count" class="notification-badge-count hidden">0</span>
         </button>
         <div id="notifications-dropdown" class="notifications-dropdown">
-          <h4 style="font-size:0.9rem; border-bottom:1px solid var(--border-color); padding-bottom:6px; margin-bottom:8px; color:var(--primary-glow);">🔔 الإشعارات والردود:</h4>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:6px; margin-bottom:8px;">
+            <h4 style="font-size:0.92rem; color:var(--primary-glow); margin:0;">🔔 مركز الإشعارات والرسائل:</h4>
+            <span id="notifs-counter-badge" style="font-size:0.75rem; color:var(--text-muted);">0 جديد</span>
+          </div>
           <div id="notifications-list-container">لا توجد إشعارات جديدة.</div>
         </div>
       </div>
@@ -1864,7 +1880,8 @@
         views: 0, xp: 50, deviceIds: [currentDevice], showInLeaderboard: true,
         attendance: ["مسجل بالسنتر ✅"],
         avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`,
-        unlockedLessons: []
+        unlockedLessons: [],
+        firstLogin: true
       });
       saveStudents(students);
 
@@ -2017,6 +2034,15 @@
       });
     }
 
+    // إغلاق قائمة الإشعارات تلقائياً عند النقر خارجها
+    window.addEventListener("click", (e) => {
+      if (!e.target.closest("#student-notification-bell-wrapper")) {
+        if (notificationsDropdown && notificationsDropdown.classList.contains("show")) {
+          notificationsDropdown.classList.remove("show");
+        }
+      }
+    });
+
     // دالة تغيير وتحجيم وقص صورة البروفايل للطالب بحرية تامة من القائمة أو قسم البروفايل
     function handleStudentAvatarUpload(e) {
       const file = e.target.files[0];
@@ -2100,44 +2126,129 @@
       renderStudentCoursesList(student);
     }
 
+    // نظام الإشعارات المتطور والتفاعلي التام
     function renderStudentNotifications(student) {
       const listContainer = document.getElementById("notifications-list-container");
       const badgeCount = document.getElementById("notification-badge-count");
+      const counterBadge = document.getElementById("notifs-counter-badge");
       listContainer.innerHTML = "";
 
       let notifs = [];
-      const myQA = getQuestions().filter(q => q.studentName === student.name && q.reply && q.reply.trim() !== "");
-      myQA.forEach(qa => {
-        notifs.push({
-          text: `💬 رد جديد من مستر يوسف على استفسارك: "${qa.reply}"`,
-          time: "اليوم"
-        });
-      });
 
-      const curriculum = getCurriculum();
-      const lessons = curriculum[student.grade] || [];
-      if (lessons.length > 0) {
-        const latestL = lessons[lessons.length - 1];
+      // 1. رسالة ترحيب الحساب الجديد
+      if (student.firstLogin !== false) {
         notifs.push({
-          text: `📚 تم إضافة حصة جديدة لصفك: "${latestL.videoTitle}"`,
-          time: "حديث"
+          title: "🎉 مرحباً بك في المنصة!",
+          text: `أهلاً بك يا ${student.name} في أكاديمية مستر يوسف خميس للغة الإنجليزية! تم تجهيز حسابك ومتابعة صفك الدراسي (${student.grade}).`,
+          time: "الآن",
+          type: "welcome",
+          actionText: "🪪 عرض بياناتك والـ QR",
+          actionCallback: () => {
+            document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-profile']").click();
+          }
         });
       }
 
+      // 2. إشعارات ردود المستر على استفسارات الطالب مع نص الرد
+      const myQA = getQuestions().filter(q => q.studentName === student.name && q.reply && q.reply.trim() !== "");
+      myQA.forEach(qa => {
+        notifs.push({
+          title: "💬 رد جديد من مستر يوسف",
+          text: `سؤالك: "${qa.question}"\n👈 رد المستر: "${qa.reply}"`,
+          time: "حديث",
+          type: "reply",
+          actionText: "💬 الذهاب للمحادثة",
+          actionCallback: () => {
+            document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
+          }
+        });
+      });
+
+      // 3. إشعارات المحاضرات والواجبات والامتحانات والـ PDF
+      const curriculum = getCurriculum();
+      const lessons = curriculum[student.grade] || [];
+      if (lessons.length > 0) {
+        // فحص أحدث حصة مضافة
+        const latestL = lessons[lessons.length - 1];
+        notifs.push({
+          title: "📚 محاضرة جديدة متاحة",
+          text: `قام مستر يوسف بنشر محاضرة جديدة: "${latestL.videoTitle || 'حصة الأسبوع'}" لـ (${student.grade}). تابع الشرح فوراً!`,
+          time: "جديد",
+          type: "course",
+          actionText: "🎬 فتح المحاضرة",
+          actionCallback: () => {
+            document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
+          }
+        });
+
+        // إذا كان هناك ملف PDF أو واجب مرفق
+        if (latestL.pdfData) {
+          notifs.push({
+            title: "📄 مذكرة وواجب (PDF) جديد",
+            text: `تم إرفاق ملف مذكرة الشرح والواجب لحصة "${latestL.videoTitle}". يمكنك تنزيلها وحل الواجب.`,
+            time: "متاح",
+            type: "pdf",
+            actionText: "📋 الذهاب لقسم الواجبات",
+            actionCallback: () => {
+              document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-homework']").click();
+            }
+          });
+        }
+
+        // إذا كان هناك امتحان دوري مطلوب أداؤه
+        if (latestL.questions && latestL.questions.some(q => q.category === 'exam' || !q.category)) {
+          const myResults = getExamResults().filter(r => r.name === student.name);
+          const alreadyDone = myResults.some(r => r.lessonTitle === latestL.videoTitle);
+          if (!alreadyDone) {
+            notifs.push({
+              title: "📝 امتحان دوري ينتظرك!",
+              text: `يوجد امتحان تقييمي خاص بـ "${latestL.videoTitle}". احرص على حل الاختبار والحصول على أعلى نسبة تفوق.`,
+              time: "هام",
+              type: "exam",
+              actionText: "✍️ دخول الامتحان",
+              actionCallback: () => {
+                document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-exams']").click();
+              }
+            });
+          }
+        }
+      }
+
       if (notifs.length === 0) {
-        listContainer.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لا توجد إشعارات جديدة حالياً.</p>";
+        listContainer.innerHTML = "<p style='color:var(--text-muted); text-align:center; font-size:0.85rem; padding:10px;'>لا توجد إشعارات أو رسائل جديدة حالياً.</p>";
         badgeCount.classList.add("hidden");
+        if (counterBadge) counterBadge.innerText = "0 جديد";
         return;
       }
 
       badgeCount.innerText = notifs.length;
       badgeCount.classList.remove("hidden");
+      if (counterBadge) counterBadge.innerText = `${notifs.length} جديد`;
 
       notifs.forEach(n => {
-        const div = document.createElement("div");
-        div.className = "notif-item";
-        div.innerHTML = `<p>${n.text}</p><small style="color:var(--text-muted);">${n.time}</small>`;
-        listContainer.appendChild(div);
+        const card = document.createElement("div");
+        card.className = "notif-item-card";
+        card.innerHTML = `
+          <div class="notif-item-header">
+            <span style="color:var(--primary-glow);">${n.title}</span>
+            <span style="color:var(--text-muted); font-size:0.72rem;">${n.time}</span>
+          </div>
+          <div class="notif-item-body">${n.text.replace(/\n/g, '<br>')}</div>
+        `;
+        
+        if (n.actionText && n.actionCallback) {
+          const actBtn = document.createElement("button");
+          actBtn.className = "notif-item-action";
+          actBtn.type = "button";
+          actBtn.innerText = n.actionText;
+          actBtn.onclick = () => {
+            notificationsDropdown.classList.remove("show");
+            n.actionCallback();
+          };
+          card.appendChild(actBtn);
+        }
+
+        listContainer.appendChild(card);
       });
     }
 
