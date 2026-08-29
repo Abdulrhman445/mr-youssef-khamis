@@ -466,7 +466,6 @@
       <span>🌟 Mr. Youssef Academy</span>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
-      <!-- جرس الإشعارات الذكي للطالب -->
       <div id="student-notification-bell-wrapper" class="notification-bell-container hidden">
         <button id="btn-toggle-notifications" class="notification-bell-btn" type="button" title="التنبيهات والإشعارات">
           🔔
@@ -590,7 +589,7 @@
       <div id="leaderboard-cards-container" class="lessons-grid"></div>
     </div>
 
-    <!-- لوحة تحكم الطالب -->
+    <!-- لوحة تحكم الطالب بدون أي تغيير فيها -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
       <aside class="adaptive-sidebar" id="std-sidebar-panel">
         <div class="sidebar-user-header">
@@ -709,7 +708,6 @@
               <button id="btn-open-quiz-modal" class="btn btn-danger btn-sm hidden" type="button">📝 اختبار الحصة (مرة واحدة)</button>
             </div>
 
-            <!-- عرض الواجبات والامتحانات المرتبطة بهذه الحصة تحديداً وتحت الفيديو -->
             <div id="lesson-attached-tasks-box" class="dash-box hidden" style="margin-top:20px; border-color:var(--secondary);">
               <h4 style="color:var(--secondary); margin-bottom:8px;">📌 الواجبات والامتحانات المرفقة لهذه الحصة:</h4>
               <div id="lesson-tasks-list-container" style="display:flex; flex-direction:column; gap:8px;"></div>
@@ -732,7 +730,7 @@
           </div>
         </section>
 
-        <!-- 2. الملف الشخصي (البيانات الكاملة المسجل بها الطالب وظاهرة بوضوح) -->
+        <!-- 2. الملف الشخصي -->
         <section id="section-profile" class="std-content-tab hidden anime-fade-in">
           <h2 class="box-title">🪪 الملف الشخصي وكود الحضور (QR Code)</h2>
           <div class="student-profile-summary-box" style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px;">
@@ -820,7 +818,7 @@
       </main>
     </div>
 
-    <!-- لوحة تحكم المعلم -->
+    <!-- لوحة تحكم المعلم (مع تعديلات البحث السريع وبروفايل الطالب وتعديله) -->
     <div id="teacher-dashboard" class="glass-card hidden">
       <header class="dash-header-flex">
         <div style="display:flex; align-items:center; gap:10px;">
@@ -886,7 +884,7 @@
             </div>
           </div>
 
-          <!-- 3. المشتركون والإيصالات (مع شريط بحث سريع بالاسم أو الكود) -->
+          <!-- 3. المشتركون والإيصالات مع شريط البحث الفوري -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -903,7 +901,7 @@
                       <th>المشاهدات</th>
                       <th>إعادة تعيين (فك الحظر)</th>
                       <th>الحالة</th>
-                      <th>الملف الشخصي والبروفايل</th>
+                      <th>الملف والبروفايل</th>
                       <th>تفعيل الحصة</th>
                       <th>إجراء (حذف)</th>
                     </tr>
@@ -1235,10 +1233,10 @@
       </div>
     </div>
 
-    <!-- نافذة تعديل بيانات الطالب للمستر من بروفايل الطالب -->
+    <!-- نافذة تعديل بيانات الطالب للمستر (تفتح عند الضغط على بروفايل أو ملف الطالب) -->
     <div id="teacher-edit-student-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
-        <h3 class="box-title">⚙️ تعديل ملف وبيانات الطالب</h3>
+        <h3 class="box-title">⚙️ تعديل ملف وبيانات الطالب والكود</h3>
         <input type="hidden" id="edit-std-orig-code">
         <div class="input-field">
           <label>اسم الطالب الثلاثي:</label>
@@ -1275,18 +1273,18 @@
       </div>
     </div>
 
-    <!-- نافذة الواجب -->
+    <!-- نافذة الواجب للطالب -->
     <div id="homework-modal" class="quiz-popup-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
         <h3 class="box-title">📤 تسليم الواجب (صور متعددة / PDF)</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">قم برفع صور صفحات الواجب (يمكنك اختيار أكثر من صورة معاً) أو ملف PDF:</p>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">قم برفع صور صفحات الواجب أو ملف PDF:</p>
         
         <div class="input-field">
           <label>ملاحظاتك للمستر:</label>
           <input type="text" id="std-hw-notes-input" placeholder="مثال: تم حل الواجب كاملاً">
         </div>
         <div class="input-field">
-          <label>صور صفحات الواجب (اختر عدة صور من كاميرا الموبايل):</label>
+          <label>صور صفحات الواجب (اختر عدة صور من الكاميرا):</label>
           <input type="file" id="std-hw-files" accept="image/*,application/pdf" multiple>
         </div>
 
@@ -1296,7 +1294,7 @@
       </div>
     </div>
 
-    <!-- نافذة عرض صور الواجب للمعلم وتصحيحها -->
+    <!-- نافذة عرض صور الواجب لمعلم -->
     <div id="view-hw-images-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:700px; text-align:center;">
         <h3 class="box-title">📄 معاينة صور الواجب المقدمة</h3>
@@ -1310,10 +1308,10 @@
       </div>
     </div>
 
-    <!-- نافذة الملف الشامل -->
+    <!-- نافذة الملف الشامل للطالب (عند المستر) -->
     <div id="student-full-details-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:600px;">
-        <h3 class="box-title">🪪 الملف الشامل وبيانات الطالب</h3>
+        <h3 class="box-title">🪪 الملف الشخصي والبروفايل للطالب</h3>
         <div class="student-profile-summary-box" style="margin:10px 0;">
           <div style="text-align:center; margin-bottom:12px;">
             <img id="modal-std-profile-img" src="" alt="صورة الطالب" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid var(--primary-glow);">
@@ -1326,12 +1324,12 @@
             <div><span>👨‍👩‍👦 هاتف ولي الأمر:</span> <strong id="det-parent-phone"></strong></div>
             <div><span>⚡ نقاط XP:</span> <strong id="det-xp" style="color:var(--accent-gold);"></strong></div>
             <div><span>💳 حالة الاشتراك:</span> <strong id="det-paid"></strong></div>
-            <div><span>🔒 بصمة الجهاز:</span> <small><code id="det-device"></code></small></div>
+            <div><span>🔒 بصمة الأجهزة:</span> <small><code id="det-device"></code></small></div>
             <div><span>👁️ عدد المشاهدات:</span> <strong id="det-views"></strong></div>
           </div>
         </div>
         <div style="display:flex; gap:8px;">
-          <button id="btn-open-edit-student-modal" class="btn btn-accent btn-sm" type="button" style="flex:1;">⚙️ تعديل بيانات الطالب</button>
+          <button id="btn-open-edit-student-modal" class="btn btn-accent btn-sm" type="button" style="flex:1;">⚙️ تعديل بيانات وكود الطالب</button>
           <button id="btn-close-details-modal" class="btn btn-danger btn-sm" type="button" style="flex:1;">إغلاق</button>
         </div>
       </div>
@@ -1987,7 +1985,6 @@
       });
     }
 
-    // رفع صورة البروفايل للطالب مع المعاينة المباشرة والقص الدائري
     document.getElementById("std-avatar-upload").addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -3417,7 +3414,7 @@
       });
     }
 
-    // جدول المشتركون مع شريط البحث الفوري وعرض البروفايل الكامل للطالب مع إمكانية تعديله
+    // جدول المشتركون في لوحة المعلم (مع شريط البحث الفوري وعرض بروفايل الطالب وتعديل كوده)
     function renderTeacherPayments() {
       const students = getStudents();
       const searchTerm = document.getElementById("teacher-student-search-input") ? document.getElementById("teacher-student-search-input").value.trim().toLowerCase() : "";
@@ -3477,7 +3474,6 @@
       document.getElementById("det-device").innerText = s.deviceIds ? s.deviceIds.join(', ') : "غير مقفل";
       document.getElementById("det-views").innerText = `${s.views || 0} / 5`;
 
-      // ربط زر تعديل بيانات الطالب للمستر
       document.getElementById("btn-open-edit-student-modal").onclick = () => {
         document.getElementById("student-full-details-modal").classList.add("hidden");
         openEditStudentModal(idx);
@@ -3514,7 +3510,7 @@
         students[idx].phone = newPhone;
         students[idx].parentPhone = newParentPhone;
         saveStudents(students);
-        alert("✅ تم تعديل بيانات وпроفيل الطالب بنجاح!");
+        alert("✅ تم تعديل بيانات وكود الطالب بنجاح!");
         document.getElementById("teacher-edit-student-modal").classList.add("hidden");
         renderTeacherPayments();
       }
