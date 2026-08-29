@@ -72,6 +72,7 @@
       width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center;
       padding: 12px 18px; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px);
       border-radius: 14px; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;
+      position: relative; z-index: 1000;
     }
     .nav-brand { font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 10px; }
 
@@ -91,12 +92,12 @@
       border: 2px solid #1e1b4b;
     }
     
-    /* تصميم صندوق الإشعارات المنسدل الاحترافي */
+    /* تصميم صندوق الإشعارات المنسدل المتطور */
     .notifications-dropdown {
-      position: absolute; top: 50px; left: 0; width: 330px; max-height: 420px; overflow-y: auto;
+      position: absolute; top: 48px; left: 0; width: 320px; max-width: 90vw; max-height: 420px; overflow-y: auto;
       background: var(--card-bg); color: var(--text-main); border-radius: 14px;
       box-shadow: 0 15px 35px rgba(0,0,0,0.35); border: 1.5px solid var(--border-color);
-      z-index: 30000; padding: 14px; display: none; text-align: right;
+      z-index: 99999; padding: 12px; display: none; text-align: right;
     }
     .notifications-dropdown.show { display: block; animation: slideUp 0.25s ease-out; }
     
@@ -110,8 +111,8 @@
     .notif-item-body { font-size: 0.84rem; line-height: 1.4; color: var(--text-main); }
     .notif-item-action {
       align-self: flex-start; margin-top: 4px; background: rgba(37, 99, 235, 0.1);
-      color: var(--primary-glow); border: none; padding: 3px 8px; border-radius: 6px;
-      font-size: 0.75rem; font-weight: 800; cursor: pointer; font-family: inherit;
+      color: var(--primary-glow); border: none; padding: 4px 10px; border-radius: 6px;
+      font-size: 0.76rem; font-weight: 800; cursor: pointer; font-family: inherit;
     }
     .notif-item-action:hover { background: var(--primary-glow); color: #fff; }
 
@@ -2025,21 +2026,30 @@
       });
     }
 
+    // زر الجرس التفاعلي وعرض الإشعارات والرسائل بدقة
     const btnToggleNotifications = document.getElementById("btn-toggle-notifications");
     const notificationsDropdown = document.getElementById("notifications-dropdown");
     if (btnToggleNotifications) {
-      btnToggleNotifications.addEventListener("click", () => {
+      btnToggleNotifications.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (currentActiveStudent) {
+          renderStudentNotifications(currentActiveStudent);
+        }
         notificationsDropdown.classList.toggle("show");
-        document.getElementById("notification-badge-count").classList.add("hidden");
+        const badge = document.getElementById("notification-badge-count");
+        if (badge) badge.classList.add("hidden");
       });
     }
 
-    // إغلاق قائمة الإشعارات تلقائياً عند النقر خارجها
-    window.addEventListener("click", (e) => {
-      if (!e.target.closest("#student-notification-bell-wrapper")) {
-        if (notificationsDropdown && notificationsDropdown.classList.contains("show")) {
-          notificationsDropdown.classList.remove("show");
-        }
+    if (notificationsDropdown) {
+      notificationsDropdown.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    }
+
+    window.addEventListener("click", () => {
+      if (notificationsDropdown && notificationsDropdown.classList.contains("show")) {
+        notificationsDropdown.classList.remove("show");
       }
     });
 
@@ -2135,21 +2145,30 @@
 
       let notifs = [];
 
-      // 1. رسالة ترحيب الحساب الجديد
-      if (student.firstLogin !== false) {
+      // 1. رسالة ترحيب الحساب
+      notifs.push({
+        title: "🎉 مرحباً بك في المنصة!",
+        text: `أهلاً بك يا ${student.name} في منصة مستر يوسف خميس للغة الإنجليزية! تم تجهيز حسابك ومتابعة صفك الدراسي (${student.grade}).`,
+        time: "تنبيه دائم",
+        type: "welcome",
+        actionText: "🪪 عرض بياناتك والـ QR",
+        actionCallback: () => {
+          document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-profile']").click();
+        }
+      });
+
+      // 2. التنبيه العام المنشور من المستر
+      const announcement = getAnnouncement();
+      if (announcement) {
         notifs.push({
-          title: "🎉 مرحباً بك في المنصة!",
-          text: `أهلاً بك يا ${student.name} في أكاديمية مستر يوسف خميس للغة الإنجليزية! تم تجهيز حسابك ومتابعة صفك الدراسي (${student.grade}).`,
-          time: "الآن",
-          type: "welcome",
-          actionText: "🪪 عرض بياناتك والـ QR",
-          actionCallback: () => {
-            document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-profile']").click();
-          }
+          title: "📢 إعلان وتنبيه عام",
+          text: announcement,
+          time: "عاجل",
+          type: "announcement"
         });
       }
 
-      // 2. إشعارات ردود المستر على استفسارات الطالب مع نص الرد
+      // 3. إشعارات ردود المستر على استفسارات الطالب مع نص الرد
       const myQA = getQuestions().filter(q => q.studentName === student.name && q.reply && q.reply.trim() !== "");
       myQA.forEach(qa => {
         notifs.push({
@@ -2157,31 +2176,29 @@
           text: `سؤالك: "${qa.question}"\n👈 رد المستر: "${qa.reply}"`,
           time: "حديث",
           type: "reply",
-          actionText: "💬 الذهاب للمحادثة",
+          actionText: "💬 الذهاب لغرفة السؤال",
           actionCallback: () => {
             document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
           }
         });
       });
 
-      // 3. إشعارات المحاضرات والواجبات والامتحانات والـ PDF
+      // 4. إشعارات المحاضرات والواجبات والامتحانات والـ PDF
       const curriculum = getCurriculum();
       const lessons = curriculum[student.grade] || [];
       if (lessons.length > 0) {
-        // فحص أحدث حصة مضافة
         const latestL = lessons[lessons.length - 1];
         notifs.push({
-          title: "📚 محاضرة جديدة متاحة",
-          text: `قام مستر يوسف بنشر محاضرة جديدة: "${latestL.videoTitle || 'حصة الأسبوع'}" لـ (${student.grade}). تابع الشرح فوراً!`,
+          title: "📚 حصة جديدة لصفك",
+          text: `قام مستر يوسف بنشر محاضرة: "${latestL.videoTitle || 'حصة الأسبوع'}" لـ (${student.grade}). تابع الشرح فوراً!`,
           time: "جديد",
           type: "course",
-          actionText: "🎬 فتح المحاضرة",
+          actionText: "🎬 فتح المحاضرات",
           actionCallback: () => {
             document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
           }
         });
 
-        // إذا كان هناك ملف PDF أو واجب مرفق
         if (latestL.pdfData) {
           notifs.push({
             title: "📄 مذكرة وواجب (PDF) جديد",
@@ -2195,14 +2212,13 @@
           });
         }
 
-        // إذا كان هناك امتحان دوري مطلوب أداؤه
         if (latestL.questions && latestL.questions.some(q => q.category === 'exam' || !q.category)) {
           const myResults = getExamResults().filter(r => r.name === student.name);
           const alreadyDone = myResults.some(r => r.lessonTitle === latestL.videoTitle);
           if (!alreadyDone) {
             notifs.push({
-              title: "📝 امتحان دوري ينتظرك!",
-              text: `يوجد امتحان تقييمي خاص بـ "${latestL.videoTitle}". احرص على حل الاختبار والحصول على أعلى نسبة تفوق.`,
+              title: "📝 اختبار تقييمي متاح",
+              text: `يوجد امتحان تقييمي خاص بـ "${latestL.videoTitle}". احرص على حل الاختبار للحصول على درجات التفوق.`,
               time: "هام",
               type: "exam",
               actionText: "✍️ دخول الامتحان",
@@ -2217,20 +2233,20 @@
       if (notifs.length === 0) {
         listContainer.innerHTML = "<p style='color:var(--text-muted); text-align:center; font-size:0.85rem; padding:10px;'>لا توجد إشعارات أو رسائل جديدة حالياً.</p>";
         badgeCount.classList.add("hidden");
-        if (counterBadge) counterBadge.innerText = "0 جديد";
+        if (counterBadge) counterBadge.innerText = "0 رسائل";
         return;
       }
 
       badgeCount.innerText = notifs.length;
       badgeCount.classList.remove("hidden");
-      if (counterBadge) counterBadge.innerText = `${notifs.length} جديد`;
+      if (counterBadge) counterBadge.innerText = `${notifs.length} رسائل`;
 
       notifs.forEach(n => {
         const card = document.createElement("div");
         card.className = "notif-item-card";
         card.innerHTML = `
           <div class="notif-item-header">
-            <span style="color:var(--primary-glow);">${n.title}</span>
+            <span style="color:var(--primary-glow); font-size:0.85rem;">${n.title}</span>
             <span style="color:var(--text-muted); font-size:0.72rem;">${n.time}</span>
           </div>
           <div class="notif-item-body">${n.text.replace(/\n/g, '<br>')}</div>
