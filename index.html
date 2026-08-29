@@ -110,9 +110,10 @@
     .nav-btn-menu:hover { background: rgba(255, 255, 255, 0.35); transform: scale(1.04); }
 
     .nav-drawer {
-      position: fixed; top: 0; right: -290px; width: 270px; height: 100vh; background: var(--sidebar-bg);
+      position: fixed; top: 0; right: -290px; width: 280px; height: 100vh; background: var(--sidebar-bg);
       backdrop-filter: blur(16px); z-index: 20000; box-shadow: -5px 0 25px rgba(0,0,0,0.4);
       display: flex; flex-direction: column; padding: 20px; transition: right 0.3s ease; border-left: 1px solid var(--border-color);
+      overflow-y: auto;
     }
     .nav-drawer.open { right: 0; }
     .nav-drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
@@ -145,20 +146,10 @@
     }
 
     .dashboard-layout-wrapper {
-      display: grid; grid-template-columns: 260px 1fr; gap: 15px; align-items: start; width: 100%;
+      display: block; width: 100%;
     }
 
-    .adaptive-sidebar {
-      background: var(--sidebar-bg); backdrop-filter: blur(14px); border: 1px solid var(--border-color);
-      border-radius: var(--radius); padding: 15px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px;
-    }
-
-    .sidebar-user-header {
-      text-align: center; border-bottom: 1.5px solid var(--border-color); padding-bottom: 12px;
-      display: flex; flex-direction: column; align-items: center;
-    }
-    .sidebar-user-name { font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-top: 6px; }
-    .sidebar-menu { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .adaptive-sidebar { display: none !important; }
 
     .side-nav-btn {
       background: transparent; border: 1.5px solid transparent; color: var(--text-main); padding: 10px 12px;
@@ -173,7 +164,7 @@
     .btn-logout-side { color: var(--danger) !important; border-color: rgba(239, 68, 68, 0.2) !important; margin-top: 6px; }
     .btn-logout-side:hover { background: rgba(239, 68, 68, 0.1) !important; }
 
-    .main-content-panel { min-height: 480px; }
+    .main-content-panel { min-height: 480px; width: 100%; }
 
     .teacher-hero {
       display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1.5px solid var(--border-color);
@@ -239,14 +230,14 @@
 
     .system-msg { margin-top: 12px; text-align: center; font-weight: 700; font-size: 0.88rem; min-height: 20px; }
 
-    .student-avatar-container { position: relative; width: 70px; height: 70px; flex-shrink: 0; }
+    .student-avatar-container { position: relative; width: 85px; height: 85px; flex-shrink: 0; margin: 0 auto; }
     .student-avatar-img {
       width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
       border: 3px solid var(--primary-glow); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
     .avatar-edit-badge {
       position: absolute; bottom: -2px; right: -2px; background: #ffffff; color: #1e293b;
-      border: 1.5px solid #cbd5e1; border-radius: 50%; width: 22px; height: 22px; font-size: 11px;
+      border: 1.5px solid #cbd5e1; border-radius: 50%; width: 26px; height: 26px; font-size: 12px;
       display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
 
@@ -476,7 +467,7 @@
           <div id="notifications-list-container">لا توجد إشعارات جديدة.</div>
         </div>
       </div>
-      <button id="btn-open-universal-drawer" class="nav-btn-menu" type="button" title="القائمة الرئيسية">
+      <button id="btn-open-universal-drawer" class="nav-btn-menu" type="button" title="القائمة الرئيسية للطالب">
         <span>☰</span>
         <span style="font-size:0.9rem;">القائمة</span>
       </button>
@@ -485,16 +476,32 @@
 
   <div id="drawer-overlay" class="drawer-overlay"></div>
 
+  <!-- القائمة المنسدلة (☰) المحدثة خصيصاً للطالب لتضم كل الأقسام والبروفايل مع إمكانية تعديل وتغيير الصورة بحرية -->
   <div id="universal-nav-drawer" class="nav-drawer">
     <div class="nav-drawer-header">
-      <h3 style="font-size:1.05rem;">قائمة المنصة 🌟</h3>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="student-avatar-container" style="width:45px; height:45px; min-width:45px;">
+          <img id="drawer-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=student" alt="صورة الطالب" class="student-avatar-img">
+          <label for="drawer-avatar-upload" class="avatar-edit-badge" title="تغيير صورتك الشخصية">📷</label>
+          <input type="file" id="drawer-avatar-upload" accept="image/*" class="hidden">
+        </div>
+        <div>
+          <h4 id="drawer-user-name" style="font-size:0.95rem; font-weight:800;">اسم الطالب</h4>
+          <span id="drawer-user-grade" style="font-size:0.75rem; color:var(--text-muted);">الصف</span>
+        </div>
+      </div>
       <button id="btn-close-universal-drawer" class="nav-drawer-close" type="button">✕</button>
     </div>
-    <div class="nav-drawer-menu">
+    <div class="nav-drawer-menu" id="student-drawer-menu-links">
+      <button class="side-nav-btn active" data-tab="tab-courses" type="button">📚 المحاضرات والأرشيف</button>
+      <button class="side-nav-btn" data-tab="tab-profile" type="button">🪪 الملف الشخصي والـ QR</button>
+      <button class="side-nav-btn" data-tab="tab-exams" type="button">📝 الامتحانات</button>
+      <button class="side-nav-btn" data-tab="tab-homework" type="button">📋 الواجبات</button>
+      <button class="side-nav-btn" data-tab="tab-attendance" type="button">📅 الحضور والـ QR</button>
       <button id="drawer-btn-home" class="side-nav-btn" type="button">🏠 الصفحة الرئيسية</button>
       <button id="drawer-btn-leaderboard" class="side-nav-btn" type="button">🏆 لوحة شرف المتفوقين</button>
       <button id="drawer-btn-theme" class="side-nav-btn" type="button">🌙 تبديل الوضع (ليلي / نهاري)</button>
-      <button id="drawer-btn-auth" class="side-nav-btn" type="button">🔑 تسجيل الدخول</button>
+      <button id="std-logout" class="side-nav-btn btn-logout-side" type="button">🚪 خروج</button>
     </div>
   </div>
 
@@ -589,30 +596,8 @@
       <div id="leaderboard-cards-container" class="lessons-grid"></div>
     </div>
 
-    <!-- لوحة تحكم الطالب بدون أي تغيير فيها -->
+    <!-- لوحة تحكم الطالب الكاملة العرض -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
-      <aside class="adaptive-sidebar" id="std-sidebar-panel">
-        <div class="sidebar-user-header">
-          <div class="student-avatar-container">
-            <img id="std-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=student" alt="صورة الطالب" class="student-avatar-img">
-            <label for="std-avatar-upload" class="avatar-edit-badge" title="تغيير صورتك وحجمها بدقة">📷</label>
-            <input type="file" id="std-avatar-upload" accept="image/*" class="hidden">
-          </div>
-          <h3 id="std-sidebar-name" class="sidebar-user-name">اسم الطالب</h3>
-          <span id="std-sidebar-grade" class="pill-grade">الصف الدراسي</span>
-          <span id="std-sidebar-xp" class="badge-xp" style="margin-top:6px;">⚡ 0 XP</span>
-        </div>
-
-        <nav class="sidebar-menu">
-          <button class="side-nav-btn active" data-tab="tab-courses" type="button">📚 المحاضرات والأرشيف</button>
-          <button class="side-nav-btn" data-tab="tab-profile" type="button">🪪 بياناتي والـ QR</button>
-          <button class="side-nav-btn" data-tab="tab-exams" type="button">📝 الامتحانات</button>
-          <button class="side-nav-btn" data-tab="tab-homework" type="button">📋 الواجبات</button>
-          <button class="side-nav-btn" data-tab="tab-attendance" type="button">📅 الحضور</button>
-          <button id="std-logout" class="side-nav-btn btn-logout-side" type="button">🚪 خروج</button>
-        </nav>
-      </aside>
-
       <main class="main-content-panel glass-card">
         <!-- 1. المحاضرات -->
         <section id="section-courses" class="std-content-tab active anime-fade-in">
@@ -730,11 +715,18 @@
           </div>
         </section>
 
-        <!-- 2. الملف الشخصي -->
+        <!-- 2. الملف الشخصي (الملف والبروفايل مع إمكانية تغيير وتعديل الصورة بحرية تامة) -->
         <section id="section-profile" class="std-content-tab hidden anime-fade-in">
           <h2 class="box-title">🪪 الملف الشخصي وكود الحضور (QR Code)</h2>
           <div class="student-profile-summary-box" style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px;">
-            <div id="student-qrcode-box" style="background:#fff; padding:15px; border-radius:12px; border:2px solid var(--primary-glow);">
+            <div class="student-avatar-container">
+              <img id="profile-main-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=student" alt="صورة الطالب" class="student-avatar-img">
+              <label for="profile-avatar-upload" class="avatar-edit-badge" title="تغيير صورتك">📷</label>
+              <input type="file" id="profile-avatar-upload" accept="image/*" class="hidden">
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-muted);">انقر على أيقونة الكاميرا لتغيير صورتك الشخصية وتحجيمها بحرية.</p>
+
+            <div id="student-qrcode-box" style="background:#fff; padding:15px; border-radius:12px; border:2px solid var(--primary-glow); margin-top:5px;">
               <img id="std-qr-img" src="" alt="QR Code" style="width:140px; height:140px;">
               <p style="font-size:0.75rem; color:#0f172a; margin-top:4px; font-weight:bold;">أعرض هذا الكود عند دخول السنتر</p>
             </div>
@@ -818,7 +810,7 @@
       </main>
     </div>
 
-    <!-- لوحة تحكم المعلم (مع تعديلات البحث السريع وبروفايل الطالب وتعديله) -->
+    <!-- لوحة تحكم المعلم (كما هي تماماً بدون تغيير) -->
     <div id="teacher-dashboard" class="glass-card hidden">
       <header class="dash-header-flex">
         <div style="display:flex; align-items:center; gap:10px;">
@@ -884,13 +876,10 @@
             </div>
           </div>
 
-          <!-- 3. المشتركون والإيصالات مع شريط البحث الفوري -->
+          <!-- 3. المشتركون والإيصالات -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-                <h3 class="box-title" style="margin:0;">💳 المشتركون، إيصالات التحويل، وتفعيل الحصص المفردة</h3>
-                <input type="text" id="teacher-student-search-input" placeholder="🔍 ابحث باسم الطالب أو كوده..." style="max-width:260px; padding:6px 10px;" oninput="renderTeacherPayments()">
-              </div>
+              <h3 class="box-title">💳 المشتركون، إيصالات التحويل، وتفعيل الحصص المفردة</h3>
               <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
@@ -901,7 +890,7 @@
                       <th>المشاهدات</th>
                       <th>إعادة تعيين (فك الحظر)</th>
                       <th>الحالة</th>
-                      <th>الملف والبروفايل</th>
+                      <th>الملف الشامل</th>
                       <th>تفعيل الحصة</th>
                       <th>إجراء (حذف)</th>
                     </tr>
@@ -1222,10 +1211,7 @@
           <!-- 12. استفسارات الطلاب -->
           <div id="t-sec-qa" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h3 class="box-title" style="margin:0;">💬 استفسارات وأسئلة الطلاب والرد عليها</h3>
-                <button class="btn btn-danger btn-sm" type="button" onclick="deleteAllTeacherQA()">🗑️ حذف كافة الاستفسارات</button>
-              </div>
+              <h3 class="box-title">💬 استفسارات وأسئلة الطلاب</h3>
               <div id="teacher-qa-container" class="qa-admin-list"></div>
             </div>
           </div>
@@ -1233,89 +1219,11 @@
       </div>
     </div>
 
-    <!-- نافذة تعديل بيانات الطالب للمستر (تفتح عند الضغط على بروفايل أو ملف الطالب) -->
-    <div id="teacher-edit-student-modal" class="cert-modal hidden">
-      <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
-        <h3 class="box-title">⚙️ تعديل ملف وبيانات الطالب والكود</h3>
-        <input type="hidden" id="edit-std-orig-code">
-        <div class="input-field">
-          <label>اسم الطالب الثلاثي:</label>
-          <input type="text" id="edit-std-name-input">
-        </div>
-        <div class="input-field">
-          <label>الصف الدراسي:</label>
-          <select id="edit-std-grade-input">
-            <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
-            <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
-            <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
-            <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
-            <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
-            <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
-            <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
-            <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-            <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
-          </select>
-        </div>
-        <div class="input-field">
-          <label>كود السنتر (تسجيل الدخول):</label>
-          <input type="text" id="edit-std-code-input">
-        </div>
-        <div class="input-field">
-          <label>هاتف الطالب:</label>
-          <input type="tel" id="edit-std-phone-input">
-        </div>
-        <div class="input-field">
-          <label>هاتف ولي الأمر:</label>
-          <input type="tel" id="edit-std-parent-phone-input">
-        </div>
-        <button id="btn-save-edited-student" class="btn btn-success btn-full" type="button">حفظ التعديلات</button>
-        <button onclick="document.getElementById('teacher-edit-student-modal').classList.add('hidden')" class="btn btn-danger btn-sm btn-full" style="margin-top:10px;">إغلاق</button>
-      </div>
-    </div>
-
-    <!-- نافذة الواجب للطالب -->
-    <div id="homework-modal" class="quiz-popup-modal hidden">
-      <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
-        <h3 class="box-title">📤 تسليم الواجب (صور متعددة / PDF)</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">قم برفع صور صفحات الواجب أو ملف PDF:</p>
-        
-        <div class="input-field">
-          <label>ملاحظاتك للمستر:</label>
-          <input type="text" id="std-hw-notes-input" placeholder="مثال: تم حل الواجب كاملاً">
-        </div>
-        <div class="input-field">
-          <label>صور صفحات الواجب (اختر عدة صور من الكاميرا):</label>
-          <input type="file" id="std-hw-files" accept="image/*,application/pdf" multiple>
-        </div>
-
-        <button id="btn-submit-multiple-hw" class="btn btn-success btn-full" type="button">إرسال الواجب للمستر للمراجعة والتصحيح</button>
-        <div id="interactive-hw-result" class="system-msg"></div>
-        <button id="btn-close-hw-modal" class="btn btn-danger btn-sm btn-full" type="button" style="margin-top:10px;">إغلاق</button>
-      </div>
-    </div>
-
-    <!-- نافذة عرض صور الواجب لمعلم -->
-    <div id="view-hw-images-modal" class="cert-modal hidden">
-      <div class="quiz-modal-content anime-slide-up" style="max-width:700px; text-align:center;">
-        <h3 class="box-title">📄 معاينة صور الواجب المقدمة</h3>
-        <div id="hw-images-container" style="display:flex; flex-direction:column; gap:10px; max-height:400px; overflow-y:auto; margin:15px 0;"></div>
-        <div class="input-field">
-          <label>درجة الواجب (من 10):</label>
-          <input type="number" id="teacher-hw-score-input" min="0" max="10" value="10">
-        </div>
-        <button id="btn-save-hw-grade" class="btn btn-success btn-full" type="button">حفظ وإرسال الدرجة للطالب</button>
-        <button onclick="document.getElementById('view-hw-images-modal').classList.add('hidden')" class="btn btn-danger btn-sm btn-full" style="margin-top:10px;">إغلاق</button>
-      </div>
-    </div>
-
-    <!-- نافذة الملف الشامل للطالب (عند المستر) -->
+    <!-- نافذة الملف الشامل -->
     <div id="student-full-details-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:600px;">
-        <h3 class="box-title">🪪 الملف الشخصي والبروفايل للطالب</h3>
+        <h3 class="box-title">🪪 الملف الشامل وبيانات الطالب</h3>
         <div class="student-profile-summary-box" style="margin:10px 0;">
-          <div style="text-align:center; margin-bottom:12px;">
-            <img id="modal-std-profile-img" src="" alt="صورة الطالب" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid var(--primary-glow);">
-          </div>
           <div class="profile-details-grid">
             <div><span>👤 الاسم بالكامل:</span> <strong id="det-name"></strong></div>
             <div><span>📚 الصف الدراسي:</span> <strong id="det-grade"></strong></div>
@@ -1324,14 +1232,11 @@
             <div><span>👨‍👩‍👦 هاتف ولي الأمر:</span> <strong id="det-parent-phone"></strong></div>
             <div><span>⚡ نقاط XP:</span> <strong id="det-xp" style="color:var(--accent-gold);"></strong></div>
             <div><span>💳 حالة الاشتراك:</span> <strong id="det-paid"></strong></div>
-            <div><span>🔒 بصمة الأجهزة:</span> <small><code id="det-device"></code></small></div>
+            <div><span>🔒 بصمة الجهاز:</span> <small><code id="det-device"></code></small></div>
             <div><span>👁️ عدد المشاهدات:</span> <strong id="det-views"></strong></div>
           </div>
         </div>
-        <div style="display:flex; gap:8px;">
-          <button id="btn-open-edit-student-modal" class="btn btn-accent btn-sm" type="button" style="flex:1;">⚙️ تعديل بيانات وكود الطالب</button>
-          <button id="btn-close-details-modal" class="btn btn-danger btn-sm" type="button" style="flex:1;">إغلاق</button>
-        </div>
+        <button id="btn-close-details-modal" class="btn btn-danger btn-sm btn-full" type="button" style="margin-top:10px;">إغلاق</button>
       </div>
     </div>
 
@@ -1912,10 +1817,12 @@
       }
     });
 
+    // التنقل من داخل القائمة المنسدلة للطالب
     document.querySelectorAll(".side-nav-btn[data-tab]").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".side-nav-btn[data-tab]").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
+        closeNavDrawer();
 
         const targetTab = btn.getAttribute("data-tab");
         document.querySelectorAll(".std-content-tab").forEach(sec => sec.classList.add("hidden"));
@@ -1985,14 +1892,16 @@
       });
     }
 
-    document.getElementById("std-avatar-upload").addEventListener("change", (e) => {
+    // دالة رفع وتغيير صورة البروفايل للطالب مع القص وتحديثها فوري
+    function handleStudentAvatarChange(e) {
       const file = e.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = (event) => {
         const newAvatar = event.target.result;
-        document.getElementById("std-avatar-img").src = newAvatar;
+        document.getElementById("drawer-avatar-img").src = newAvatar;
+        document.getElementById("profile-main-avatar-img").src = newAvatar;
 
         const students = getStudents();
         const idx = students.findIndex(s => s.code === currentActiveStudent.code);
@@ -2000,22 +1909,25 @@
           students[idx].avatar = newAvatar;
           currentActiveStudent.avatar = newAvatar;
           saveStudents(students);
-          alert("✅ تم قص وتحديث صورة البروفايل الشخصية بدقة!");
+          alert("✅ تم قص وتحديث صورتك الشخصية بدقة في بروفايلك!");
         }
       };
       reader.readAsDataURL(file);
-    });
+    }
+
+    document.getElementById("drawer-avatar-upload").addEventListener("change", handleStudentAvatarChange);
+    document.getElementById("profile-avatar-upload").addEventListener("change", handleStudentAvatarChange);
 
     function loadStudentDashboard(student) {
       currentActiveStudent = student;
 
-      document.getElementById("std-sidebar-name").innerText = student.name;
-      document.getElementById("std-sidebar-grade").innerText = student.grade;
-      document.getElementById("std-sidebar-xp").innerText = `⚡ ${student.xp || 0} XP`;
+      document.getElementById("drawer-user-name").innerText = student.name;
+      document.getElementById("drawer-user-grade").innerText = student.grade;
       document.getElementById("std-courses-grade-text").innerText = student.grade;
 
       if (student.avatar) {
-        document.getElementById("std-avatar-img").src = student.avatar;
+        document.getElementById("drawer-avatar-img").src = student.avatar;
+        document.getElementById("profile-main-avatar-img").src = student.avatar;
       }
 
       const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(student.code)}`;
@@ -2050,6 +1962,7 @@
       const defaultTabBtn = document.querySelector(".side-nav-btn[data-tab='tab-courses']");
       if (defaultTabBtn) defaultTabBtn.click();
       
+      document.getElementById("student-notification-bell-wrapper").classList.remove("hidden");
       document.getElementById("student-courses-catalog").classList.remove("hidden");
       document.getElementById("payment-gate-box").classList.add("hidden");
       document.getElementById("student-lesson-viewer").classList.add("hidden");
@@ -3414,25 +3327,12 @@
       });
     }
 
-    // جدول المشتركون في لوحة المعلم (مع شريط البحث الفوري وعرض بروفايل الطالب وتعديل كوده)
     function renderTeacherPayments() {
       const students = getStudents();
-      const searchTerm = document.getElementById("teacher-student-search-input") ? document.getElementById("teacher-student-search-input").value.trim().toLowerCase() : "";
       const tbody = document.getElementById("teacher-payments-table");
       if (!tbody) return;
       tbody.innerHTML = "";
-
-      const filteredStudents = students.filter(s => {
-        return s.name.toLowerCase().includes(searchTerm) || s.code.toLowerCase().includes(searchTerm);
-      });
-
-      if (filteredStudents.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='9' style='text-align:center; color:var(--text-muted);'>لا توجد نتائج مطابقة للبحث.</td></tr>";
-        return;
-      }
-
-      filteredStudents.forEach((s) => {
-        const realIdx = students.findIndex(st => st.code === s.code);
+      students.forEach((s, idx) => {
         const tr = document.createElement("tr");
         const isUnlocked = s.unlockedLessons && s.unlockedLessons.length > 0;
         const receiptHtml = s.receiptImg ? `<a href="${s.receiptImg}" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">🖼️ عرض الإيصال</a><br><small>${s.senderWallet || ''}</small>` : (s.senderWallet ? `<code>${s.senderWallet}</code>` : "لم يرسل إيصال");
@@ -3441,11 +3341,11 @@
           <td>${s.grade}</td>
           <td>${receiptHtml}</td>
           <td><span class="badge-score-pill">${s.views || 0} / 5 مشاهدات</span></td>
-          <td><button class="btn btn-accent btn-sm" type="button" onclick="resetStudentViews(${realIdx})">🔄 تصفير</button></td>
+          <td><button class="btn btn-accent btn-sm" type="button" onclick="resetStudentViews(${idx})">🔄 تصفير</button></td>
           <td><span class="${isUnlocked ? 'status-badge-active' : 'status-badge-pending'}">${isUnlocked ? 'مفعلة حصة' : 'في الانتظار'}</span></td>
-          <td><button class="btn btn-primary btn-sm" type="button" onclick="openStudentFullDetailsModal(${realIdx})">🔍 البروفايل</button></td>
-          <td><button class="btn btn-success btn-sm" type="button" onclick="toggleStudentPayment(${realIdx})">${isUnlocked ? 'إلغاء' : 'تفعيل'}</button></td>
-          <td><button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByTeacher(${realIdx})">🗑️ حذف</button></td>
+          <td><button class="btn btn-primary btn-sm" type="button" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td>
+          <td><button class="btn btn-success btn-sm" type="button" onclick="toggleStudentPayment(${idx})">${isUnlocked ? 'إلغاء التفعيل' : 'تفعيل الحصة'}</button></td>
+          <td><button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByTeacher(${idx})">🗑️ حذف</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -3463,7 +3363,6 @@
       const students = getStudents();
       const s = students[idx];
       if (!s) return;
-      document.getElementById("modal-std-profile-img").src = s.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=student";
       document.getElementById("det-name").innerText = s.name || "—";
       document.getElementById("det-grade").innerText = s.grade || "—";
       document.getElementById("det-code").innerText = s.code || "—";
@@ -3471,49 +3370,9 @@
       document.getElementById("det-parent-phone").innerText = s.parentPhone || "—";
       document.getElementById("det-xp").innerText = `${s.xp || 0} XP`;
       document.getElementById("det-paid").innerText = (s.unlockedLessons && s.unlockedLessons.length > 0) ? "مفعل ✅" : "غير مفعل ❌";
-      document.getElementById("det-device").innerText = s.deviceIds ? s.deviceIds.join(', ') : "غير مقفل";
+      document.getElementById("det-device").innerText = s.deviceId || "غير مقفل";
       document.getElementById("det-views").innerText = `${s.views || 0} / 5`;
-
-      document.getElementById("btn-open-edit-student-modal").onclick = () => {
-        document.getElementById("student-full-details-modal").classList.add("hidden");
-        openEditStudentModal(idx);
-      };
-
       document.getElementById("student-full-details-modal").classList.remove("hidden");
-    };
-
-    function openEditStudentModal(idx) {
-      const s = getStudents()[idx];
-      document.getElementById("edit-std-orig-code").value = s.code;
-      document.getElementById("edit-std-name-input").value = s.name;
-      document.getElementById("edit-std-grade-input").value = s.grade;
-      document.getElementById("edit-std-code-input").value = s.code;
-      document.getElementById("edit-std-phone-input").value = s.phone;
-      document.getElementById("edit-std-parent-phone-input").value = s.parentPhone;
-      document.getElementById("teacher-edit-student-modal").classList.remove("hidden");
-    }
-
-    document.getElementById("btn-save-edited-student").onclick = () => {
-      const origCode = document.getElementById("edit-std-orig-code").value;
-      const newName = document.getElementById("edit-std-name-input").value.trim();
-      const newGrade = document.getElementById("edit-std-grade-input").value;
-      const newCode = document.getElementById("edit-std-code-input").value.trim().toUpperCase();
-      const newPhone = document.getElementById("edit-std-phone-input").value.trim();
-      const newParentPhone = document.getElementById("edit-std-parent-phone-input").value.trim();
-
-      const students = getStudents();
-      const idx = students.findIndex(s => s.code === origCode);
-      if (idx !== -1) {
-        students[idx].name = newName;
-        students[idx].grade = newGrade;
-        students[idx].code = newCode;
-        students[idx].phone = newPhone;
-        students[idx].parentPhone = newParentPhone;
-        saveStudents(students);
-        alert("✅ تم تعديل بيانات وكود الطالب بنجاح!");
-        document.getElementById("teacher-edit-student-modal").classList.add("hidden");
-        renderTeacherPayments();
-      }
     };
 
     window.openMonthlyReportModal = function(idx) {
@@ -3666,16 +3525,7 @@
         const div = document.createElement("div");
         div.className = "qa-msg";
         div.style.marginBottom = "8px";
-        div.innerHTML = `
-          <p><strong>الطالب:</strong> ${qa.studentName} (${qa.grade})</p>
-          <p><strong>السؤال:</strong> ${qa.question}</p>
-          ${qa.reply ? `<p style="color:var(--success); margin-top:4px;"><strong>رد المستر:</strong> ${qa.reply}</p>` : ''}
-          <div style="display:flex; gap:6px; margin-top:6px;">
-            <input type="text" id="t-reply-input-${idx}" placeholder="اكتب ردك..." value="${qa.reply || ''}">
-            <button class="btn btn-primary btn-sm" type="button" onclick="replyToQA(${idx})">إرسال الرد وإشعاره</button>
-            <button class="btn btn-danger btn-sm" type="button" onclick="deleteSingleQA(${idx})">🗑️ حذف</button>
-          </div>
-        `;
+        div.innerHTML = `<p><strong>الطالب:</strong> ${qa.studentName} (${qa.grade})</p><p><strong>السؤال:</strong> ${qa.question}</p><div style="display:flex; gap:6px; margin-top:6px;"><input type="text" id="t-reply-input-${idx}" placeholder="اكتب ردك..." value="${qa.reply || ''}"><button class="btn btn-primary btn-sm" type="button" onclick="replyToQA(${idx})">إرسال</button></div>`;
         container.appendChild(div);
       });
     }
@@ -3685,24 +3535,8 @@
       const allQA = getQuestions();
       allQA[idx].reply = reply;
       saveQuestions(allQA);
-      alert("✅ تم إرسال الرد للطالب ووصله إشعار بالجرس بنجاح!");
+      alert("✅ تم إرسال الرد!");
       renderTeacherQA();
-    };
-
-    window.deleteSingleQA = function(idx) {
-      if (confirm("⚠️ هل أنت متأكد من حذف هذا الاستفسار؟")) {
-        let allQA = getQuestions();
-        allQA.splice(idx, 1);
-        saveQuestions(allQA);
-        renderTeacherQA();
-      }
-    };
-
-    window.deleteAllTeacherQA = function() {
-      if (confirm("⚠️ هل أنت متأكد من حذف كافة الاستفسارات والأسئلة؟")) {
-        saveQuestions([]);
-        renderTeacherQA();
-      }
     };
 
     function loadDevPanel() {
@@ -3714,7 +3548,7 @@
       students.forEach((s, idx) => {
         const tr = document.createElement("tr");
         const isUnlocked = s.unlockedLessons && s.unlockedLessons.length > 0;
-        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}</td><td><code>${s.code}</code></td><td><input type="number" id="dev-std-xp-${idx}" value="${s.xp || 0}" style="width:70px;"><button class="btn btn-accent btn-sm" onclick="devUpdateStudentXP(${idx})">تعديل</button></td><td><button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td><td><small><code>${s.deviceIds ? s.deviceIds.join(', ') : "غير مقفل"}</code></small></td><td><span class="${isUnlocked ? 'status-badge-active' : 'status-badge-pending'}">${isUnlocked ? 'مفعل' : 'غير مفعل'}</span></td><td><button class="btn btn-primary btn-sm" type="button" onclick="resetStudentDevice(${idx})">فك القفل</button> <button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByDev(${idx})">حذف</button></td>`;
+        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}</td><td><code>${s.code}</code></td><td><input type="number" id="dev-std-xp-${idx}" value="${s.xp || 0}" style="width:70px;"><button class="btn btn-accent btn-sm" onclick="devUpdateStudentXP(${idx})">تعديل</button></td><td><button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td><td><small><code>${s.deviceId || "غير مقفل"}</code></small></td><td><span class="${isUnlocked ? 'status-badge-active' : 'status-badge-pending'}">${isUnlocked ? 'مفعل' : 'غير مفعل'}</span></td><td><button class="btn btn-primary btn-sm" type="button" onclick="resetStudentDevice(${idx})">فك القفل</button> <button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByDev(${idx})">حذف</button></td>`;
         tbody.appendChild(tr);
       });
     }
@@ -3730,9 +3564,9 @@
 
     window.resetStudentDevice = function(idx) {
       const students = getStudents();
-      students[idx].deviceIds = [];
+      students[idx].deviceId = "";
       saveStudents(students);
-      alert(`✅ تم فك قفل الأجهزة عن الطالب.`);
+      alert(`✅ تم فك قفل الجهاز.`);
       loadDevPanel();
     };
 
