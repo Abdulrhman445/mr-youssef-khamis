@@ -73,7 +73,35 @@
       padding: 12px 18px; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px);
       border-radius: 14px; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;
     }
-    .nav-brand { font-weight: 800; font-size: 1.05rem; }
+    .nav-brand { font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 10px; }
+
+    /* تنسيق زر جرس الإشعارات الذكي */
+    .notification-bell-container {
+      position: relative;
+      display: inline-block;
+    }
+    .notification-bell-btn {
+      background: rgba(255, 255, 255, 0.2); color: #fff; border: none; padding: 6px 12px;
+      border-radius: 50%; width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .notification-bell-btn:hover { background: rgba(255, 255, 255, 0.35); transform: scale(1.05); }
+    .notification-badge-count {
+      position: absolute; top: -2px; right: -2px; background: #ef4444; color: #fff;
+      font-size: 0.7rem; font-weight: 900; padding: 2px 6px; border-radius: 50%;
+      border: 2px solid #1e1b4b;
+    }
+    .notifications-dropdown {
+      position: absolute; top: 48px; left: 0; width: 300px; max-height: 350px; overflow-y: auto;
+      background: var(--card-bg); color: var(--text-main); border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid var(--border-color);
+      z-index: 30000; padding: 12px; display: none; text-align: right;
+    }
+    .notifications-dropdown.show { display: block; }
+    .notif-item {
+      padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-size: 0.82rem; margin-bottom: 6px;
+    }
+    .notif-item:last-child { border-bottom: none; }
 
     .nav-btn-menu {
       background: rgba(255, 255, 255, 0.2); color: #fff; border: none; padding: 6px 14px;
@@ -435,11 +463,26 @@
   </div>
 
   <header class="top-nav-bar">
-    <div class="nav-brand">🌟 Mr. Youssef Academy</div>
-    <button id="btn-open-universal-drawer" class="nav-btn-menu" type="button" title="القائمة الرئيسية">
-      <span>☰</span>
-      <span style="font-size:0.9rem;">القائمة</span>
-    </button>
+    <div class="nav-brand">
+      <span>🌟 Mr. Youssef Academy</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <!-- جرس الإشعارات الذكي للطالب -->
+      <div id="student-notification-bell-wrapper" class="notification-bell-container hidden">
+        <button id="btn-toggle-notifications" class="notification-bell-btn" type="button" title="التنبيهات والإشعارات">
+          🔔
+          <span id="notification-badge-count" class="notification-badge-count hidden">0</span>
+        </button>
+        <div id="notifications-dropdown" class="notifications-dropdown">
+          <h4 style="font-size:0.9rem; border-bottom:1px solid var(--border-color); padding-bottom:6px; margin-bottom:8px; color:var(--primary-glow);">🔔 الإشعارات والردود:</h4>
+          <div id="notifications-list-container">لا توجد إشعارات جديدة.</div>
+        </div>
+      </div>
+      <button id="btn-open-universal-drawer" class="nav-btn-menu" type="button" title="القائمة الرئيسية">
+        <span>☰</span>
+        <span style="font-size:0.9rem;">القائمة</span>
+      </button>
+    </div>
   </header>
 
   <div id="drawer-overlay" class="drawer-overlay"></div>
@@ -548,7 +591,7 @@
       <div id="leaderboard-cards-container" class="lessons-grid"></div>
     </div>
 
-    <!-- لوحة تحكم الطالب (مرتبة ومبسطة بالكامل) -->
+    <!-- لوحة تحكم الطالب -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
       <aside class="adaptive-sidebar" id="std-sidebar-panel">
         <div class="sidebar-user-header">
@@ -1040,83 +1083,62 @@
             </div>
           </div>
 
-          <!-- 9. بنك الأسئلة والامتحانات والواجبات المحدث (كتابة الأسئلة دفعة واحدة، مراجعتها، ثم النشر وربطها بالحصة) -->
+          <!-- 9. بنك الأسئلة -->
           <div id="t-sec-quiz" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">📝 بنك الأسئلة والامتحانات والواجبات (كتابة متكاملة ومعاينة قبل النشر)</h3>
-              
-              <form id="form-builder-task">
-                <div class="grid-2col">
-                  <div class="input-field">
-                    <label>الصف الدراسي:</label>
-                    <select id="builder-grade" required onchange="loadLessonsForBuilder()">
-                      <option value="" disabled selected>اختر الصف</option>
-                      <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
-                      <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
-                      <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
-                      <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
-                      <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
-                      <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
-                      <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
-                      <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                      <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
-                    </select>
-                  </div>
-                  <div class="input-field">
-                    <label>اختر الحصة المرتبطة (الدرس):</label>
-                    <select id="builder-lesson-id" required>
-                      <option value="" disabled selected>اختر المحاضرة/الحصة أولاً</option>
-                    </select>
-                  </div>
+              <h3 class="box-title">📝 بنك الأسئلة، الاختبارات، ونموذج إجابة الواجب</h3>
+              <form id="form-manage-quiz">
+                <div class="input-field">
+                  <label>الصف الدراسي:</label>
+                  <select id="teacher-q-grade" required>
+                    <option value="" disabled selected>اختر الصف</option>
+                    <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+                    <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+                    <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+                    <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+                    <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+                    <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+                    <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+                    <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
+                    <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+                  </select>
                 </div>
-
-                <div class="grid-2col">
-                  <div class="input-field">
-                    <label>نوع النشر:</label>
-                    <select id="builder-category">
-                      <option value="exam">امتحان (إلزامي بعد الحصة)</option>
-                      <option value="homework">واجب منزلي (مرتبط بالحصة ويظهر للطالب)</option>
-                    </select>
-                  </div>
-                  <div class="input-field">
-                    <label>اسم الامتحان أو الواجب:</label>
-                    <input type="text" id="builder-title-name" placeholder="مثال: امتحان Unit 1 الشامل أو واجب الدرس" required>
-                  </div>
+                <div class="input-field">
+                  <label>اختر نوع النشر:</label>
+                  <select id="teacher-q-category">
+                    <option value="exam">امتحان دوري (يُحل لمرة واحدة)</option>
+                    <option value="homework">واجب منزلي (يُنزل كملف PDF ويُرسل حله كصور)</option>
+                  </select>
                 </div>
-
+                <div class="input-field">
+                  <label>اسم الامتحان أو الواجب:</label>
+                  <input type="text" id="teacher-q-title-name" placeholder="مثال: امتحان Unit 1 الشامل" required>
+                </div>
                 <div class="input-field">
                   <label>⏱️ مدة الامتحان (بالدقائق):</label>
-                  <input type="number" id="builder-duration" min="1" max="180" value="10" required>
+                  <input type="number" id="teacher-quiz-duration" min="1" max="180" value="10" required>
                 </div>
-
-                <hr style="margin: 15px 0; border-color: var(--border-color);">
-                <h4 style="color:var(--primary-glow); margin-bottom:8px;">➕ إضافة أسئلة للنموذج الحالي:</h4>
-
-                <div class="grid-2col">
-                  <div class="input-field">
-                    <label>نوع السؤال:</label>
-                    <select id="builder-q-type" onchange="toggleBuilderQType()">
-                      <option value="mcq">اختيار من متعدد</option>
-                      <option value="essay">سؤال مقالي قصير</option>
-                    </select>
-                  </div>
+                <div class="input-field">
+                  <label>نوع السؤال:</label>
+                  <select id="teacher-q-type">
+                    <option value="mcq">اختيار من متعدد</option>
+                    <option value="essay">سؤال مقالي قصير</option>
+                  </select>
                 </div>
-
                 <div class="input-field">
                   <label>نص السؤال:</label>
-                  <input type="text" id="builder-q-text" placeholder="اكتب نص السؤال هنا...">
+                  <input type="text" id="teacher-q-text" placeholder="اكتب السؤال هنا" required>
                 </div>
-
-                <div id="builder-mcq-group">
+                <div id="q-mcq-options-group">
                   <div class="grid-2col">
-                    <input type="text" id="b-opt-0" placeholder="الاختيار 1">
-                    <input type="text" id="b-opt-1" placeholder="الاختيار 2">
-                    <input type="text" id="b-opt-2" placeholder="الاختيار 3">
-                    <input type="text" id="b-opt-3" placeholder="الاختيار 4">
+                    <input type="text" id="t-opt-0" placeholder="الاختيار 1">
+                    <input type="text" id="t-opt-1" placeholder="الاختيار 2">
+                    <input type="text" id="t-opt-2" placeholder="الاختيار 3">
+                    <input type="text" id="t-opt-3" placeholder="الاختيار 4">
                   </div>
                   <div class="input-field" style="margin-top: 10px;">
                     <label>الاختيار الصحيح:</label>
-                    <select id="builder-q-correct">
+                    <select id="teacher-q-correct">
                       <option value="0">الاختيار 1</option>
                       <option value="1">الاختيار 2</option>
                       <option value="2">الاختيار 3</option>
@@ -1124,21 +1146,14 @@
                     </select>
                   </div>
                 </div>
-
-                <div id="builder-essay-group" class="input-field hidden">
+                <div id="q-essay-answer-group" class="input-field hidden">
                   <label>✍️ الإجابة النموذجية الصحيحة:</label>
-                  <input type="text" id="builder-essay-correct" placeholder="الإجابة النموذجية">
+                  <input type="text" id="teacher-essay-correct-text" placeholder="اكتب الإجابة النموذجية">
                 </div>
-
-                <button type="button" id="btn-add-question-to-list" class="btn btn-accent btn-sm" style="margin-bottom:15px;">➕ إضافة السؤال لقائمة الأسئلة</button>
-
-                <!-- صندوق معاينة الأسئلة التي كتبها المستر قبل النشر النهائي -->
-                <div class="dash-box" style="background:#fff; border: 2px dashed var(--primary-glow); margin-bottom:15px;">
-                  <h4 style="color:var(--primary-glow); margin-bottom:6px;">👁️ معاينة محتوى النموذج (الأسئلة المضافة حالياً):</h4>
-                  <div id="builder-preview-list" style="max-height:200px; overflow-y:auto; font-size:0.88rem;">لم تقم بإضافة أي أسئلة بعد.</div>
+                <div class="btn-group-row">
+                  <button type="submit" class="btn btn-success">➕ إضافة السؤال ونشر الامتحان/الواجب</button>
+                  <button type="button" id="btn-clear-quiz" class="btn btn-danger btn-sm">حذف الأسئلة</button>
                 </div>
-
-                <button type="button" id="btn-publish-final-task" class="btn btn-success btn-full">🚀 تأكيد ومراجعة ثم نشر الامتحان / الواجب للصف والحصة</button>
               </form>
             </div>
           </div>
@@ -1204,7 +1219,7 @@
             </div>
           </div>
 
-          <!-- 12. استفسارات وأسئلة الطلاب (مع إمكانية رد المستر، الإشعارات للطالب، وحذف سؤال أو الكل) -->
+          <!-- 12. استفسارات وأسئلة الطلاب (مع زر الرد، الإشعارات، وحذف سؤال أو الكل) -->
           <div id="t-sec-qa" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -1528,8 +1543,6 @@
     let videoWatchTrackTimer = null;
     let hasCountedThisSession = false;
     let html5QrCodeScanner = null;
-
-    let tempBuilderQuestionsList = [];
 
     window.addEventListener("load", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
@@ -1917,6 +1930,17 @@
       });
     }
 
+    // زر جرس الإشعارات للطالب لعرض الردود والتحديثات
+    const btnToggleNotifications = document.getElementById("btn-toggle-notifications");
+    const notificationsDropdown = document.getElementById("notifications-dropdown");
+    if (btnToggleNotifications) {
+      btnToggleNotifications.addEventListener("click", () => {
+        notificationsDropdown.classList.toggle("show");
+        // عند فتح الإجراس يتم إخفاء شارة العدد مؤقتاً
+        document.getElementById("notification-badge-count").classList.add("hidden");
+      });
+    }
+
     document.getElementById("std-avatar-upload").addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -1945,6 +1969,9 @@
       document.getElementById("std-sidebar-grade").innerText = student.grade;
       document.getElementById("std-sidebar-xp").innerText = `⚡ ${student.xp || 0} XP`;
       document.getElementById("std-courses-grade-text").innerText = student.grade;
+
+      // إظهار جرس الإشعارات للطالب في الأعلى
+      document.getElementById("student-notification-bell-wrapper").classList.remove("hidden");
 
       if (student.avatar) {
         document.getElementById("std-avatar-img").src = student.avatar;
@@ -1977,6 +2004,7 @@
       renderStudentHomeworkHistory(student);
       renderStudentExamStatus(student);
       renderStudentHomeworkCatalog(student);
+      renderStudentNotifications(student);
 
       const defaultTabBtn = document.querySelector(".side-nav-btn[data-tab='tab-courses']");
       if (defaultTabBtn) defaultTabBtn.click();
@@ -1987,6 +2015,51 @@
       if (btnBackCatalog) btnBackCatalog.classList.add("hidden");
 
       renderStudentCoursesList(student);
+    }
+
+    // عرض الإشعارات للطالب في قائمة الجرس (ردود المستر والتحديثات الجديدة)
+    function renderStudentNotifications(student) {
+      const listContainer = document.getElementById("notifications-list-container");
+      const badgeCount = document.getElementById("notification-badge-count");
+      listContainer.innerHTML = "";
+
+      let notifs = [];
+
+      // التحقق من ردود المستر على استفسارات الطالب
+      const myQA = getQuestions().filter(q => q.studentName === student.name && q.reply && q.reply.trim() !== "");
+      myQA.forEach(qa => {
+        notifs.push({
+          text: `💬 رد جديد من مستر يوسف على استفسارك: "${qa.reply}"`,
+          time: "اليوم"
+        });
+      });
+
+      // التحقق من وجود حصص جديدة مرفوعة لصفه
+      const curriculum = getCurriculum();
+      const lessons = curriculum[student.grade] || [];
+      if (lessons.length > 0) {
+        const latestL = lessons[lessons.length - 1];
+        notifs.push({
+          text: `📚 تم إضافة حصة جديدة لصفك: "${latestL.videoTitle}"`,
+          time: "حديث"
+        });
+      }
+
+      if (notifs.length === 0) {
+        listContainer.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لا توجد إشعارات جديدة حالياً.</p>";
+        badgeCount.classList.add("hidden");
+        return;
+      }
+
+      badgeCount.innerText = notifs.length;
+      badgeCount.classList.remove("hidden");
+
+      notifs.forEach(n => {
+        const div = document.createElement("div");
+        div.className = "notif-item";
+        div.innerHTML = `<p>${n.text}</p><small style="color:var(--text-muted);">${n.time}</small>`;
+        listContainer.appendChild(div);
+      });
     }
 
     // عرض المحاضرات للطالب مع التصميم الاحترافي والـ FREE الكرت اللامع
@@ -2072,7 +2145,7 @@
       });
 
       if (!hasHwTasks) {
-        container.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لا توجد واجبات منزلية منشورة حالياً في الأرشيف.</p>";
+        container.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لا توجد واجبات منزلية منشورة حالياً في الأرشيف.</p>";
       }
     }
 
@@ -2113,7 +2186,7 @@
       if (!Array.isArray(lessonsArr)) lessonsArr = lessonsArr ? [lessonsArr] : [];
 
       if (myResults.length === 0) {
-        completedBox.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لم تؤدِ أي امتحان بعد.</p>";
+        completedBox.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لم تؤدِ أي امتحان بعد.</p>";
       } else {
         myResults.forEach(r => {
           const item = document.createElement("div");
@@ -2146,7 +2219,7 @@
       });
 
       if (!hasPendingExams && pendingBox.innerHTML === "") {
-        pendingBox.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لا توجد امتحانات معلقة حالياً.</p>";
+        pendingBox.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لا توجد امتحانات معلقة حالياً.</p>";
       }
     }
 
@@ -3212,7 +3285,6 @@
       });
     }
 
-    // دالة رفع المحاضرات
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
