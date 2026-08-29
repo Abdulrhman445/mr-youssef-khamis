@@ -515,7 +515,7 @@
 
   <div id="drawer-overlay" class="drawer-overlay"></div>
 
-  <!-- القائمة المنسدلة (☰) بالترتيب القياسي الصحيح -->
+  <!-- القائمة المنسدلة (☰) مرتبة بالشكل القياسي الصحيح -->
   <div id="universal-nav-drawer" class="nav-drawer">
     <div class="nav-drawer-header">
       <div id="drawer-student-profile-header" class="hidden" style="display:flex; align-items:center; gap:10px;">
@@ -536,7 +536,7 @@
     <div class="nav-drawer-menu" id="universal-drawer-menu-container">
       <button id="drawer-btn-home" class="side-nav-btn" type="button">🏠 الصفحة الرئيسية</button>
       
-      <!-- ترتيب أقسام الطالب الصحيح والفعلي -->
+      <!-- ترتيب أقسام الطالب الصحيح والمتسلسل -->
       <div id="student-drawer-links" class="hidden" style="display:flex; flex-direction:column; gap:6px;">
         <button class="side-nav-btn active" data-tab="tab-courses" type="button">📚 المحاضرات والأرشيف</button>
         <button class="side-nav-btn" data-tab="tab-homework" type="button">📋 الواجبات</button>
@@ -1621,6 +1621,7 @@
     let hasCountedThisSession = false;
     let html5QrCodeScanner = null;
 
+    // استعادة الجلسة والصفحة الحالية فور عمل ريفرش
     window.addEventListener("load", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
       const savedRole = localStorage.getItem("yk_active_role");
@@ -1644,8 +1645,15 @@
             studentDashboard.classList.remove("hidden");
             loadStudentDashboard(student);
             updateAuthNavState(true);
+
+            // البقاء في نفس التبويب/القسم الذي كان واقفاً عنده الطالب
+            const lastActiveTab = localStorage.getItem("yk_active_student_tab") || "tab-courses";
+            const targetTabBtn = document.querySelector(`#student-drawer-links .side-nav-btn[data-tab='${lastActiveTab}']`);
+            if (targetTabBtn) {
+              targetTabBtn.click();
+            }
           }
-        }, 600);
+        }, 500);
       }
     });
 
@@ -1943,6 +1951,7 @@
         }
 
         localStorage.setItem("yk_active_student_code", student.code);
+        localStorage.setItem("yk_active_student_tab", "tab-courses");
         localStorage.removeItem("yk_active_role");
 
         authSection.classList.add("hidden");
@@ -1956,7 +1965,7 @@
       }
     });
 
-    // التنقل للطالب من أزرار القائمة المنسدلة (☰)
+    // التنقل وحفظ التبويب النشط في الذاكرة لمنع الخروج عند الـ Refresh
     document.querySelectorAll("#student-drawer-links .side-nav-btn[data-tab]").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll("#student-drawer-links .side-nav-btn[data-tab]").forEach(b => b.classList.remove("active"));
@@ -1964,6 +1973,8 @@
         closeNavDrawer();
 
         const targetTab = btn.getAttribute("data-tab");
+        localStorage.setItem("yk_active_student_tab", targetTab);
+        
         document.querySelectorAll(".std-content-tab").forEach(sec => sec.classList.add("hidden"));
 
         if (targetTab === "tab-courses") document.getElementById("section-courses").classList.remove("hidden");
@@ -2129,9 +2140,6 @@
       renderStudentExamStatus(student);
       renderStudentHomeworkCatalog(student);
       renderStudentNotifications(student);
-
-      const defaultTabBtn = document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']");
-      if (defaultTabBtn) defaultTabBtn.click();
       
       document.getElementById("student-notification-bell-wrapper").classList.remove("hidden");
       document.getElementById("student-courses-catalog").classList.remove("hidden");
@@ -2204,7 +2212,6 @@
               }
             });
           } else {
-            // إشعار الحصة العادية
             if (lIdx === lessons.length - 1) {
               rawNotifs.push({
                 id: "notif_lesson_" + (lesson.id || lIdx),
@@ -2220,7 +2227,6 @@
             }
           }
 
-          // إشعار المذكرة والواجب إن وجد
           if (lesson.pdfData && lIdx === lessons.length - 1) {
             rawNotifs.push({
               id: "notif_pdf_" + (lesson.id || lIdx),
@@ -2235,7 +2241,6 @@
             });
           }
 
-          // إشعار الامتحان التقييمي إن وجد
           if (lesson.questions && lesson.questions.some(q => q.category === 'exam' || !q.category)) {
             const myResults = getExamResults().filter(r => r.name === student.name);
             const alreadyDone = myResults.some(r => r.lessonTitle === lesson.videoTitle);
@@ -2256,7 +2261,6 @@
         });
       }
 
-      // تصفية الإشعارات المحذوفة من قبل الطالب
       const notifs = isAllDismissed ? [] : rawNotifs.filter(n => !dismissed.includes(n.id));
 
       if (notifs.length === 0) {
@@ -3986,6 +3990,7 @@
       if (watermarkInterval) clearInterval(watermarkInterval);
       if (quizTimerInterval) clearInterval(quizTimerInterval);
       localStorage.removeItem("yk_active_student_code");
+      localStorage.removeItem("yk_active_student_tab");
       localStorage.removeItem("yk_active_role");
       currentActiveStudent = null;
       updateAuthNavState(false);
