@@ -548,7 +548,7 @@
       <div id="leaderboard-cards-container" class="lessons-grid"></div>
     </div>
 
-    <!-- لوحة تحكم الطالب (مرتبة ومبسطة بالكامل في القائمة الجانبية) -->
+    <!-- لوحة تحكم الطالب (مرتبة ومبسطة بالكامل) -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
       <aside class="adaptive-sidebar" id="std-sidebar-panel">
         <div class="sidebar-user-header">
@@ -667,7 +667,7 @@
               <button id="btn-open-quiz-modal" class="btn btn-danger btn-sm hidden" type="button">📝 اختبار الحصة (مرة واحدة)</button>
             </div>
 
-            <!-- عرض الواجبات والامتحانات الخاصة بهذه الحصة مباشرة تحت الفيديو -->
+            <!-- عرض الواجبات والامتحانات المرتبطة بهذه الحصة تحديداً وتحت الفيديو -->
             <div id="lesson-attached-tasks-box" class="dash-box hidden" style="margin-top:20px; border-color:var(--secondary);">
               <h4 style="color:var(--secondary); margin-bottom:8px;">📌 الواجبات والامتحانات المرفقة لهذه الحصة:</h4>
               <div id="lesson-tasks-list-container" style="display:flex; flex-direction:column; gap:8px;"></div>
@@ -710,7 +710,7 @@
           </div>
         </section>
 
-        <!-- 3. الامتحانات (القسم العام للاختبارات) -->
+        <!-- 3. الامتحانات -->
         <section id="section-exams" class="std-content-tab hidden anime-fade-in">
           <h2 class="box-title">📝 سجل الاختبارات والدرجات (تتطلب اجتياز 60% فأعلى)</h2>
           <div class="grid-2col">
@@ -725,11 +725,11 @@
           </div>
         </section>
 
-        <!-- 4. الواجبات (القسم العام للواجبات مع إمكانية تنزيل ملفات الـ PDF وحل وتسليم) -->
+        <!-- 4. الواجبات -->
         <section id="section-homework" class="std-content-tab hidden anime-fade-in">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
             <h2 class="box-title" style="margin:0;">📋 الواجبات المطلوبة والمنزلة (PDF)</h2>
-            <button id="btn-side-open-hw" class="btn btn-success btn-sm" type="button">📤 تسليم الحل للمستر</button>
+            <button id="btn-side-open-hw" class="btn btn-success btn-sm" type="button">📤 حل وتسليم واجب جديد (صور متعددة / PDF)</button>
           </div>
           <div id="student-homework-catalog-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px;"></div>
           <div class="table-responsive">
@@ -1040,10 +1040,10 @@
             </div>
           </div>
 
-          <!-- 9. بنك الأسئلة والامتحانات والواجبات المحدث (كتابة كامل الأسئلة دفعة واحدة، مراجعتها، ثم النشر وربطها بحصة محددة) -->
+          <!-- 9. بنك الأسئلة والامتحانات والواجبات المحدث (كتابة الأسئلة دفعة واحدة، مراجعتها، ثم النشر وربطها بالحصة) -->
           <div id="t-sec-quiz" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">📝 بنك الأسئلة والامتحانات (كتابة متكاملة ومعاينة قبل النشر)</h3>
+              <h3 class="box-title">📝 بنك الأسئلة والامتحانات والواجبات (كتابة متكاملة ومعاينة قبل النشر)</h3>
               
               <form id="form-builder-task">
                 <div class="grid-2col">
@@ -1075,12 +1075,12 @@
                     <label>نوع النشر:</label>
                     <select id="builder-category">
                       <option value="exam">امتحان (إلزامي بعد الحصة)</option>
-                      <option value="homework">واجب منزلي (مرتبط بالحصة)</option>
+                      <option value="homework">واجب منزلي (مرتبط بالحصة ويظهر للطالب)</option>
                     </select>
                   </div>
                   <div class="input-field">
                     <label>اسم الامتحان أو الواجب:</label>
-                    <input type="text" id="builder-title-name" placeholder="مثال: امتحان Unit 1 الشامل" required>
+                    <input type="text" id="builder-title-name" placeholder="مثال: امتحان Unit 1 الشامل أو واجب الدرس" required>
                   </div>
                 </div>
 
@@ -1138,7 +1138,7 @@
                   <div id="builder-preview-list" style="max-height:200px; overflow-y:auto; font-size:0.88rem;">لم تقم بإضافة أي أسئلة بعد.</div>
                 </div>
 
-                <button type="button" id="btn-publish-final-task" class="btn btn-success btn-full">🚀 تأكيد ومراجعة ثم نشر الامتحان / الواجب للصف</button>
+                <button type="button" id="btn-publish-final-task" class="btn btn-success btn-full">🚀 تأكيد ومراجعة ثم نشر الامتحان / الواجب للصف والحصة</button>
               </form>
             </div>
           </div>
@@ -1204,10 +1204,13 @@
             </div>
           </div>
 
-          <!-- 12. استفسارات الطلاب -->
+          <!-- 12. استفسارات وأسئلة الطلاب (مع إمكانية رد المستر، الإشعارات للطالب، وحذف سؤال أو الكل) -->
           <div id="t-sec-qa" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">💬 استفسارات وأسئلة الطلاب</h3>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h3 class="box-title" style="margin:0;">💬 استفسارات وأسئلة الطلاب والرد عليها</h3>
+                <button class="btn btn-danger btn-sm" type="button" onclick="deleteAllTeacherQA()">🗑️ حذف كافة الاستفسارات</button>
+              </div>
               <div id="teacher-qa-container" class="qa-admin-list"></div>
             </div>
           </div>
@@ -1219,14 +1222,14 @@
     <div id="homework-modal" class="quiz-popup-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
         <h3 class="box-title">📤 تسليم الواجب (صور متعددة / PDF)</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">قم برفع صور صفحات الواجب أو ملف PDF:</p>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">قم برفع صور صفحات الواجب (يمكنك اختيار أكثر من صورة معاً) أو ملف PDF:</p>
         
         <div class="input-field">
           <label>ملاحظاتك للمستر:</label>
           <input type="text" id="std-hw-notes-input" placeholder="مثال: تم حل الواجب كاملاً">
         </div>
         <div class="input-field">
-          <label>صور صفحات الواجب (اختر عدة صور من الكاميرا):</label>
+          <label>صور صفحات الواجب (اختر عدة صور من كاميرا الموبايل):</label>
           <input type="file" id="std-hw-files" accept="image/*,application/pdf" multiple>
         </div>
 
@@ -1526,7 +1529,6 @@
     let hasCountedThisSession = false;
     let html5QrCodeScanner = null;
 
-    // ذاكرة مؤقتة لإنشاء أسئلة الامتحان والواجب دفعة واحدة قبل نشرها
     let tempBuilderQuestionsList = [];
 
     window.addEventListener("load", () => {
@@ -1987,7 +1989,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض المحاضرات للطالب مع التصميم الاحترافي
+    // عرض المحاضرات للطالب مع التصميم الاحترافي والـ FREE الكرت اللامع
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -2042,7 +2044,6 @@
       });
     }
 
-    // عرض الواجبات المرفوعة كملفات PDF في قسم الواجبات عند الطالب
     function renderStudentHomeworkCatalog(student) {
       const container = document.getElementById("student-homework-catalog-list");
       if (!container) return;
@@ -2125,7 +2126,6 @@
         });
       }
 
-      // البحث عن الامتحانات المتاحة والمرتبطة بحصص مفعلة للطالب
       let hasPendingExams = false;
       lessonsArr.forEach(lesson => {
         const isUnlocked = student.paid || student.isFree || (student.unlockedLessons && student.unlockedLessons.includes(lesson.id));
@@ -2401,7 +2401,6 @@
         pdfBox.classList.add("hidden");
       }
 
-      // عرض الواجبات أو الامتحانات المرتبطة بهذه الحصة تحديداً
       const attachedTasksBox = document.getElementById("lesson-attached-tasks-box");
       const attachedList = document.getElementById("lesson-tasks-list-container");
       attachedList.innerHTML = "";
@@ -2735,7 +2734,6 @@
       loadLessonsForBuilder();
     }
 
-    // جلب الحصص في لوحة المستر لربط الامتحان أو الواجب بحصة محددة
     window.loadLessonsForBuilder = function() {
       const gradeSel = document.getElementById("builder-grade").value;
       const lessonSel = document.getElementById("builder-lesson-id");
@@ -2753,7 +2751,6 @@
       }
     };
 
-    // دوظائف نموذج كتابة الأسئلة دفعة واحدة ومعاينتها قبل النشر
     document.getElementById("btn-add-question-to-list").addEventListener("click", () => {
       const type = document.getElementById("builder-q-type").value;
       const qText = document.getElementById("builder-q-text").value.trim();
@@ -3215,7 +3212,7 @@
       });
     }
 
-    // دالة رفع المحاضرات (مؤمنة وسريعة وتستجيب فوراً للضغط على حفظ)
+    // دالة رفع المحاضرات
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -3568,7 +3565,16 @@
         const div = document.createElement("div");
         div.className = "qa-msg";
         div.style.marginBottom = "8px";
-        div.innerHTML = `<p><strong>الطالب:</strong> ${qa.studentName} (${qa.grade})</p><p><strong>السؤال:</strong> ${qa.question}</p><div style="display:flex; gap:6px; margin-top:6px;"><input type="text" id="t-reply-input-${idx}" placeholder="اكتب ردك..." value="${qa.reply || ''}"><button class="btn btn-primary btn-sm" type="button" onclick="replyToQA(${idx})">إرسال</button></div>`;
+        div.innerHTML = `
+          <p><strong>الطالب:</strong> ${qa.studentName} (${qa.grade})</p>
+          <p><strong>السؤال:</strong> ${qa.question}</p>
+          ${qa.reply ? `<p style="color:var(--success); margin-top:4px;"><strong>رد المستر:</strong> ${qa.reply}</p>` : ''}
+          <div style="display:flex; gap:6px; margin-top:6px;">
+            <input type="text" id="t-reply-input-${idx}" placeholder="اكتب ردك..." value="${qa.reply || ''}">
+            <button class="btn btn-primary btn-sm" type="button" onclick="replyToQA(${idx})">إرسال الرد</button>
+            <button class="btn btn-danger btn-sm" type="button" onclick="deleteSingleQA(${idx})">🗑️ حذف</button>
+          </div>
+        `;
         container.appendChild(div);
       });
     }
@@ -3578,8 +3584,24 @@
       const allQA = getQuestions();
       allQA[idx].reply = reply;
       saveQuestions(allQA);
-      alert("✅ تم إرسال الرد!");
+      alert("✅ تم إرسال الرد للطالب وإشعاره بنجاح!");
       renderTeacherQA();
+    };
+
+    window.deleteSingleQA = function(idx) {
+      if (confirm("⚠️ هل أنت متأكد من حذف هذا الاستفسار؟")) {
+        let allQA = getQuestions();
+        allQA.splice(idx, 1);
+        saveQuestions(allQA);
+        renderTeacherQA();
+      }
+    };
+
+    window.deleteAllTeacherQA = function() {
+      if (confirm("⚠️ هل أنت متأكد من حذف كافة الاستفسارات والأسئلة؟")) {
+        saveQuestions([]);
+        renderTeacherQA();
+      }
     };
 
     function loadDevPanel() {
