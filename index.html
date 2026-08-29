@@ -520,7 +520,7 @@
 
   <div id="drawer-overlay" class="drawer-overlay"></div>
 
-  <!-- القائمة المنسدلة (☰) مع قسم جدول المواعيد والترتيب القياسي -->
+  <!-- القائمة المنسدلة (☰) بالترتيب القياسي الصحيح -->
   <div id="universal-nav-drawer" class="nav-drawer">
     <div class="nav-drawer-header">
       <div id="drawer-student-profile-header" class="hidden" style="display:flex; align-items:center; gap:10px;">
@@ -541,7 +541,7 @@
     <div class="nav-drawer-menu" id="universal-drawer-menu-container">
       <button id="drawer-btn-home" class="side-nav-btn" type="button">🏠 الصفحة الرئيسية</button>
       
-      <!-- ترتيب أقسام الطالب الصحيح والفعلي -->
+      <!-- ترتيب أقسام الطالب الفعلي والصحيح -->
       <div id="student-drawer-links" class="hidden" style="display:flex; flex-direction:column; gap:6px;">
         <button class="side-nav-btn active" data-tab="tab-courses" type="button">📚 المحاضرات والأرشيف</button>
         <button class="side-nav-btn" data-tab="tab-homework" type="button">📋 الواجبات</button>
@@ -553,7 +553,7 @@
 
       <button id="drawer-btn-leaderboard" class="side-nav-btn" type="button">🏆 لوحة شرف المتفوقين</button>
       <button id="drawer-btn-theme" class="side-nav-btn" type="button">🌙 تبديل الوضع (ليلي / نهاري)</button>
-      <button id="drawer-btn-auth" class="side-nav-btn" type="button">🔑 تسجيل الدخول</button>
+      <button id="drawer-btn-auth" class="side-nav-btn btn-logout-side" type="button">🚪 تسجيل الخروج</button>
     </div>
   </div>
 
@@ -1720,7 +1720,7 @@
     let hasCountedThisSession = false;
     let html5QrCodeScanner = null;
 
-    // استعادة الجلسة والتبويب الحالي للطالب فور عمل Refresh
+    // استعادة جلسة الدخول والتبويب النشط للطالب فور عمل Refresh
     window.addEventListener("load", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
       const savedRole = localStorage.getItem("yk_active_role");
@@ -1836,29 +1836,6 @@
     });
 
     // تسجيل الخروج الفعلي والمباشر للطالب أو الزائر
-    function performGlobalLogout() {
-      isExamActive = false;
-      if (watermarkInterval) clearInterval(watermarkInterval);
-      if (quizTimerInterval) clearInterval(quizTimerInterval);
-      
-      localStorage.removeItem("yk_active_student_code");
-      localStorage.removeItem("yk_active_student_data");
-      localStorage.removeItem("yk_active_student_tab");
-      localStorage.removeItem("yk_active_role");
-      
-      currentActiveStudent = null;
-      closeNavDrawer();
-      updateAuthNavState(false);
-      
-      studentDashboard.classList.add("hidden");
-      teacherDashboard.classList.add("hidden");
-      devDashboard.classList.add("hidden");
-      leaderboardSection.classList.add("hidden");
-      
-      authSection.classList.remove("hidden");
-      tabLogin.click();
-    }
-
     document.getElementById("drawer-btn-auth").addEventListener("click", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
       const savedRole = localStorage.getItem("yk_active_role");
@@ -2661,8 +2638,7 @@
       startQuizTimer(duration);
     };
 
-    // تسليم الواجب مع ضغط الصور قبل الرفع
-    document.getElementById("btn-submit-multiple-hw").onclick = async () => {
+    document.getElementById("btn-submit-multiple-hw").onclick = () => {
       const notes = document.getElementById("std-hw-notes-input").value.trim();
       const filesInput = document.getElementById("std-hw-files");
       const resMsg = document.getElementById("interactive-hw-result");
@@ -2673,31 +2649,35 @@
         return;
       }
 
-      resMsg.innerText = "⏳ جاري ضغط ومعالجة الصور وإرسالها...";
-      resMsg.style.color = "var(--accent-gold)";
-
+      let uploadedFilesCount = 0;
       let filesDataArr = [];
-      for (let i = 0; i < filesInput.files.length; i++) {
-        const compressedBase64 = await compressImageFile(filesInput.files[i], 1000, 0.75);
-        filesDataArr.push(compressedBase64);
-      }
 
-      const allHW = getHomework();
-      allHW.unshift({
-        id: Date.now(),
-        studentName: currentActiveStudent.name,
-        grade: currentActiveStudent.grade,
-        notes: notes || "صور صفحات الواجب",
-        files: filesDataArr,
-        status: "قيد المراجعة من المستر",
-        score: "",
-        feedback: "انتظر تصحيح المستر قريباً",
-        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      Array.from(filesInput.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          filesDataArr.push(e.target.result);
+          uploadedFilesCount++;
+          if (uploadedFilesCount === filesInput.files.length) {
+            const allHW = getHomework();
+            allHW.unshift({
+              id: Date.now(),
+              studentName: currentActiveStudent.name,
+              grade: currentActiveStudent.grade,
+              notes: notes || "صور صفحات الواجب",
+              files: filesDataArr,
+              status: "قيد المراجعة من المستر",
+              score: "",
+              feedback: "انتظر تصحيح المستر قريباً",
+              time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+            });
+            saveHomework(allHW);
+            resMsg.innerText = "✅ تم إرسال الواجب بنجاح للمستر!";
+            resMsg.style.color = "var(--success)";
+            renderStudentHomeworkHistory(currentActiveStudent);
+          }
+        };
+        reader.readAsDataURL(file);
       });
-      saveHomework(allHW);
-      resMsg.innerText = "✅ تم ضغط وإرسال الواجب بنجاح للمستر!";
-      resMsg.style.color = "var(--success)";
-      renderStudentHomeworkHistory(currentActiveStudent);
     };
 
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
@@ -2742,8 +2722,7 @@
       }
     });
 
-    // إرسال إيصال الدفع مع ضغط الصورة التلقائي
-    document.getElementById("btn-request-activation").addEventListener("click", async () => {
+    document.getElementById("btn-request-activation").addEventListener("click", () => {
       const senderPhone = document.getElementById("pay-sender-phone").value.trim();
       const fileInput = document.getElementById("pay-receipt-file");
       const statusMsg = document.getElementById("payment-status-msg");
@@ -2760,25 +2739,26 @@
         return;
       }
 
-      statusMsg.innerText = "⏳ جاري ضغط الصورة وإرسال الطلب...";
-      statusMsg.style.color = "var(--accent-gold)";
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const receiptImg = e.target.result;
+        const students = getStudents();
+        const idx = students.findIndex(s => s.code === currentActiveStudent.code);
+        if (idx !== -1) {
+          students[idx].senderWallet = senderPhone;
+          students[idx].receiptImg = receiptImg;
+          students[idx].pendingLessonId = window.targetLessonToUnlock || "";
+          saveStudents(students);
+          currentActiveStudent = students[idx];
+          localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
+          statusMsg.innerText = "✅ تم إرسال الإيصال وطلب التفعيل للمستر بنجاح!";
+          statusMsg.style.color = "var(--success)";
 
-      const receiptImg = await compressImageFile(fileInput.files[0], 800, 0.7);
-      const students = getStudents();
-      const idx = students.findIndex(s => s.code === currentActiveStudent.code);
-      if (idx !== -1) {
-        students[idx].senderWallet = senderPhone;
-        students[idx].receiptImg = receiptImg;
-        students[idx].pendingLessonId = window.targetLessonToUnlock || "";
-        saveStudents(students);
-        currentActiveStudent = students[idx];
-        localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
-        statusMsg.innerText = "✅ تم إرسال الإيصال وطلب التفعيل للمستر بنجاح!";
-        statusMsg.style.color = "var(--success)";
-
-        const waMsg = encodeURIComponent(`طلب تفعيل حصة للطالب: ${currentActiveStudent.name} (${currentActiveStudent.grade})\nرقم المحفظة: ${senderPhone}`);
-        window.open(`https://wa.me/201152039710?text=${waMsg}`, "_blank");
-      }
+          const waMsg = encodeURIComponent(`طلب تفعيل حصة للطالب: ${currentActiveStudent.name} (${currentActiveStudent.grade})\nرقم المحفظة: ${senderPhone}`);
+          window.open(`https://wa.me/201152039710?text=${waMsg}`, "_blank");
+        }
+      };
+      reader.readAsDataURL(fileInput.files[0]);
     });
 
     let activeVideoElForTimestamp = null;
@@ -2808,7 +2788,6 @@
       activeVideoElForTimestamp = null;
       hasCountedThisSession = false;
 
-      // علامة إكمال الحصة التلقائية
       const markLessonCompleted = () => {
         if (!student.completedLessons) student.completedLessons = [];
         if (!student.completedLessons.includes(lesson.id)) {
