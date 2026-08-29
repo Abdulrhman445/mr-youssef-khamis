@@ -145,13 +145,13 @@
       align-items: center; gap: 6px; font-weight: 800; font-family: inherit;
     }
 
-    /* تقسيم المنصة للوحة المعلم، وشاشة كاملة للوحة الطالب */
-    #teacher-dashboard .dashboard-layout-wrapper {
+    .dashboard-layout-wrapper {
       display: grid; grid-template-columns: 260px 1fr; gap: 15px; align-items: start; width: 100%;
     }
-    #student-dashboard.dashboard-layout-wrapper {
-      display: block !important;
-      width: 100%;
+
+    /* ضبط لوحة الطالب كشاشة عريضة بدون سايدبار */
+    #student-dashboard {
+      grid-template-columns: 1fr;
     }
     #student-dashboard .adaptive-sidebar {
       display: none !important;
@@ -1246,7 +1246,7 @@
       </div>
     </div>
 
-    <!-- نافذة تعديل بيانات الطالب للمستر (تفتح عند الضغط على بروفايل أو ملف الطالب) -->
+    <!-- نافذة تعديل بيانات الطالب للمستر -->
     <div id="teacher-edit-student-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
         <h3 class="box-title">⚙️ تعديل ملف وبيانات الطالب والكود</h3>
@@ -1307,7 +1307,7 @@
       </div>
     </div>
 
-    <!-- نافذة عرض صور الواجب لمعلم -->
+    <!-- نافذة عرض صور الواجب للمعلم -->
     <div id="view-hw-images-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:700px; text-align:center;">
         <h3 class="box-title">📄 معاينة صور الواجب المقدمة</h3>
@@ -2831,9 +2831,6 @@
       students[sIdx].xp = (students[sIdx].xp || 0) + earnedXP;
       currentActiveStudent.xp = students[sIdx].xp;
       saveStudents(students);
-      if (document.getElementById("drawer-user-xp")) {
-        document.getElementById("drawer-user-xp").innerText = `⚡ ${currentActiveStudent.xp} XP`;
-      }
 
       const results = getExamResults();
       results.unshift({
