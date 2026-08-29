@@ -905,7 +905,7 @@
         </aside>
 
         <main class="main-content-panel">
-          <!-- 1. شريط الإعلانات والإشعارات الموجهة لصف محدد -->
+          <!-- 1. شريط الإعلانات والإشعارات الموجهة مع تحديد المدة -->
           <div id="t-sec-announcement" class="teacher-content-tab active anime-fade-in">
             <div class="dash-box" style="margin-bottom:15px;">
               <h3 class="box-title">📢 تحديث شريط الإعلانات العام (لكل الطلاب)</h3>
@@ -916,7 +916,7 @@
             </div>
 
             <div class="dash-box" style="border-color:var(--accent-gold);">
-              <h3 class="box-title" style="color:var(--accent-gold);">🎯 إرسال إشعار فوري وتنبيه لصف دراسي محدد</h3>
+              <h3 class="box-title" style="color:var(--accent-gold);">🎯 إرسال إشعار فوري وتنبيه لصف دراسي محدد مع تحديد المدة</h3>
               <div class="grid-2col" style="margin-bottom:10px;">
                 <select id="teacher-push-grade">
                   <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
@@ -929,9 +929,18 @@
                   <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
                   <option value="الصف الثالث الإعدادي" selected>الصف الثالث الإعدادي</option>
                 </select>
-                <input type="text" id="teacher-push-text" placeholder="اكتب نص الإشعار الموجه لطلاب هذا الصف...">
+                <select id="teacher-push-duration">
+                  <option value="1">ساعة واحدة</option>
+                  <option value="24" selected>يوم واحد (24 ساعة)</option>
+                  <option value="72">3 أيام</option>
+                  <option value="168">أسبوع كامل</option>
+                  <option value="99999">دائم (بدون انتهاء)</option>
+                </select>
               </div>
-              <button id="btn-send-push-announcement" class="btn btn-accent btn-full" type="button">🚀 إرسال التنبيه فورياً لجرس طلاب هذا الصف</button>
+              <div class="input-field">
+                <textarea id="teacher-push-text" rows="2" placeholder="اكتب نص الإشعار الموجه لطلاب هذا الصف..." required></textarea>
+              </div>
+              <button id="btn-send-push-announcement" class="btn btn-accent btn-full" type="button">🚀 إرسال التنبيه فوراً لجرس طلاب هذا الصف</button>
             </div>
           </div>
 
@@ -2308,7 +2317,7 @@
       `;
     }
 
-    // نظام الإشعارات الذكي (مع دعم الإشعارات الموجهة لصف معين)
+    // نظام الإشعارات الذكي (مع فلترة المدة الزمنية التي حددها المستر)
     function renderStudentNotifications(student) {
       const listContainer = document.getElementById("notifications-list-container");
       const badgeCount = document.getElementById("notification-badge-count");
@@ -2318,8 +2327,29 @@
       const isAllDismissed = dismissed.some(d => d.startsWith("all_"));
 
       let rawNotifs = [];
+      const now = Date.now();
 
-      // 1. رسالة ترحيب الحساب الجديد
+      // 1. إشعارات التنبيهات الموجهة لصف الطالب مع فلترة وقت انتهاء الصلاحية
+      const targeted = getTargetedAnnouncements();
+      if (targeted[student.grade] && Array.isArray(targeted[student.grade])) {
+        targeted[student.grade].forEach((tAnnounce) => {
+          const durationHours = tAnnounce.durationHours || 24;
+          const expiresAt = tAnnounce.timestamp + (durationHours * 60 * 60 * 1000);
+          
+          if (durationHours === 99999 || now < expiresAt) {
+            rawNotifs.push({
+              id: "notif_target_" + tAnnounce.id,
+              title: "📢 تنبيه خاص لصفك الدراسي",
+              text: tAnnounce.text,
+              time: tAnnounce.time || "تنبيه",
+              type: "targeted",
+              isSpecialFree: false
+            });
+          }
+        });
+      }
+
+      // 2. رسالة ترحيب الحساب الجديد
       rawNotifs.push({
         id: "notif_welcome_" + student.code,
         title: "🎉 مرحباً بك في المنصة!",
@@ -2331,21 +2361,6 @@
           document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-profile']").click();
         }
       });
-
-      // 2. إشعارات التنبيهات الموجهة لصف الطالب من المستر
-      const targeted = getTargetedAnnouncements();
-      if (targeted[student.grade] && Array.isArray(targeted[student.grade])) {
-        targeted[student.grade].forEach((tAnnounce) => {
-          rawNotifs.push({
-            id: "notif_target_" + tAnnounce.id,
-            title: "📢 تنبيه خاص لصفك الدراسي",
-            text: tAnnounce.text,
-            time: tAnnounce.time || "تنبيه",
-            type: "targeted",
-            isSpecialFree: false
-          });
-        });
-      }
 
       // 3. إشعارات ردود المستر على استفسارات الطالب مع نص الرد الكامل
       const myQA = getQuestions().filter(q => q.studentName === student.name && q.reply && q.reply.trim() !== "");
@@ -3252,10 +3267,11 @@
       alert("✅ تم نشر التنبيه العام لجميع الطلاب!");
     });
 
-    // إرسال إشعار فوري لصف محدد (تم تصحيح الـ IDs لتعمل بنسبة 100%)
+    // إرسال إشعار فوري لصف محدد مع تحديد مدة الصلاحية
     document.getElementById("btn-send-push-announcement").addEventListener("click", () => {
       const targetGrade = document.getElementById("teacher-push-grade").value;
       const text = document.getElementById("teacher-push-text").value.trim();
+      const durationHours = parseInt(document.getElementById("teacher-push-duration").value) || 24;
 
       if (!text) {
         alert("⚠️ يرجى كتابة نص الإشعار أولاً.");
@@ -3267,12 +3283,14 @@
       targeted[targetGrade].unshift({
         id: Date.now(),
         text: text,
+        timestamp: Date.now(),
+        durationHours: durationHours,
         time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
 
       saveTargetedAnnouncements(targeted);
       document.getElementById("teacher-push-text").value = "";
-      alert(`🚀 تم إرسال الإشعار والتنبيه فورياً لجرس طلاب (${targetGrade}) بنجاح!`);
+      alert(`🚀 تم إرسال الإشعار لطلاب (${targetGrade}) بنجاح ويبقى ظاهراً لمدة محددة!`);
     });
 
     // حفظ وتحديث جدول المواعيد
