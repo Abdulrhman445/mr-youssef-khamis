@@ -515,7 +515,7 @@
 
   <div id="drawer-overlay" class="drawer-overlay"></div>
 
-  <!-- القائمة المنسدلة (☰) مرتبة بالشكل القياسي الصحيح -->
+  <!-- القائمة المنسدلة (☰) بالترتيب القياسي الصحيح -->
   <div id="universal-nav-drawer" class="nav-drawer">
     <div class="nav-drawer-header">
       <div id="drawer-student-profile-header" class="hidden" style="display:flex; align-items:center; gap:10px;">
@@ -536,7 +536,7 @@
     <div class="nav-drawer-menu" id="universal-drawer-menu-container">
       <button id="drawer-btn-home" class="side-nav-btn" type="button">🏠 الصفحة الرئيسية</button>
       
-      <!-- ترتيب أقسام الطالب الصحيح والمتسلسل -->
+      <!-- ترتيب أقسام الطالب الفعلي والصحيح -->
       <div id="student-drawer-links" class="hidden" style="display:flex; flex-direction:column; gap:6px;">
         <button class="side-nav-btn active" data-tab="tab-courses" type="button">📚 المحاضرات والأرشيف</button>
         <button class="side-nav-btn" data-tab="tab-homework" type="button">📋 الواجبات</button>
@@ -1564,6 +1564,7 @@
           if (updated) {
             currentActiveStudent = updated;
             localStorage.setItem("yk_active_student_code", updated.code);
+            localStorage.setItem("yk_active_student_data", JSON.stringify(updated));
             loadStudentDashboard(updated);
           }
         }
@@ -1621,10 +1622,11 @@
     let hasCountedThisSession = false;
     let html5QrCodeScanner = null;
 
-    // استعادة الجلسة والصفحة الحالية فور عمل ريفرش
+    // استعادة جلسة الدخول والتبويب النشط للطالب فور عمل Refresh بدون تأخير وبلا خروج
     window.addEventListener("load", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
       const savedRole = localStorage.getItem("yk_active_role");
+      const savedStudentData = localStorage.getItem("yk_active_student_data");
 
       if (savedRole === "teacher") {
         authSection.classList.add("hidden");
@@ -1636,24 +1638,26 @@
         devDashboard.classList.remove("hidden");
         loadDevPanel();
         updateAuthNavState(true);
-      } else if (savedCode) {
-        setTimeout(() => {
-          const students = getStudents();
-          const student = students.find(s => s.code === savedCode);
-          if (student) {
-            authSection.classList.add("hidden");
-            studentDashboard.classList.remove("hidden");
-            loadStudentDashboard(student);
-            updateAuthNavState(true);
+      } else if (savedStudentData || savedCode) {
+        let student = savedStudentData ? JSON.parse(savedStudentData) : null;
+        if (!student && savedCode) {
+          student = getStudents().find(s => s.code === savedCode);
+        }
 
-            // البقاء في نفس التبويب/القسم الذي كان واقفاً عنده الطالب
-            const lastActiveTab = localStorage.getItem("yk_active_student_tab") || "tab-courses";
-            const targetTabBtn = document.querySelector(`#student-drawer-links .side-nav-btn[data-tab='${lastActiveTab}']`);
-            if (targetTabBtn) {
-              targetTabBtn.click();
-            }
+        if (student) {
+          currentActiveStudent = student;
+          authSection.classList.add("hidden");
+          studentDashboard.classList.remove("hidden");
+          loadStudentDashboard(student);
+          updateAuthNavState(true);
+
+          // استرجاع نفس التبويب الذي كان يقف عنده الطالب
+          const lastTab = localStorage.getItem("yk_active_student_tab") || "tab-courses";
+          const targetBtn = document.querySelector(`#student-drawer-links .side-nav-btn[data-tab='${lastTab}']`);
+          if (targetBtn) {
+            targetBtn.click();
           }
-        }, 500);
+        }
       }
     });
 
@@ -1880,14 +1884,16 @@
       saveExclusiveCodes(exclusiveCodes);
 
       const currentDevice = getDeviceFingerprint();
-      students.push({
+      const newStudent = {
         name, grade, phone, parentPhone, code, paid: false, senderWallet: "", receiptImg: "",
         views: 0, xp: 50, deviceIds: [currentDevice], showInLeaderboard: true,
         attendance: ["مسجل بالسنتر ✅"],
         avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`,
         unlockedLessons: [],
         firstLogin: true
-      });
+      };
+
+      students.push(newStudent);
       saveStudents(students);
 
       formStudentSignup.reset();
@@ -1951,9 +1957,11 @@
         }
 
         localStorage.setItem("yk_active_student_code", student.code);
+        localStorage.setItem("yk_active_student_data", JSON.stringify(student));
         localStorage.setItem("yk_active_student_tab", "tab-courses");
         localStorage.removeItem("yk_active_role");
 
+        currentActiveStudent = student;
         authSection.classList.add("hidden");
         studentDashboard.classList.remove("hidden");
         loadStudentDashboard(student);
@@ -1965,7 +1973,7 @@
       }
     });
 
-    // التنقل وحفظ التبويب النشط في الذاكرة لمنع الخروج عند الـ Refresh
+    // التنقل وحفظ التبويب النشط في localStorage
     document.querySelectorAll("#student-drawer-links .side-nav-btn[data-tab]").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll("#student-drawer-links .side-nav-btn[data-tab]").forEach(b => b.classList.remove("active"));
@@ -1974,7 +1982,7 @@
 
         const targetTab = btn.getAttribute("data-tab");
         localStorage.setItem("yk_active_student_tab", targetTab);
-        
+
         document.querySelectorAll(".std-content-tab").forEach(sec => sec.classList.add("hidden"));
 
         if (targetTab === "tab-courses") document.getElementById("section-courses").classList.remove("hidden");
@@ -2033,7 +2041,6 @@
       });
     }
 
-    // زر الجرس التفاعلي وعرض الإشعارات والرسائل بدقة
     const btnToggleNotifications = document.getElementById("btn-toggle-notifications");
     const notificationsDropdown = document.getElementById("notifications-dropdown");
     if (btnToggleNotifications) {
@@ -2070,7 +2077,7 @@
       }
     });
 
-    // دالة تغيير وتحجيم وقص صورة البروفايل للطالب بحرية تامة من القائمة أو قسم البروفايل
+    // تغيير صورة البروفايل للطالب مع الحفظ الفوري
     function handleStudentAvatarUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -2087,6 +2094,7 @@
           students[idx].avatar = newAvatar;
           currentActiveStudent.avatar = newAvatar;
           saveStudents(students);
+          localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
           alert("✅ تم قص وتحديث صورة البروفايل الشخصية بدقة!");
         }
       };
@@ -2212,6 +2220,7 @@
               }
             });
           } else {
+            // إشعار الحصة العادية
             if (lIdx === lessons.length - 1) {
               rawNotifs.push({
                 id: "notif_lesson_" + (lesson.id || lIdx),
@@ -2227,6 +2236,7 @@
             }
           }
 
+          // إشعار المذكرة والواجب إن وجد
           if (lesson.pdfData && lIdx === lessons.length - 1) {
             rawNotifs.push({
               id: "notif_pdf_" + (lesson.id || lIdx),
@@ -2241,6 +2251,7 @@
             });
           }
 
+          // إشعار الامتحان التقييمي إن وجد
           if (lesson.questions && lesson.questions.some(q => q.category === 'exam' || !q.category)) {
             const myResults = getExamResults().filter(r => r.name === student.name);
             const alreadyDone = myResults.some(r => r.lessonTitle === lesson.videoTitle);
@@ -2261,6 +2272,7 @@
         });
       }
 
+      // تصفية الإشعارات المحذوفة من قبل الطالب
       const notifs = isAllDismissed ? [] : rawNotifs.filter(n => !dismissed.includes(n.id));
 
       if (notifs.length === 0) {
@@ -2561,6 +2573,7 @@
           students[sIdx].xp = (students[sIdx].xp || 0) + 25;
           currentActiveStudent = students[sIdx];
           saveStudents(students);
+          localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
         }
 
         alert("🎉 تم تفعيل هذه الحصة فقط بنجاح!");
@@ -2598,6 +2611,7 @@
           students[idx].pendingLessonId = window.targetLessonToUnlock || "";
           saveStudents(students);
           currentActiveStudent = students[idx];
+          localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
           statusMsg.innerText = "✅ تم إرسال الإيصال وطلب التفعيل للمستر بنجاح!";
           statusMsg.style.color = "var(--success)";
 
@@ -2613,7 +2627,7 @@
     function openLessonPlayer(student, lesson) {
       const students = getStudents();
       const sIdx = students.findIndex(s => s.code === student.code);
-      const currentViews = students[sIdx].views || 0;
+      const currentViews = (sIdx !== -1 && students[sIdx].views) ? students[sIdx].views : (student.views || 0);
 
       const isFree = lesson.isFree === true || lesson.price === 0;
 
@@ -2672,7 +2686,7 @@
         }
       }
 
-      document.getElementById("views-count-badge").innerText = isFree ? "👁️ مشاهدات مجانية (بلا حدود)" : `👁️ المشاهدات: ${students[sIdx].views || 0} / 5`;
+      document.getElementById("views-count-badge").innerText = isFree ? "👁️ مشاهدات مجانية (بلا حدود)" : `👁️ المشاهدات: ${currentViews} / 5`;
 
       document.getElementById("btn-vid-forward").onclick = () => {
         if (activeVideoElForTimestamp) activeVideoElForTimestamp.currentTime += 5;
@@ -2755,6 +2769,10 @@
       if (sIdx !== -1) {
         students[sIdx].views = (students[sIdx].views || 0) + 1;
         saveStudents(students);
+        if (currentActiveStudent && currentActiveStudent.code === studentCode) {
+          currentActiveStudent.views = students[sIdx].views;
+          localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
+        }
         document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views} / 5`;
         alert("👁️ تم تجاوز منتصف مدة الحصة، وتم احتساب هذه المشاهدة.");
       }
@@ -2995,9 +3013,13 @@
       const earnedXP = percent >= 80 ? 50 : (percent >= 60 ? 30 : 10);
       const students = getStudents();
       const sIdx = students.findIndex(s => s.code === currentActiveStudent.code);
-      students[sIdx].xp = (students[sIdx].xp || 0) + earnedXP;
-      currentActiveStudent.xp = students[sIdx].xp;
-      saveStudents(students);
+      if (sIdx !== -1) {
+        students[sIdx].xp = (students[sIdx].xp || 0) + earnedXP;
+        currentActiveStudent.xp = students[sIdx].xp;
+        saveStudents(students);
+        localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
+      }
+      
       if (document.getElementById("drawer-user-xp")) {
         document.getElementById("drawer-user-xp").innerText = `⚡ ${currentActiveStudent.xp} XP`;
       }
@@ -3715,6 +3737,10 @@
         students[idx].phone = newPhone;
         students[idx].parentPhone = newParentPhone;
         saveStudents(students);
+        if (currentActiveStudent && currentActiveStudent.code === origCode) {
+          currentActiveStudent = students[idx];
+          localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
+        }
         alert("✅ تم تعديل بيانات وكود الطالب بنجاح!");
         document.getElementById("teacher-edit-student-modal").classList.add("hidden");
         renderTeacherPayments();
@@ -3990,6 +4016,7 @@
       if (watermarkInterval) clearInterval(watermarkInterval);
       if (quizTimerInterval) clearInterval(quizTimerInterval);
       localStorage.removeItem("yk_active_student_code");
+      localStorage.removeItem("yk_active_student_data");
       localStorage.removeItem("yk_active_student_tab");
       localStorage.removeItem("yk_active_role");
       currentActiveStudent = null;
