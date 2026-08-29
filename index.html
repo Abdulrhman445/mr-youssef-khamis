@@ -515,7 +515,7 @@
 
   <div id="drawer-overlay" class="drawer-overlay"></div>
 
-  <!-- القائمة المنسدلة (☰) بالترتيب القياسي الصحيح -->
+  <!-- القائمة المنسدلة (☰) بالترتيب القياسي الصحيح وزر خروج شغال 100% -->
   <div id="universal-nav-drawer" class="nav-drawer">
     <div class="nav-drawer-header">
       <div id="drawer-student-profile-header" class="hidden" style="display:flex; align-items:center; gap:10px;">
@@ -1738,11 +1738,37 @@
       localStorage.setItem("yk_theme", isDark ? "dark" : "light");
     });
 
-    document.getElementById("drawer-btn-auth").addEventListener("click", () => {
+    // تسجيل الخروج الفعلي والمباشر للطالب أو الزائر
+    function performGlobalLogout() {
+      isExamActive = false;
+      if (watermarkInterval) clearInterval(watermarkInterval);
+      if (quizTimerInterval) clearInterval(quizTimerInterval);
+      
+      localStorage.removeItem("yk_active_student_code");
+      localStorage.removeItem("yk_active_student_data");
+      localStorage.removeItem("yk_active_student_tab");
+      localStorage.removeItem("yk_active_role");
+      
+      currentActiveStudent = null;
       closeNavDrawer();
-      if (currentActiveStudent || localStorage.getItem("yk_active_role")) {
-        document.getElementById("std-logout").click();
+      updateAuthNavState(false);
+      
+      studentDashboard.classList.add("hidden");
+      teacherDashboard.classList.add("hidden");
+      devDashboard.classList.add("hidden");
+      leaderboardSection.classList.add("hidden");
+      
+      authSection.classList.remove("hidden");
+      tabLogin.click();
+    }
+
+    document.getElementById("drawer-btn-auth").addEventListener("click", () => {
+      const savedCode = localStorage.getItem("yk_active_student_code");
+      const savedRole = localStorage.getItem("yk_active_role");
+      if (currentActiveStudent || savedCode || savedRole) {
+        performGlobalLogout();
       } else {
+        closeNavDrawer();
         studentDashboard.classList.add("hidden");
         teacherDashboard.classList.add("hidden");
         devDashboard.classList.add("hidden");
@@ -2041,6 +2067,7 @@
       });
     }
 
+    // زر الجرس التفاعلي وعرض الإشعارات والرسائل بدقة
     const btnToggleNotifications = document.getElementById("btn-toggle-notifications");
     const notificationsDropdown = document.getElementById("notifications-dropdown");
     if (btnToggleNotifications) {
@@ -4009,21 +4036,6 @@
       } catch (err) {
         alert("❌ خطأ في تنسيق JSON!");
       }
-    });
-
-    document.getElementById("std-logout").addEventListener("click", () => {
-      isExamActive = false;
-      if (watermarkInterval) clearInterval(watermarkInterval);
-      if (quizTimerInterval) clearInterval(quizTimerInterval);
-      localStorage.removeItem("yk_active_student_code");
-      localStorage.removeItem("yk_active_student_data");
-      localStorage.removeItem("yk_active_student_tab");
-      localStorage.removeItem("yk_active_role");
-      currentActiveStudent = null;
-      updateAuthNavState(false);
-      studentDashboard.classList.add("hidden");
-      authSection.classList.remove("hidden");
-      tabLogin.click();
     });
 
     document.getElementById("teacher-logout").addEventListener("click", () => {
