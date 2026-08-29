@@ -94,7 +94,7 @@
     
     /* تصميم صندوق الإشعارات المنسدل المتطور */
     .notifications-dropdown {
-      position: absolute; top: 48px; left: 0; width: 320px; max-width: 90vw; max-height: 420px; overflow-y: auto;
+      position: absolute; top: 48px; left: 0; width: 330px; max-width: 90vw; max-height: 440px; overflow-y: auto;
       background: var(--card-bg); color: var(--text-main); border-radius: 14px;
       box-shadow: 0 15px 35px rgba(0,0,0,0.35); border: 1.5px solid var(--border-color);
       z-index: 99999; padding: 12px; display: none; text-align: right;
@@ -104,17 +104,24 @@
     .notif-item-card {
       background: var(--box-bg); border: 1px solid var(--border-color); border-radius: 10px;
       padding: 10px 12px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px;
-      transition: all 0.2s ease;
+      transition: all 0.2s ease; cursor: pointer; position: relative;
     }
-    .notif-item-card:hover { border-color: var(--primary-glow); transform: translateX(-2px); }
-    .notif-item-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 800; }
+    .notif-item-card:hover { border-color: var(--primary-glow); transform: translateX(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .notif-item-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 800; padding-left: 18px; }
     .notif-item-body { font-size: 0.84rem; line-height: 1.4; color: var(--text-main); }
-    .notif-item-action {
-      align-self: flex-start; margin-top: 4px; background: rgba(37, 99, 235, 0.1);
-      color: var(--primary-glow); border: none; padding: 4px 10px; border-radius: 6px;
-      font-size: 0.76rem; font-weight: 800; cursor: pointer; font-family: inherit;
+    
+    /* تصميم إشعار الحصة المجانية الحماسي */
+    .notif-free-special {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.2)) !important;
+      border: 1.5px solid #10b981 !important;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2) !important;
     }
-    .notif-item-action:hover { background: var(--primary-glow); color: #fff; }
+    .btn-notif-delete {
+      position: absolute; top: 6px; left: 6px; background: transparent; border: none;
+      color: var(--danger); font-size: 0.8rem; cursor: pointer; font-weight: bold; padding: 2px 5px;
+      border-radius: 50%;
+    }
+    .btn-notif-delete:hover { background: rgba(239, 68, 68, 0.15); }
 
     .nav-btn-menu {
       background: rgba(255, 255, 255, 0.2); color: #fff; border: none; padding: 6px 14px;
@@ -495,8 +502,8 @@
         </button>
         <div id="notifications-dropdown" class="notifications-dropdown">
           <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:6px; margin-bottom:8px;">
-            <h4 style="font-size:0.92rem; color:var(--primary-glow); margin:0;">🔔 مركز الإشعارات والرسائل:</h4>
-            <span id="notifs-counter-badge" style="font-size:0.75rem; color:var(--text-muted);">0 جديد</span>
+            <h4 style="font-size:0.92rem; color:var(--primary-glow); margin:0;">🔔 مركز الإشعارات والرسائل</h4>
+            <button id="btn-clear-all-notifs" style="background:transparent; border:none; color:var(--danger); font-size:0.75rem; font-weight:800; cursor:pointer;" type="button">مسح الكل 🗑️</button>
           </div>
           <div id="notifications-list-container">لا توجد إشعارات جديدة.</div>
         </div>
@@ -847,7 +854,7 @@
       </main>
     </div>
 
-    <!-- لوحة تحكم المعلم (مع تعديلات البحث السريع وبروفايل الطالب وتعديله) -->
+    <!-- لوحة تحكم المعلم -->
     <div id="teacher-dashboard" class="glass-card hidden">
       <header class="dash-header-flex">
         <div style="display:flex; align-items:center; gap:10px;">
@@ -881,7 +888,6 @@
         </aside>
 
         <main class="main-content-panel">
-          <!-- 1. شريط الإعلانات -->
           <div id="t-sec-announcement" class="teacher-content-tab active anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📢 تحديث شريط الإعلانات والتنبيهات العاجلة</h3>
@@ -892,7 +898,6 @@
             </div>
           </div>
 
-          <!-- 2. ماسح الحضور بالكاميرا والـ QR -->
           <div id="t-sec-qr-scan" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box" style="text-align:center;">
               <h3 class="box-title">📷 نظام مسح حضور السنتر (كاميرا الجوال / QR / كود يدوي)</h3>
@@ -913,7 +918,6 @@
             </div>
           </div>
 
-          <!-- 3. المشتركون والإيصالات مع شريط البحث الفوري -->
           <div id="t-sec-payments" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -941,7 +945,6 @@
             </div>
           </div>
 
-          <!-- 4. لوحة الشرف -->
           <div id="t-sec-leaderboard-mgr" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">🏆 التحكم في لوحة شرف الأوائل والمتفوقين</h3>
@@ -962,7 +965,6 @@
             </div>
           </div>
 
-          <!-- 5. أسعار الحصص لكل درس على حدة وخيار المجاني (Free) -->
           <div id="t-sec-prices" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">💰 تحديد سعر كل حصة / درس على حدة أو جعلها مجانية (Free)</h3>
@@ -970,7 +972,6 @@
             </div>
           </div>
 
-          <!-- 6. كروت شحن الحصص -->
           <div id="t-sec-promos" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">🎟️ توليد كروت شحن الحصص (تفعل فيديو واحد فقط المرتبط بالكرت)</h3>
@@ -997,7 +998,6 @@
             </div>
           </div>
 
-          <!-- 7. أكواد تسجيل السنتر الحصرية -->
           <div id="t-sec-student-codes" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">🪪 توليد وربط أكواد تسجيل السنتر (لكل طالب كود حصري باسمه)</h3>
@@ -1033,7 +1033,6 @@
             </div>
           </div>
 
-          <!-- 8. رفع المحاضرات -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
@@ -1112,7 +1111,6 @@
             </div>
           </div>
 
-          <!-- 9. بنك الأسئلة -->
           <div id="t-sec-quiz" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📝 بنك الأسئلة، الاختبارات، ونموذج إجابة الواجب</h3>
@@ -1187,7 +1185,6 @@
             </div>
           </div>
 
-          <!-- 10. تصدير النتائج -->
           <div id="t-sec-results" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -1227,7 +1224,6 @@
             </div>
           </div>
 
-          <!-- 11. متابعة الواجبات -->
           <div id="t-sec-homework" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📝 تصدير ومتابعة الواجبات (صور متعددة)</h3>
@@ -1248,7 +1244,6 @@
             </div>
           </div>
 
-          <!-- 12. استفسارات الطلاب -->
           <div id="t-sec-qa" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -2053,6 +2048,16 @@
       }
     });
 
+    // مسح كافة الإشعارات للطالب
+    document.getElementById("btn-clear-all-notifs").addEventListener("click", () => {
+      if (currentActiveStudent) {
+        let dismissed = JSON.parse(localStorage.getItem(`yk_dismissed_notifs_${currentActiveStudent.code}`) || "[]");
+        dismissed.push("all_" + Date.now());
+        localStorage.setItem(`yk_dismissed_notifs_${currentActiveStudent.code}`, JSON.stringify(dismissed));
+        renderStudentNotifications(currentActiveStudent);
+      }
+    });
+
     // دالة تغيير وتحجيم وقص صورة البروفايل للطالب بحرية تامة من القائمة أو قسم البروفايل
     function handleStudentAvatarUpload(e) {
       const file = e.target.files[0];
@@ -2136,133 +2141,160 @@
       renderStudentCoursesList(student);
     }
 
-    // نظام الإشعارات المتطور والتفاعلي التام
+    // نظام الإشعارات الذكي (حذف فردي + تحويل فوري عند النقر + إشعار الحصص المجانية VIP)
     function renderStudentNotifications(student) {
       const listContainer = document.getElementById("notifications-list-container");
       const badgeCount = document.getElementById("notification-badge-count");
-      const counterBadge = document.getElementById("notifs-counter-badge");
       listContainer.innerHTML = "";
 
-      let notifs = [];
+      let dismissed = JSON.parse(localStorage.getItem(`yk_dismissed_notifs_${student.code}`) || "[]");
+      const isAllDismissed = dismissed.some(d => d.startsWith("all_"));
 
-      // 1. رسالة ترحيب الحساب
-      notifs.push({
+      let rawNotifs = [];
+
+      // 1. رسالة ترحيب الحساب الجديد
+      rawNotifs.push({
+        id: "notif_welcome_" + student.code,
         title: "🎉 مرحباً بك في المنصة!",
-        text: `أهلاً بك يا ${student.name} في منصة مستر يوسف خميس للغة الإنجليزية! تم تجهيز حسابك ومتابعة صفك الدراسي (${student.grade}).`,
+        text: `أهلاً بك يا ${student.name} في منصة مستر يوسف خميس للغة الإنجليزية! تم تجهيز حسابك لصفك الدراسي (${student.grade}). اضغط هنا لعرض كود السنتر الخاص بك.`,
         time: "تنبيه دائم",
         type: "welcome",
-        actionText: "🪪 عرض بياناتك والـ QR",
+        isSpecialFree: false,
         actionCallback: () => {
           document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-profile']").click();
         }
       });
 
-      // 2. التنبيه العام المنشور من المستر
-      const announcement = getAnnouncement();
-      if (announcement) {
-        notifs.push({
-          title: "📢 إعلان وتنبيه عام",
-          text: announcement,
-          time: "عاجل",
-          type: "announcement"
-        });
-      }
-
-      // 3. إشعارات ردود المستر على استفسارات الطالب مع نص الرد
+      // 2. إشعارات ردود المستر على استفسارات الطالب مع نص الرد الكامل
       const myQA = getQuestions().filter(q => q.studentName === student.name && q.reply && q.reply.trim() !== "");
       myQA.forEach(qa => {
-        notifs.push({
+        rawNotifs.push({
+          id: "notif_qa_" + qa.id,
           title: "💬 رد جديد من مستر يوسف",
           text: `سؤالك: "${qa.question}"\n👈 رد المستر: "${qa.reply}"`,
           time: "حديث",
           type: "reply",
-          actionText: "💬 الذهاب لغرفة السؤال",
+          isSpecialFree: false,
           actionCallback: () => {
             document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
           }
         });
       });
 
-      // 4. إشعارات المحاضرات والواجبات والامتحانات والـ PDF
+      // 3. إشعارات المحاضرات والواجبات والامتحانات والحصص المجانية
       const curriculum = getCurriculum();
       const lessons = curriculum[student.grade] || [];
       if (lessons.length > 0) {
-        const latestL = lessons[lessons.length - 1];
-        notifs.push({
-          title: "📚 حصة جديدة لصفك",
-          text: `قام مستر يوسف بنشر محاضرة: "${latestL.videoTitle || 'حصة الأسبوع'}" لـ (${student.grade}). تابع الشرح فوراً!`,
-          time: "جديد",
-          type: "course",
-          actionText: "🎬 فتح المحاضرات",
-          actionCallback: () => {
-            document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
-          }
-        });
+        lessons.forEach((lesson, lIdx) => {
+          const isFree = lesson.isFree === true || lesson.price === 0;
 
-        if (latestL.pdfData) {
-          notifs.push({
-            title: "📄 مذكرة وواجب (PDF) جديد",
-            text: `تم إرفاق ملف مذكرة الشرح والواجب لحصة "${latestL.videoTitle}". يمكنك تنزيلها وحل الواجب.`,
-            time: "متاح",
-            type: "pdf",
-            actionText: "📋 الذهاب لقسم الواجبات",
-            actionCallback: () => {
-              document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-homework']").click();
-            }
-          });
-        }
-
-        if (latestL.questions && latestL.questions.some(q => q.category === 'exam' || !q.category)) {
-          const myResults = getExamResults().filter(r => r.name === student.name);
-          const alreadyDone = myResults.some(r => r.lessonTitle === latestL.videoTitle);
-          if (!alreadyDone) {
-            notifs.push({
-              title: "📝 اختبار تقييمي متاح",
-              text: `يوجد امتحان تقييمي خاص بـ "${latestL.videoTitle}". احرص على حل الاختبار للحصول على درجات التفوق.`,
-              time: "هام",
-              type: "exam",
-              actionText: "✍️ دخول الامتحان",
+          // إشعار مميز للحصة المجانية (Free)
+          if (isFree) {
+            rawNotifs.push({
+              id: "notif_free_lesson_" + (lesson.id || lIdx),
+              title: "🎁 هدية مجانية من مستر يوسف! (FREE VIP)",
+              text: `🔥 حماسكم سر تفوقكم.. تم فتح محاضرة "${lesson.videoTitle || 'حصة مميزة'}" مجاناً بالكامل بلا قيود! انقر للمشاهدة فوراً 🚀`,
+              time: "حصري ومجاني 🌟",
+              type: "free_course",
+              isSpecialFree: true,
               actionCallback: () => {
-                document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-exams']").click();
+                document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
+                openLessonPlayer(student, lesson);
+              }
+            });
+          } else {
+            // إشعار الحصة العادية
+            if (lIdx === lessons.length - 1) {
+              rawNotifs.push({
+                id: "notif_lesson_" + (lesson.id || lIdx),
+                title: "📚 محاضرة جديدة لصفك",
+                text: `قام مستر يوسف بنشر محاضرة: "${lesson.videoTitle}". انقر هنا للانتقال للاشتراك وتفعيل الحصة.`,
+                time: "جديد",
+                type: "course",
+                isSpecialFree: false,
+                actionCallback: () => {
+                  document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
+                }
+              });
+            }
+          }
+
+          // إشعار المذكرة والواجب إن وجد
+          if (lesson.pdfData && lIdx === lessons.length - 1) {
+            rawNotifs.push({
+              id: "notif_pdf_" + (lesson.id || lIdx),
+              title: "📄 مذكرة الشرح والواجب (PDF)",
+              text: `تم إرفاق ملف مذكرة الشرح والواجب لحصة "${lesson.videoTitle}". انقر هنا لتحميل الملف وتسليم الحل.`,
+              time: "متاح",
+              type: "pdf",
+              isSpecialFree: false,
+              actionCallback: () => {
+                document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-homework']").click();
               }
             });
           }
-        }
+
+          // إشعار الامتحان التقييمي إن وجد
+          if (lesson.questions && lesson.questions.some(q => q.category === 'exam' || !q.category)) {
+            const myResults = getExamResults().filter(r => r.name === student.name);
+            const alreadyDone = myResults.some(r => r.lessonTitle === lesson.videoTitle);
+            if (!alreadyDone && lIdx === lessons.length - 1) {
+              rawNotifs.push({
+                id: "notif_exam_" + (lesson.id || lIdx),
+                title: "📝 امتحان تقييمي جديد!",
+                text: `يوجد امتحان متاح الآن لـ "${lesson.videoTitle}". انقر هنا لدخول الامتحان واختبار مستواك.`,
+                time: "هام",
+                type: "exam",
+                isSpecialFree: false,
+                actionCallback: () => {
+                  document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-exams']").click();
+                }
+              });
+            }
+          }
+        });
       }
 
+      // تصفية الإشعارات المحذوفة من قبل الطالب
+      const notifs = isAllDismissed ? [] : rawNotifs.filter(n => !dismissed.includes(n.id));
+
       if (notifs.length === 0) {
-        listContainer.innerHTML = "<p style='color:var(--text-muted); text-align:center; font-size:0.85rem; padding:10px;'>لا توجد إشعارات أو رسائل جديدة حالياً.</p>";
+        listContainer.innerHTML = "<p style='color:var(--text-muted); text-align:center; font-size:0.85rem; padding:15px;'>لا توجد إشعارات أو رسائل جديدة حالياً.</p>";
         badgeCount.classList.add("hidden");
-        if (counterBadge) counterBadge.innerText = "0 رسائل";
         return;
       }
 
       badgeCount.innerText = notifs.length;
       badgeCount.classList.remove("hidden");
-      if (counterBadge) counterBadge.innerText = `${notifs.length} رسائل`;
 
       notifs.forEach(n => {
         const card = document.createElement("div");
-        card.className = "notif-item-card";
+        card.className = n.isSpecialFree ? "notif-item-card notif-free-special" : "notif-item-card";
+        
         card.innerHTML = `
+          <button class="btn-notif-delete" type="button" title="حذف هذا الإشعار">✕</button>
           <div class="notif-item-header">
-            <span style="color:var(--primary-glow); font-size:0.85rem;">${n.title}</span>
+            <span style="color:${n.isSpecialFree ? '#047857' : 'var(--primary-glow)'}; font-size:0.86rem; font-weight:800;">${n.title}</span>
             <span style="color:var(--text-muted); font-size:0.72rem;">${n.time}</span>
           </div>
           <div class="notif-item-body">${n.text.replace(/\n/g, '<br>')}</div>
         `;
-        
-        if (n.actionText && n.actionCallback) {
-          const actBtn = document.createElement("button");
-          actBtn.className = "notif-item-action";
-          actBtn.type = "button";
-          actBtn.innerText = n.actionText;
-          actBtn.onclick = () => {
-            notificationsDropdown.classList.remove("show");
-            n.actionCallback();
-          };
-          card.appendChild(actBtn);
-        }
+
+        // زر الحذف الفردي
+        const delBtn = card.querySelector(".btn-notif-delete");
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          let currentDismissed = JSON.parse(localStorage.getItem(`yk_dismissed_notifs_${student.code}`) || "[]");
+          currentDismissed.push(n.id);
+          localStorage.setItem(`yk_dismissed_notifs_${student.code}`, JSON.stringify(currentDismissed));
+          renderStudentNotifications(student);
+        };
+
+        // النقر على الإشعار للتحويل التلقائي المباشر
+        card.onclick = () => {
+          notificationsDropdown.classList.remove("show");
+          if (n.actionCallback) n.actionCallback();
+        };
 
         listContainer.appendChild(card);
       });
@@ -3585,7 +3617,6 @@
       });
     }
 
-    // جدول المشتركون في لوحة المعلم (مع شريط البحث الفوري وعرض بروفايل الطالب وتعديل كوده)
     function renderTeacherPayments() {
       const students = getStudents();
       const searchTerm = document.getElementById("teacher-student-search-input") ? document.getElementById("teacher-student-search-input").value.trim().toLowerCase() : "";
