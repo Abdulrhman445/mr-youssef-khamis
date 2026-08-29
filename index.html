@@ -548,7 +548,7 @@
       <div id="leaderboard-cards-container" class="lessons-grid"></div>
     </div>
 
-    <!-- لوحة تحكم الطالب (القائمة المرتبطة بالطلاب فقط وبدون أي تعقيد) -->
+    <!-- لوحة تحكم الطالب (مرتبة ومبسطة بالكامل في القائمة الجانبية) -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
       <aside class="adaptive-sidebar" id="std-sidebar-panel">
         <div class="sidebar-user-header">
@@ -667,6 +667,12 @@
               <button id="btn-open-quiz-modal" class="btn btn-danger btn-sm hidden" type="button">📝 اختبار الحصة (مرة واحدة)</button>
             </div>
 
+            <!-- عرض الواجبات والامتحانات الخاصة بهذه الحصة مباشرة تحت الفيديو -->
+            <div id="lesson-attached-tasks-box" class="dash-box hidden" style="margin-top:20px; border-color:var(--secondary);">
+              <h4 style="color:var(--secondary); margin-bottom:8px;">📌 الواجبات والامتحانات المرفقة لهذه الحصة:</h4>
+              <div id="lesson-tasks-list-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+
             <div id="pdf-viewer-section" class="pdf-box hidden" style="margin-top: 20px;">
               <h4>📖 مذكرة الشرح والواجب (PDF)</h4>
               <iframe id="std-pdf-frame" src="" width="100%" height="450" frameborder="0"></iframe>
@@ -704,7 +710,7 @@
           </div>
         </section>
 
-        <!-- 3. الامتحانات -->
+        <!-- 3. الامتحانات (القسم العام للاختبارات) -->
         <section id="section-exams" class="std-content-tab hidden anime-fade-in">
           <h2 class="box-title">📝 سجل الاختبارات والدرجات (تتطلب اجتياز 60% فأعلى)</h2>
           <div class="grid-2col">
@@ -719,12 +725,13 @@
           </div>
         </section>
 
-        <!-- 4. الواجبات -->
+        <!-- 4. الواجبات (القسم العام للواجبات مع إمكانية تنزيل ملفات الـ PDF وحل وتسليم) -->
         <section id="section-homework" class="std-content-tab hidden anime-fade-in">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-            <h2 class="box-title" style="margin:0;">📋 جدول متابعة وتسليم الواجبات</h2>
-            <button id="btn-side-open-hw" class="btn btn-success btn-sm" type="button">📤 حل وتسليم واجب جديد (صور متعددة / PDF)</button>
+            <h2 class="box-title" style="margin:0;">📋 الواجبات المطلوبة والمنزلة (PDF)</h2>
+            <button id="btn-side-open-hw" class="btn btn-success btn-sm" type="button">📤 تسليم الحل للمستر</button>
           </div>
+          <div id="student-homework-catalog-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px;"></div>
           <div class="table-responsive">
             <table class="custom-table">
               <thead>
@@ -797,7 +804,7 @@
             <button class="side-nav-btn" data-ttab="t-tab-promos" type="button">🎟️ كروت شحن الحصص</button>
             <button class="side-nav-btn" data-ttab="t-tab-student-codes" type="button">🪪 أكواد تسجيل السنتر الحصرية</button>
             <button class="side-nav-btn" data-ttab="t-tab-video" type="button">📹 رفع وتعديل المحاضرات</button>
-            <button class="side-nav-btn" data-ttab="t-tab-quiz" type="button">✍️ بنك الأسئلة ونموذج الواجب</button>
+            <button class="side-nav-btn" data-ttab="t-tab-quiz" type="button">✍️ بنك الأسئلة والامتحانات</button>
             <button class="side-nav-btn" data-ttab="t-tab-results" type="button">📊 تصدير Excel لكل صف</button>
             <button class="side-nav-btn" data-ttab="t-tab-homework" type="button">📝 تصدير ومتابعة الواجبات</button>
             <button class="side-nav-btn" data-ttab="t-tab-qa" type="button">💬 استفسارات الطلاب</button>
@@ -954,7 +961,7 @@
             </div>
           </div>
 
-          <!-- 8. رفع المحاضرات (تم تصحيح وتأمين زر الرفع بالكامل ليستجيب فوراً) -->
+          <!-- 8. رفع المحاضرات -->
           <div id="t-sec-video" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
@@ -1033,62 +1040,83 @@
             </div>
           </div>
 
-          <!-- 9. بنك الأسئلة -->
+          <!-- 9. بنك الأسئلة والامتحانات والواجبات المحدث (كتابة كامل الأسئلة دفعة واحدة، مراجعتها، ثم النشر وربطها بحصة محددة) -->
           <div id="t-sec-quiz" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">📝 بنك الأسئلة، الاختبارات، ونموذج إجابة الواجب</h3>
-              <form id="form-manage-quiz">
-                <div class="input-field">
-                  <label>الصف الدراسي:</label>
-                  <select id="teacher-q-grade" required>
-                    <option value="" disabled selected>اختر الصف</option>
-                    <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
-                    <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
-                    <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
-                    <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
-                    <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
-                    <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
-                    <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
-                    <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                    <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
-                  </select>
+              <h3 class="box-title">📝 بنك الأسئلة والامتحانات (كتابة متكاملة ومعاينة قبل النشر)</h3>
+              
+              <form id="form-builder-task">
+                <div class="grid-2col">
+                  <div class="input-field">
+                    <label>الصف الدراسي:</label>
+                    <select id="builder-grade" required onchange="loadLessonsForBuilder()">
+                      <option value="" disabled selected>اختر الصف</option>
+                      <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+                      <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+                      <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+                      <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+                      <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+                      <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+                      <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+                      <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
+                      <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+                    </select>
+                  </div>
+                  <div class="input-field">
+                    <label>اختر الحصة المرتبطة (الدرس):</label>
+                    <select id="builder-lesson-id" required>
+                      <option value="" disabled selected>اختر المحاضرة/الحصة أولاً</option>
+                    </select>
+                  </div>
                 </div>
-                <div class="input-field">
-                  <label>اختر نوع النشر:</label>
-                  <select id="teacher-q-category">
-                    <option value="exam">امتحان دوري (يُحل لمرة واحدة)</option>
-                    <option value="homework">واجب منزلي (يُنزل كملف PDF ويُرسل حله كصور)</option>
-                  </select>
+
+                <div class="grid-2col">
+                  <div class="input-field">
+                    <label>نوع النشر:</label>
+                    <select id="builder-category">
+                      <option value="exam">امتحان (إلزامي بعد الحصة)</option>
+                      <option value="homework">واجب منزلي (مرتبط بالحصة)</option>
+                    </select>
+                  </div>
+                  <div class="input-field">
+                    <label>اسم الامتحان أو الواجب:</label>
+                    <input type="text" id="builder-title-name" placeholder="مثال: امتحان Unit 1 الشامل" required>
+                  </div>
                 </div>
-                <div class="input-field">
-                  <label>اسم الامتحان أو الواجب:</label>
-                  <input type="text" id="teacher-q-title-name" placeholder="مثال: امتحان Unit 1 الشامل" required>
-                </div>
+
                 <div class="input-field">
                   <label>⏱️ مدة الامتحان (بالدقائق):</label>
-                  <input type="number" id="teacher-quiz-duration" min="1" max="180" value="10" required>
+                  <input type="number" id="builder-duration" min="1" max="180" value="10" required>
                 </div>
-                <div class="input-field">
-                  <label>نوع السؤال:</label>
-                  <select id="teacher-q-type">
-                    <option value="mcq">اختيار من متعدد</option>
-                    <option value="essay">سؤال مقالي قصير</option>
-                  </select>
+
+                <hr style="margin: 15px 0; border-color: var(--border-color);">
+                <h4 style="color:var(--primary-glow); margin-bottom:8px;">➕ إضافة أسئلة للنموذج الحالي:</h4>
+
+                <div class="grid-2col">
+                  <div class="input-field">
+                    <label>نوع السؤال:</label>
+                    <select id="builder-q-type" onchange="toggleBuilderQType()">
+                      <option value="mcq">اختيار من متعدد</option>
+                      <option value="essay">سؤال مقالي قصير</option>
+                    </select>
+                  </div>
                 </div>
+
                 <div class="input-field">
                   <label>نص السؤال:</label>
-                  <input type="text" id="teacher-q-text" placeholder="اكتب السؤال هنا" required>
+                  <input type="text" id="builder-q-text" placeholder="اكتب نص السؤال هنا...">
                 </div>
-                <div id="q-mcq-options-group">
+
+                <div id="builder-mcq-group">
                   <div class="grid-2col">
-                    <input type="text" id="t-opt-0" placeholder="الاختيار 1">
-                    <input type="text" id="t-opt-1" placeholder="الاختيار 2">
-                    <input type="text" id="t-opt-2" placeholder="الاختيار 3">
-                    <input type="text" id="t-opt-3" placeholder="الاختيار 4">
+                    <input type="text" id="b-opt-0" placeholder="الاختيار 1">
+                    <input type="text" id="b-opt-1" placeholder="الاختيار 2">
+                    <input type="text" id="b-opt-2" placeholder="الاختيار 3">
+                    <input type="text" id="b-opt-3" placeholder="الاختيار 4">
                   </div>
                   <div class="input-field" style="margin-top: 10px;">
                     <label>الاختيار الصحيح:</label>
-                    <select id="teacher-q-correct">
+                    <select id="builder-q-correct">
                       <option value="0">الاختيار 1</option>
                       <option value="1">الاختيار 2</option>
                       <option value="2">الاختيار 3</option>
@@ -1096,14 +1124,21 @@
                     </select>
                   </div>
                 </div>
-                <div id="q-essay-answer-group" class="input-field hidden">
+
+                <div id="builder-essay-group" class="input-field hidden">
                   <label>✍️ الإجابة النموذجية الصحيحة:</label>
-                  <input type="text" id="teacher-essay-correct-text" placeholder="اكتب الإجابة النموذجية">
+                  <input type="text" id="builder-essay-correct" placeholder="الإجابة النموذجية">
                 </div>
-                <div class="btn-group-row">
-                  <button type="submit" class="btn btn-success">➕ إضافة السؤال ونشر الامتحان/الواجب</button>
-                  <button type="button" id="btn-clear-quiz" class="btn btn-danger btn-sm">حذف الأسئلة</button>
+
+                <button type="button" id="btn-add-question-to-list" class="btn btn-accent btn-sm" style="margin-bottom:15px;">➕ إضافة السؤال لقائمة الأسئلة</button>
+
+                <!-- صندوق معاينة الأسئلة التي كتبها المستر قبل النشر النهائي -->
+                <div class="dash-box" style="background:#fff; border: 2px dashed var(--primary-glow); margin-bottom:15px;">
+                  <h4 style="color:var(--primary-glow); margin-bottom:6px;">👁️ معاينة محتوى النموذج (الأسئلة المضافة حالياً):</h4>
+                  <div id="builder-preview-list" style="max-height:200px; overflow-y:auto; font-size:0.88rem;">لم تقم بإضافة أي أسئلة بعد.</div>
                 </div>
+
+                <button type="button" id="btn-publish-final-task" class="btn btn-success btn-full">🚀 تأكيد ومراجعة ثم نشر الامتحان / الواجب للصف</button>
               </form>
             </div>
           </div>
@@ -1184,14 +1219,14 @@
     <div id="homework-modal" class="quiz-popup-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
         <h3 class="box-title">📤 تسليم الواجب (صور متعددة / PDF)</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">قم برفع صور صفحات الواجب (يمكنك اختيار أكثر من صورة معاً) أو ملف PDF:</p>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">قم برفع صور صفحات الواجب أو ملف PDF:</p>
         
         <div class="input-field">
           <label>ملاحظاتك للمستر:</label>
           <input type="text" id="std-hw-notes-input" placeholder="مثال: تم حل الواجب كاملاً">
         </div>
         <div class="input-field">
-          <label>صور صفحات الواجب (اختر عدة صور من كاميرا الموبايل):</label>
+          <label>صور صفحات الواجب (اختر عدة صور من الكاميرا):</label>
           <input type="file" id="std-hw-files" accept="image/*,application/pdf" multiple>
         </div>
 
@@ -1361,7 +1396,6 @@
       return regex.test(phone);
     }
 
-    // تعديل بصمة الجهاز لتسمح بفتح الحساب على جهازين كحد أقصى
     function getDeviceFingerprint() {
       let fp = localStorage.getItem("yk_device_fp");
       if (!fp) {
@@ -1492,7 +1526,9 @@
     let hasCountedThisSession = false;
     let html5QrCodeScanner = null;
 
-    // الحفاظ على حالة الطالب عند تحديث الصفحة (Refresh) بدون إعادة تسجيل الدخول
+    // ذاكرة مؤقتة لإنشاء أسئلة الامتحان والواجب دفعة واحدة قبل نشرها
+    let tempBuilderQuestionsList = [];
+
     window.addEventListener("load", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
       const savedRole = localStorage.getItem("yk_active_role");
@@ -1754,7 +1790,6 @@
       window.open(`https://wa.me/2${phone}?text=${welcomeText}`, "_blank");
     });
 
-    // تسجيل دخول الطالب مع دعم فتح الحساب على جهازين كحد أقصى (Device Limit = 2)
     formUnifiedLogin.addEventListener("submit", (e) => {
       e.preventDefault();
       const identifier = document.getElementById("login-identifier").value.trim();
@@ -1793,7 +1828,7 @@
 
         if (!student.deviceIds.includes(currentDevice)) {
           if (student.deviceIds.length >= 2) {
-            systemMsg.innerText = "⛔ تم حظر الدخول: هذا الحساب مسجل ومقفل على جهازين بالفعل ولا يمكن فتحه على جهاز ثالث.";
+            systemMsg.innerText = "⛔ تم حظر الدخول: هذا الحساب مسجل ومقفل على جهازين بالفعل.";
             systemMsg.style.color = "var(--danger)";
             return;
           } else {
@@ -1939,6 +1974,7 @@
 
       renderStudentHomeworkHistory(student);
       renderStudentExamStatus(student);
+      renderStudentHomeworkCatalog(student);
 
       const defaultTabBtn = document.querySelector(".side-nav-btn[data-tab='tab-courses']");
       if (defaultTabBtn) defaultTabBtn.click();
@@ -1951,7 +1987,7 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض المحاضرات للطالب مع التصميم الاحترافي والـ FREE الكرت اللامع والصور المصغرة
+    // عرض المحاضرات للطالب مع التصميم الاحترافي
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -2006,6 +2042,39 @@
       });
     }
 
+    // عرض الواجبات المرفوعة كملفات PDF في قسم الواجبات عند الطالب
+    function renderStudentHomeworkCatalog(student) {
+      const container = document.getElementById("student-homework-catalog-list");
+      if (!container) return;
+      container.innerHTML = "";
+      const curriculum = getCurriculum();
+      let lessonsArr = curriculum[student.grade] || [];
+      if (!Array.isArray(lessonsArr)) lessonsArr = lessonsArr ? [lessonsArr] : [];
+
+      let hasHwTasks = false;
+      lessonsArr.forEach(lesson => {
+        if (lesson.questions) {
+          lesson.questions.forEach(q => {
+            if (q.category === 'homework') {
+              hasHwTasks = true;
+              const box = document.createElement("div");
+              box.className = "dash-box";
+              box.innerHTML = `
+                <h4 style="color:var(--primary-glow); margin-bottom:4px;">📋 ${q.titleName || 'واجب منزلي'} - (${lesson.videoTitle})</h4>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">مرفق مع هذه الحصة واجب مطلوب حله وتسليمه.</p>
+                ${lesson.pdfData ? `<a href="${lesson.pdfData}" download="واجب_${lesson.videoTitle}.pdf" class="btn btn-primary btn-sm">📥 تنزيل الواجب (PDF) على جهازك</a>` : '<p style="font-size:0.8rem; color:#b45309;">لا يوجد ملف PDF مرفق لهذا الواجب.</p>'}
+              `;
+              container.appendChild(box);
+            }
+          });
+        }
+      });
+
+      if (!hasHwTasks) {
+        container.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لا توجد واجبات منزلية منشورة حالياً في الأرشيف.</p>";
+      }
+    }
+
     function renderStudentHomeworkHistory(student) {
       const myHW = getHomework().filter(h => h.studentName === student.name);
       document.getElementById("std-hw-count").innerText = `${myHW.length} واجب`;
@@ -2041,8 +2110,6 @@
       const myResults = getExamResults().filter(r => r.name === student.name);
       let lessonsArr = getCurriculum()[student.grade] || [];
       if (!Array.isArray(lessonsArr)) lessonsArr = lessonsArr ? [lessonsArr] : [];
-      const latestLesson = lessonsArr.length > 0 ? lessonsArr[lessonsArr.length - 1] : {};
-      const hasQuiz = latestLesson.questions && latestLesson.questions.length > 0;
 
       if (myResults.length === 0) {
         completedBox.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لم تؤدِ أي امتحان بعد.</p>";
@@ -2058,34 +2125,44 @@
         });
       }
 
-      const isLatestUnlocked = student.paid || student.isFree || (student.unlockedLessons && student.unlockedLessons.includes(latestLesson.id));
-      if (hasQuiz && myResults.length === 0 && isLatestUnlocked) {
-        const item = document.createElement("div");
-        item.className = "exam-status-item";
-        item.style.borderColor = "var(--primary-glow)";
-        item.innerHTML = `
-          <div><strong>📝 امتحان: ${latestLesson.videoTitle || "محاضرة الأسبوع"}</strong></div>
-          <div><button class="btn btn-primary btn-sm" type="button" onclick="openExamModalForLatest()">دخول الامتحان</button></div>
-        `;
-        pendingBox.appendChild(item);
-      } else if (hasQuiz && myResults.length === 0 && !isLatestUnlocked) {
-        pendingBox.innerHTML = "<p style='color:var(--danger); font-size:0.85rem;'>⚠️ الامتحان مرتبط بحصة تتطلب اشتراكاً أو تفعيل أولاً.</p>";
-      } else if (hasQuiz && myResults.length > 0) {
-        pendingBox.innerHTML = "<p style='color:var(--success); font-size:0.85rem;'>✅ أتممت امتحان هذه الحصة بنجاح.</p>";
-      } else {
-        pendingBox.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لا توجد اختبارات معلقة حالياً.</p>";
+      // البحث عن الامتحانات المتاحة والمرتبطة بحصص مفعلة للطالب
+      let hasPendingExams = false;
+      lessonsArr.forEach(lesson => {
+        const isUnlocked = student.paid || student.isFree || (student.unlockedLessons && student.unlockedLessons.includes(lesson.id));
+        if (lesson.questions && lesson.questions.some(q => q.category === 'exam') && isUnlocked) {
+          const alreadyDone = myResults.some(r => r.lessonTitle === lesson.videoTitle);
+          if (!alreadyDone) {
+            hasPendingExams = true;
+            const item = document.createElement("div");
+            item.className = "exam-status-item";
+            item.style.borderColor = "var(--primary-glow)";
+            item.innerHTML = `
+              <div><strong>📝 امتحان: ${lesson.videoTitle}</strong></div>
+              <div><button class="btn btn-primary btn-sm" type="button" onclick="openExamModalForLesson('${lesson.id}')">دخول الامتحان</button></div>
+            `;
+            pendingBox.appendChild(item);
+          }
+        }
+      });
+
+      if (!hasPendingExams && pendingBox.innerHTML === "") {
+        pendingBox.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لا توجد امتحانات معلقة حالياً.</p>";
       }
     }
 
-    window.openExamModalForLatest = function() {
+    let activeExamLessonId = null;
+    window.openExamModalForLesson = function(lessonId) {
       let lessonsArr = getCurriculum()[currentActiveStudent.grade] || [];
       if (!Array.isArray(lessonsArr)) lessonsArr = lessonsArr ? [lessonsArr] : [];
-      const latestLesson = lessonsArr.length > 0 ? lessonsArr[lessonsArr.length - 1] : {};
-      currentExamQuestions = latestLesson.questions || [];
-      const duration = latestLesson.quizDuration || 10;
+      const lesson = lessonsArr.find(l => l.id === lessonId);
+      if (!lesson) return;
+
+      activeExamLessonId = lessonId;
+      currentExamQuestions = (lesson.questions || []).filter(q => q.category === 'exam' || !q.category);
+      const duration = lesson.quizDuration || 10;
 
       if (currentExamQuestions.length === 0) {
-        alert("لا توجد أسئلة في هذا الامتحان.");
+        alert("لا توجد أسئلة امتحانات متاحة في هذه الحصة.");
         return;
       }
 
@@ -2324,8 +2401,30 @@
         pdfBox.classList.add("hidden");
       }
 
+      // عرض الواجبات أو الامتحانات المرتبطة بهذه الحصة تحديداً
+      const attachedTasksBox = document.getElementById("lesson-attached-tasks-box");
+      const attachedList = document.getElementById("lesson-tasks-list-container");
+      attachedList.innerHTML = "";
+      if (lesson.questions && lesson.questions.length > 0) {
+        attachedTasksBox.classList.remove("hidden");
+        lesson.questions.forEach(q => {
+          const taskDiv = document.createElement("div");
+          taskDiv.style.background = "var(--card-bg)";
+          taskDiv.style.padding = "10px";
+          taskDiv.style.borderRadius = "8px";
+          taskDiv.style.border = "1px solid var(--border-color)";
+          taskDiv.innerHTML = `
+            <p><strong>${q.category === 'exam' ? '📝 امتحان الحصة:' : '📋 واجب الحصة:'}</strong> ${q.titleName || 'اختبار تقييمي'}</p>
+            ${q.category === 'exam' ? `<button class="btn btn-primary btn-sm" style="margin-top:6px;" onclick="openExamModalForLesson('${lesson.id}')">دخول امتحان هذه الحصة</button>` : `<p style="font-size:0.8rem; color:#059669; margin-top:4px;">راجع قسم الواجبات لتنزيل ملف الـ PDF وحل وتسليم الحل.</p>`}
+          `;
+          attachedList.appendChild(taskDiv);
+        });
+      } else {
+        attachedTasksBox.classList.add("hidden");
+      }
+
       const quizBtn = document.getElementById("btn-open-quiz-modal");
-      currentExamQuestions = lesson.questions || [];
+      currentExamQuestions = (lesson.questions || []).filter(q => q.category === 'exam' || !q.category);
       const myResults = getExamResults().filter(r => r.name === student.name);
 
       if (currentExamQuestions.length > 0 && myResults.length === 0) {
@@ -2633,7 +2732,126 @@
       renderTeacherResults();
       renderTeacherHomework();
       renderTeacherQA();
+      loadLessonsForBuilder();
     }
+
+    // جلب الحصص في لوحة المستر لربط الامتحان أو الواجب بحصة محددة
+    window.loadLessonsForBuilder = function() {
+      const gradeSel = document.getElementById("builder-grade").value;
+      const lessonSel = document.getElementById("builder-lesson-id");
+      lessonSel.innerHTML = '<option value="" disabled selected>اختر الحصة/الدرس</option>';
+      
+      const curr = getCurriculum();
+      const lessons = curr[gradeSel] || [];
+      if (Array.isArray(lessons)) {
+        lessons.forEach(l => {
+          const opt = document.createElement("option");
+          opt.value = l.id;
+          opt.innerText = l.videoTitle;
+          lessonSel.appendChild(opt);
+        });
+      }
+    };
+
+    // دوظائف نموذج كتابة الأسئلة دفعة واحدة ومعاينتها قبل النشر
+    document.getElementById("btn-add-question-to-list").addEventListener("click", () => {
+      const type = document.getElementById("builder-q-type").value;
+      const qText = document.getElementById("builder-q-text").value.trim();
+      if (!qText) {
+        alert("⚠️ يرجى كتابة نص السؤال أولاً.");
+        return;
+      }
+
+      const newQ = { type, question: qText };
+      if (type === "mcq") {
+        newQ.options = [
+          document.getElementById("b-opt-0").value.trim(),
+          document.getElementById("b-opt-1").value.trim(),
+          document.getElementById("b-opt-2").value.trim(),
+          document.getElementById("b-opt-3").value.trim()
+        ];
+        newQ.correctIndex = parseInt(document.getElementById("builder-q-correct").value);
+      } else {
+        newQ.correctText = document.getElementById("builder-essay-correct").value.trim();
+      }
+
+      tempBuilderQuestionsList.push(newQ);
+      renderBuilderPreview();
+      document.getElementById("builder-q-text").value = "";
+      document.getElementById("b-opt-0").value = "";
+      document.getElementById("b-opt-1").value = "";
+      document.getElementById("b-opt-2").value = "";
+      document.getElementById("b-opt-3").value = "";
+      document.getElementById("builder-essay-correct").value = "";
+    });
+
+    function toggleBuilderQType() {
+      const isEssay = document.getElementById("builder-q-type").value === "essay";
+      document.getElementById("builder-mcq-group").classList.toggle("hidden", isEssay);
+      document.getElementById("builder-essay-group").classList.toggle("hidden", !isEssay);
+    }
+
+    function renderBuilderPreview() {
+      const container = document.getElementById("builder-preview-list");
+      if (tempBuilderQuestionsList.length === 0) {
+        container.innerHTML = "لم تقم بإضافة أي أسئلة بعد.";
+        return;
+      }
+      container.innerHTML = "";
+      tempBuilderQuestionsList.forEach((q, idx) => {
+        const p = document.createElement("p");
+        p.style.margin = "4px 0";
+        p.innerText = `${idx + 1}. [${q.type === 'mcq' ? 'اختياري' : 'مقالي'}] ${q.question}`;
+        container.appendChild(p);
+      });
+    }
+
+    document.getElementById("btn-publish-final-task").addEventListener("click", () => {
+      const grade = document.getElementById("builder-grade").value;
+      const lessonId = document.getElementById("builder-lesson-id").value;
+      const category = document.getElementById("builder-category").value;
+      const titleName = document.getElementById("builder-title-name").value.trim();
+      const duration = parseInt(document.getElementById("builder-duration").value) || 10;
+
+      if (!grade || !lessonId || !titleName) {
+        alert("⚠️ يرجى اختيار الصف، الحصة المرتبطة، وكتابة اسم الاختبار أو الواجب.");
+        return;
+      }
+      if (tempBuilderQuestionsList.length === 0) {
+        alert("⚠️ يرجى إضافة سؤال واحد على الأقل للقائمة قبل النشر النهائي.");
+        return;
+      }
+
+      const curr = getCurriculum();
+      const lessons = curr[grade] || [];
+      const lessonObj = lessons.find(l => l.id === lessonId);
+
+      if (!lessonObj) {
+        alert("❌ الحصة المحددة غير موجودة.");
+        return;
+      }
+
+      lessonObj.quizDuration = duration;
+      if (!lessonObj.questions) lessonObj.questions = [];
+
+      tempBuilderQuestionsList.forEach(q => {
+        lessonObj.questions.push({
+          category,
+          titleName,
+          type: q.type,
+          question: q.question,
+          options: q.options || [],
+          correctIndex: q.correctIndex,
+          correctText: q.correctText
+        });
+      });
+
+      saveCurriculum(curr);
+      alert(`✅ تم مراجعة ونشر (${category === 'exam' ? 'الامتحان' : 'الواجب'}) بنجاح وربطه بالحصة!`);
+      tempBuilderQuestionsList = [];
+      renderBuilderPreview();
+      document.getElementById("form-builder-task").reset();
+    });
 
     document.getElementById("btn-update-announcement").addEventListener("click", () => {
       const text = document.getElementById("teacher-announcement-input").value.trim();
@@ -2711,7 +2929,7 @@
 
       const grades = Object.keys(curr);
       if (grades.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً. ابدأ برفع محاضرة جديدة.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً.</td></tr>";
         return;
       }
 
@@ -2997,7 +3215,7 @@
       });
     }
 
-    // دالة رفع المحاضرات (تمت مراجعتها وإصلاح مشكلة الحفظ الفوري تماماً)
+    // دالة رفع المحاضرات (مؤمنة وسريعة وتستجيب فوراً للضغط على حفظ)
     document.getElementById("form-manage-video").addEventListener("submit", (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -3045,6 +3263,7 @@
         document.getElementById("form-manage-video").reset();
         renderTeacherCurriculumTable();
         renderTeacherPricesUI();
+        loadLessonsForBuilder();
       };
 
       const processPdfAndSave = (videoUrl) => {
@@ -3087,70 +3306,6 @@
       } else {
         document.getElementById("v-input-yt").classList.remove("hidden");
         document.getElementById("v-input-local").classList.add("hidden");
-      }
-    });
-
-    document.getElementById("teacher-q-type").addEventListener("change", (e) => {
-      const isEssay = e.target.value === "essay";
-      document.getElementById("q-mcq-options-group").classList.toggle("hidden", isEssay);
-      document.getElementById("q-essay-answer-group").classList.toggle("hidden", !isEssay);
-    });
-
-    document.getElementById("form-manage-quiz").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const grade = document.getElementById("teacher-q-grade").value;
-      const category = document.getElementById("teacher-q-category").value; // exam or homework
-      const titleName = document.getElementById("teacher-q-title-name").value.trim();
-      const duration = parseInt(document.getElementById("teacher-quiz-duration").value) || 10;
-      const type = document.getElementById("teacher-q-type").value;
-      const qText = document.getElementById("teacher-q-text").value.trim();
-
-      const curr = getCurriculum();
-      if (!curr[grade] || curr[grade].length === 0) {
-        alert("⚠️ يرجى رفع محاضرة لهذا الصف أولاً قبل إضافة أسئلة لها.");
-        return;
-      }
-
-      let lessonsArr = curr[grade];
-      if (!Array.isArray(lessonsArr)) lessonsArr = [lessonsArr];
-      const latestLesson = lessonsArr[lessonsArr.length - 1];
-      
-      latestLesson.quizDuration = duration;
-      if (!latestLesson.questions) latestLesson.questions = [];
-
-      const count = latestLesson.questions.length + 1;
-      const newQ = { category, titleName, type, question: `${count}. ${qText}` };
-
-      if (type === "mcq") {
-        newQ.options = [
-          document.getElementById("t-opt-0").value.trim(),
-          document.getElementById("t-opt-1").value.trim(),
-          document.getElementById("t-opt-2").value.trim(),
-          document.getElementById("t-opt-3").value.trim()
-        ];
-        newQ.correctIndex = parseInt(document.getElementById("teacher-q-correct").value);
-      } else {
-        newQ.correctText = document.getElementById("teacher-essay-correct-text").value.trim();
-      }
-
-      latestLesson.questions.push(newQ);
-      saveCurriculum(curr);
-      alert(`✅ تم حفظ السؤال ونشره كـ (${category === 'exam' ? 'امتحان' : 'واجب'}) للمحاضرة الأخيرة (${grade}) بنجاح!`);
-      document.getElementById("teacher-q-text").value = "";
-      document.getElementById("teacher-essay-correct-text").value = "";
-    });
-
-    document.getElementById("btn-clear-quiz").addEventListener("click", () => {
-      const grade = document.getElementById("teacher-q-grade").value;
-      if (confirm(`حذف كافة أسئلة أحدث محاضرة لـ (${grade})؟`)) {
-        const curr = getCurriculum();
-        if (curr[grade] && curr[grade].length > 0) {
-          let lessonsArr = curr[grade];
-          if (!Array.isArray(lessonsArr)) lessonsArr = [lessonsArr];
-          lessonsArr[lessonsArr.length - 1].questions = [];
-          saveCurriculum(curr);
-          alert(`✅ تم مسح الأسئلة بنجاح.`);
-        }
       }
     });
 
@@ -3258,7 +3413,7 @@
       document.getElementById("det-parent-phone").innerText = s.parentPhone || "—";
       document.getElementById("det-xp").innerText = `${s.xp || 0} XP`;
       document.getElementById("det-paid").innerText = (s.unlockedLessons && s.unlockedLessons.length > 0) ? "مفعل ✅" : "غير مفعل ❌";
-      document.getElementById("det-device").innerText = s.deviceId || "غير مقفل";
+      document.getElementById("det-device").innerText = s.deviceIds ? s.deviceIds.join(', ') : "غير مقفل";
       document.getElementById("det-views").innerText = `${s.views || 0} / 5`;
       document.getElementById("student-full-details-modal").classList.remove("hidden");
     };
@@ -3436,7 +3591,7 @@
       students.forEach((s, idx) => {
         const tr = document.createElement("tr");
         const isUnlocked = s.unlockedLessons && s.unlockedLessons.length > 0;
-        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}</td><td><code>${s.code}</code></td><td><input type="number" id="dev-std-xp-${idx}" value="${s.xp || 0}" style="width:70px;"><button class="btn btn-accent btn-sm" onclick="devUpdateStudentXP(${idx})">تعديل</button></td><td><button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td><td><small><code>${s.deviceId || "غير مقفل"}</code></small></td><td><span class="${isUnlocked ? 'status-badge-active' : 'status-badge-pending'}">${isUnlocked ? 'مفعل' : 'غير مفعل'}</span></td><td><button class="btn btn-primary btn-sm" type="button" onclick="resetStudentDevice(${idx})">فك القفل</button> <button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByDev(${idx})">حذف</button></td>`;
+        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}</td><td><code>${s.code}</code></td><td><input type="number" id="dev-std-xp-${idx}" value="${s.xp || 0}" style="width:70px;"><button class="btn btn-accent btn-sm" onclick="devUpdateStudentXP(${idx})">تعديل</button></td><td><button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${idx})">🔍 الملف</button></td><td><small><code>${s.deviceIds ? s.deviceIds.join(', ') : "غير مقفل"}</code></small></td><td><span class="${isUnlocked ? 'status-badge-active' : 'status-badge-pending'}">${isUnlocked ? 'مفعل' : 'غير مفعل'}</span></td><td><button class="btn btn-primary btn-sm" type="button" onclick="resetStudentDevice(${idx})">فك القفل</button> <button class="btn btn-danger btn-sm" type="button" onclick="deleteStudentByDev(${idx})">حذف</button></td>`;
         tbody.appendChild(tr);
       });
     }
@@ -3452,9 +3607,9 @@
 
     window.resetStudentDevice = function(idx) {
       const students = getStudents();
-      students[idx].deviceId = "";
+      students[idx].deviceIds = [];
       saveStudents(students);
-      alert(`✅ تم فك قفل الجهاز.`);
+      alert(`✅ تم فك قفل الأجهزة عن الطالب.`);
       loadDevPanel();
     };
 
