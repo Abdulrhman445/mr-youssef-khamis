@@ -805,7 +805,7 @@
           </div>
         </section>
 
-        <!-- 4. جدول المواعيد الأسبوعي للطالب -->
+        <!-- 4. جدول المواعيد الأسبوعي للطالب (يدعم أيام متعددة للسنتر والأونلاين) -->
         <section id="section-schedule" class="std-content-tab hidden anime-fade-in">
           <h2 class="box-title">🗓️ جدول مواعيد مجموعات السنتر وحصص الأونلاين</h2>
           <div class="dash-box">
@@ -905,7 +905,7 @@
         </aside>
 
         <main class="main-content-panel">
-          <!-- 1. شريط الإعلانات والإشعارات الموجهة مع تحديد المدة -->
+          <!-- 1. شريط الإعلانات والإشعارات الموجهة لصف محدد مع المدة -->
           <div id="t-sec-announcement" class="teacher-content-tab active anime-fade-in">
             <div class="dash-box" style="margin-bottom:15px;">
               <h3 class="box-title">📢 تحديث شريط الإعلانات العام (لكل الطلاب)</h3>
@@ -944,11 +944,12 @@
             </div>
           </div>
 
-          <!-- 2. إدارة جدول المواعيد -->
+          <!-- 2. إدارة جدول المواعيد (متعدد الأيام للسنتر والأونلاين لكل صف) -->
           <div id="t-sec-schedule-mgr" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">🗓️ إضافة وتحديث جدول المواعيد الأسبوعي للسنتر والأونلاين</h3>
-              <div class="grid-2col" style="margin-bottom:10px;">
+              <h3 class="box-title">🗓️ إضافة وتحديث جدول المواعيد الأسبوعي (أيام متعددة للسنتر والأونلاين)</h3>
+              <div class="input-field">
+                <label>اختر الصف الدراسي:</label>
                 <select id="teacher-schedule-grade">
                   <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
                   <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
@@ -960,18 +961,21 @@
                   <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
                   <option value="الصف الثالث الإعدادي" selected>الصف الثالث الإعدادي</option>
                 </select>
-                <input type="text" id="teacher-schedule-days" placeholder="الأيام (مثال: السبت والثلاثاء)">
               </div>
-              <div class="grid-2col" style="margin-bottom:10px;">
-                <input type="text" id="teacher-schedule-center-time" placeholder="مواعيد السنتر (مثال: الساعة 4:00 عصراً)">
-                <input type="text" id="teacher-schedule-online-time" placeholder="ميعاد نزول الحصة أونلاين (مثال: الساعة 8:00 مساءً)">
+              <div class="input-field">
+                <label>🏢 مواعيد السنتر (أيام متعددة مع أوقاتها):</label>
+                <textarea id="teacher-schedule-center" rows="2" placeholder="مثال: السبت 4 عصراً، الثلاثاء 2 ظهراً"></textarea>
+              </div>
+              <div class="input-field">
+                <label>💻 مواعيد حصص الأونلاين (أيام متعددة مع أوقاتها):</label>
+                <textarea id="teacher-schedule-online" rows="2" placeholder="مثال: الأحد 8 مساءً، الأربعاء 7 مساءً"></textarea>
               </div>
               <button id="btn-save-grade-schedule" class="btn btn-success btn-full" type="button">💾 حفظ وتحديث جدول هذا الصف</button>
 
               <div class="table-responsive" style="margin-top:15px;">
                 <table class="custom-table">
                   <thead>
-                    <tr><th>الصف</th><th>الأيام</th><th>مواعيد السنتر</th><th>مواعيد الأونلاين</th></tr>
+                    <tr><th>الصف</th><th>مواعيد السنتر</th><th>مواعيد الأونلاين</th></tr>
                   </thead>
                   <tbody id="teacher-schedule-table-body"></tbody>
                 </table>
@@ -1503,6 +1507,7 @@
             <option value="curriculum">📚 المناهج والمحاضرات والأسئلة</option>
             <option value="exclusiveCodes">🪪 أكواد السنتر الحصرية</option>
             <option value="schedules">🗓️ جدول المواعيد</option>
+            <option value="targetedAnnouncements">📢 إشعارات الصفوف الموجهة</option>
             <option value="results">📊 نتائج الاختبارات</option>
             <option value="prices">💰 أسعار الحصص</option>
             <option value="all">🌐 النسخة الاحتياطية الكاملة</option>
@@ -1634,7 +1639,10 @@
     function saveSchedules(d) { cloudCache.schedules = d; rdb.ref('schedules').set(d); }
 
     function getTargetedAnnouncements() { return cloudCache.targetedAnnouncements || {}; }
-    function saveTargetedAnnouncements(d) { cloudCache.targetedAnnouncements = d; rdb.ref('targetedAnnouncements').set(d); }
+    function saveTargetedAnnouncements(d) { 
+      cloudCache.targetedAnnouncements = d; 
+      rdb.ref('targetedAnnouncements').set(d); 
+    }
 
     function getQuestions() { return cloudCache.qa || []; }
     function saveQuestions(d) { cloudCache.qa = d; rdb.ref('qa').set(d); }
@@ -2297,31 +2305,34 @@
       renderStudentCoursesList(student);
     }
 
-    // عرض جدول المواعيد للطالب
+    // عرض جدول المواعيد للطالب (مع دعم الأيام المتعددة للسنتر والأونلاين)
     function renderStudentSchedule() {
       const container = document.getElementById("student-schedule-display-container");
       if (!container || !currentActiveStudent) return;
       const schedules = getSchedules();
       const mySchedule = schedules[currentActiveStudent.grade];
 
-      if (!mySchedule || (!mySchedule.days && !mySchedule.centerTime)) {
+      if (!mySchedule || (!mySchedule.center && !mySchedule.online)) {
         container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:15px;">لم يتم إدخال جدول المواعيد لـ (${currentActiveStudent.grade}) بعد.</p>`;
         return;
       }
 
       container.innerHTML = `
-        <div style="background:var(--card-bg); border:1.5px solid var(--border-color); border-radius:12px; padding:15px;">
-          <h4 style="color:var(--primary-glow); margin-bottom:10px;">🗓️ جدول مواعيد (${currentActiveStudent.grade})</h4>
-          <div class="profile-details-grid">
-            <div><span>📅 الأيام المحددة:</span> <strong>${mySchedule.days || 'يحدد لاحقاً'}</strong></div>
-            <div><span>🏢 مواعيد مجموعات السنتر:</span> <strong style="color:var(--accent-gold);">${mySchedule.centerTime || 'حسب المجموعة'}</strong></div>
-            <div><span>💻 موعد نزول الحصة أونلاين:</span> <strong style="color:var(--success);">${mySchedule.onlineTime || 'متاح فوراً'}</strong></div>
+        <div style="background:var(--card-bg); border:1.5px solid var(--border-color); border-radius:12px; padding:15px; display:flex; flex-direction:column; gap:12px;">
+          <h4 style="color:var(--primary-glow); margin-bottom:4px;">🗓️ جدول مواعيد مجموعات (${currentActiveStudent.grade})</h4>
+          <div>
+            <strong style="color:var(--accent-gold); display:block; margin-bottom:4px;">🏢 مواعيد السنتر:</strong>
+            <p style="background:var(--box-bg); padding:10px; border-radius:8px; white-space:pre-line; font-size:0.9rem;">${mySchedule.center || 'غير محدد'}</p>
+          </div>
+          <div>
+            <strong style="color:var(--success); display:block; margin-bottom:4px;">💻 مواعيد حصص الأونلاين:</strong>
+            <p style="background:var(--box-bg); padding:10px; border-radius:8px; white-space:pre-line; font-size:0.9rem;">${mySchedule.online || 'غير محدد'}</p>
           </div>
         </div>
       `;
     }
 
-    // نظام الإشعارات الذكي والمزامنة الفورية مع الـ Firebase
+    // نظام الإشعارات الذكي (مع دعم الإشعارات الموجهة لصف معين)
     function renderStudentNotifications(student) {
       const listContainer = document.getElementById("notifications-list-container");
       const badgeCount = document.getElementById("notification-badge-count");
@@ -3272,7 +3283,7 @@
       alert("✅ تم نشر التنبيه العام لجميع الطلاب!");
     });
 
-    // إرسال إشعار فوري لصف محدد مع تحديد مدة الصلاحية وحفظه بالسحاب في Firebase
+    // إرسال إشعار فوري لصف محدد مع تحديد مدة الصلاحية الفعّالة
     document.getElementById("btn-send-push-announcement").addEventListener("click", () => {
       const targetGrade = document.getElementById("teacher-push-grade").value;
       const text = document.getElementById("teacher-push-text").value.trim();
@@ -3295,18 +3306,17 @@
 
       saveTargetedAnnouncements(targeted);
       document.getElementById("teacher-push-text").value = "";
-      alert(`🚀 تم إرسال الإشعار فوراً لجرس طلاب (${targetGrade}) بنجاح وبقاؤه مفعل للمدة المحددة!`);
+      alert(`🚀 تم إرسال الإشعار لطلاب (${targetGrade}) بنجاح ويبقى ظاهراً للمدة المحددة!`);
     });
 
-    // حفظ وتحديث جدول المواعيد
+    // حفظ وتحديث جدول المواعيد (أيام متعددة للسنتر والأونلاين)
     document.getElementById("btn-save-grade-schedule").addEventListener("click", () => {
       const grade = document.getElementById("teacher-schedule-grade").value;
-      const days = document.getElementById("teacher-schedule-days").value.trim();
-      const centerTime = document.getElementById("teacher-schedule-center-time").value.trim();
-      const onlineTime = document.getElementById("teacher-schedule-online-time").value.trim();
+      const center = document.getElementById("teacher-schedule-center").value.trim();
+      const online = document.getElementById("teacher-schedule-online").value.trim();
 
       const schedules = getSchedules();
-      schedules[grade] = { days, centerTime, onlineTime };
+      schedules[grade] = { center, online };
       saveSchedules(schedules);
       renderTeacherScheduleTable();
       alert(`✅ تم حفظ جدول مواعيد (${grade}) بنجاح!`);
@@ -3325,13 +3335,12 @@
       ];
 
       grades.forEach(g => {
-        const item = schedules[g] || { days: "—", centerTime: "—", onlineTime: "—" };
+        const item = schedules[g] || { center: "—", online: "—" };
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td><strong>${g}</strong></td>
-          <td>${item.days || '—'}</td>
-          <td>${item.centerTime || '—'}</td>
-          <td>${item.onlineTime || '—'}</td>
+          <td style="white-space:pre-line;">${item.center || '—'}</td>
+          <td style="white-space:pre-line;">${item.online || '—'}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -4243,9 +4252,10 @@
       else if (selected === "curriculum") dataToLoad = getCurriculum();
       else if (selected === "exclusiveCodes") dataToLoad = getExclusiveCodes();
       else if (selected === "schedules") dataToLoad = getSchedules();
+      else if (selected === "targetedAnnouncements") dataToLoad = getTargetedAnnouncements();
       else if (selected === "results") dataToLoad = getExamResults();
       else if (selected === "prices") dataToLoad = getPrices();
-      else if (selected === "all") dataToLoad = { students: getStudents(), curriculum: getCurriculum(), exclusiveCodes: getExclusiveCodes(), schedules: getSchedules(), results: getExamResults(), prices: getPrices() };
+      else if (selected === "all") dataToLoad = { students: getStudents(), curriculum: getCurriculum(), exclusiveCodes: getExclusiveCodes(), schedules: getSchedules(), targetedAnnouncements: getTargetedAnnouncements(), results: getExamResults(), prices: getPrices() };
       editor.value = JSON.stringify(dataToLoad, null, 2);
     });
 
@@ -4258,6 +4268,7 @@
         else if (selected === "curriculum") saveCurriculum(parsedData);
         else if (selected === "exclusiveCodes") saveExclusiveCodes(parsedData);
         else if (selected === "schedules") saveSchedules(parsedData);
+        else if (selected === "targetedAnnouncements") saveTargetedAnnouncements(parsedData);
         else if (selected === "results") saveExamResults(parsedData);
         else if (selected === "prices") savePrices(parsedData);
         else if (selected === "all") {
@@ -4265,6 +4276,7 @@
           if (parsedData.curriculum) saveCurriculum(parsedData.curriculum);
           if (parsedData.exclusiveCodes) saveExclusiveCodes(parsedData.exclusiveCodes);
           if (parsedData.schedules) saveSchedules(parsedData.schedules);
+          if (parsedData.targetedAnnouncements) saveTargetedAnnouncements(parsedData.targetedAnnouncements);
         }
         alert("✅ تم حفظ وتطبيق التعديل بنجاح!");
         loadDevPanel();
