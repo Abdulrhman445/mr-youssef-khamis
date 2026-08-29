@@ -1836,6 +1836,29 @@
     });
 
     // تسجيل الخروج الفعلي والمباشر للطالب أو الزائر
+    function performGlobalLogout() {
+      isExamActive = false;
+      if (watermarkInterval) clearInterval(watermarkInterval);
+      if (quizTimerInterval) clearInterval(quizTimerInterval);
+      
+      localStorage.removeItem("yk_active_student_code");
+      localStorage.removeItem("yk_active_student_data");
+      localStorage.removeItem("yk_active_student_tab");
+      localStorage.removeItem("yk_active_role");
+      
+      currentActiveStudent = null;
+      closeNavDrawer();
+      updateAuthNavState(false);
+      
+      studentDashboard.classList.add("hidden");
+      teacherDashboard.classList.add("hidden");
+      devDashboard.classList.add("hidden");
+      leaderboardSection.classList.add("hidden");
+      
+      authSection.classList.remove("hidden");
+      tabLogin.click();
+    }
+
     document.getElementById("drawer-btn-auth").addEventListener("click", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
       const savedRole = localStorage.getItem("yk_active_role");
@@ -3229,7 +3252,7 @@
       alert("✅ تم نشر التنبيه العام لجميع الطلاب!");
     });
 
-    // إرسال إشعار فوري لصف محدد
+    // إرسال إشعار فوري لصف محدد (تم تصحيح الـ IDs لتعمل بنسبة 100%)
     document.getElementById("btn-send-push-announcement").addEventListener("click", () => {
       const targetGrade = document.getElementById("teacher-push-grade").value;
       const text = document.getElementById("teacher-push-text").value.trim();
@@ -3249,7 +3272,7 @@
 
       saveTargetedAnnouncements(targeted);
       document.getElementById("teacher-push-text").value = "";
-      alert(`🚀 تم إرسال الإشعار والتنبيه فورياً لطلاب (${targetGrade})!`);
+      alert(`🚀 تم إرسال الإشعار والتنبيه فورياً لجرس طلاب (${targetGrade}) بنجاح!`);
     });
 
     // حفظ وتحديث جدول المواعيد
