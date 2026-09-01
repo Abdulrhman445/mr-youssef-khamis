@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#1e1b4b">
+  
+  <!-- إعدادات تطبيق الويب التقدمي (PWA Meta Tags) -->
+  <link rel="manifest" id="manifest-placeholder">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Mr. Youssef Academy">
   
   <!-- وسوم الـ SEO وعنوان محركات البحث (جوجل) -->
   <title>منصة مستر يوسف خميس - Mr. Youssef Khamis English Academy</title>
@@ -16,9 +23,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
   
-  <!-- ربط مكتبات Firebase السحابية للـ Real-time Sync الحقيقي -->
+  <!-- ربط مكتبات Firebase السحابية للـ Real-time Sync والتخزين السحابي Firebase Storage -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
   <!-- مكتبة قراءة الـ QR Code عبر الكاميرا -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
@@ -292,7 +300,15 @@
     .badge-xp { background: #fef08a; color: #854d0e; padding: 2px 8px; border-radius: 12px; font-weight: 900; font-size: 0.78rem; }
     .badge-score-pill { background: #dbeafe; color: #1e40af; padding: 3px 10px; border-radius: 12px; font-weight: 900; font-size: 0.85rem; }
 
-    .student-analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+    /* شريط ونسب التقدم المئوية للطالب */
+    .progress-bar-container {
+      width: 100%; background: #e2e8f0; border-radius: 10px; height: 10px; overflow: hidden; margin-top: 6px;
+    }
+    .progress-bar-fill {
+      height: 100%; background: linear-gradient(90deg, #10b981, #2563eb); width: 0%; transition: width 0.5s ease;
+    }
+
+    .student-analytics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
     .stat-analytics-box {
       background: var(--box-bg); border: 1.5px solid var(--border-color); border-radius: 12px;
       padding: 12px; display: flex; align-items: center; gap: 10px;
@@ -422,7 +438,7 @@
     }
 
     .printable-cards-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin-top: 15px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; margin-top: 15px;
     }
     .scratch-card-mini {
       border: 2px dashed #3b82f6; border-radius: 10px; padding: 10px; text-align: center;
@@ -506,6 +522,9 @@
       <span>🌟 Mr. Youssef Academy</span>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
+      <!-- زر تثبيت المنصة كتطبيق PWA على الهاتف والكمبيوتر -->
+      <button id="btn-pwa-install" class="btn btn-sm btn-accent hidden" type="button" style="width:auto; padding:4px 10px; font-size:0.8rem;">📲 تثبيت التطبيق</button>
+      
       <div id="student-notification-bell-wrapper" class="notification-bell-container hidden">
         <button id="btn-toggle-notifications" class="notification-bell-btn" type="button" title="التنبيهات والإشعارات">
           🔔
@@ -676,6 +695,17 @@
     <!-- لوحة تحكم الطالب -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
       <main class="main-content-panel glass-card">
+        <!-- شريط التقدم وإنجاز الطالب العام والمؤشرات -->
+        <div class="dash-box" style="margin-bottom:15px; border-color:var(--primary-glow);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <h4 style="color:var(--primary-glow); margin:0;">📊 مؤشر تقدمك العام في المنهج:</h4>
+            <strong id="std-progress-percent-text" style="color:var(--success); font-size:1rem;">0%</strong>
+          </div>
+          <div class="progress-bar-container">
+            <div id="std-progress-bar-fill" class="progress-bar-fill"></div>
+          </div>
+        </div>
+
         <!-- 1. المحاضرات -->
         <section id="section-courses" class="std-content-tab active anime-fade-in">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
@@ -868,6 +898,13 @@
                 <span id="std-hw-count" class="sa-val">0 واجب</span>
               </div>
             </div>
+            <div class="stat-analytics-box">
+              <div class="sa-icon">📚</div>
+              <div class="sa-info">
+                <h4>الحصص المكتملة</h4>
+                <span id="std-completed-lessons-count" class="sa-val">0 حصة</span>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -918,13 +955,14 @@
       <div class="dashboard-layout-wrapper">
         <aside class="adaptive-sidebar" id="teacher-sidebar-panel">
           <nav class="sidebar-menu">
-            <button class="side-nav-btn active" data-ttab="t-tab-announcement" type="button">📢 شريط وإشعارات الصفوف</button>
+            <button class="side-nav-btn active" data-ttab="t-tab-analytics" type="button">📊 لوحة الإحصائيات الشاملة</button>
+            <button class="side-nav-btn" data-ttab="t-tab-announcement" type="button">📢 شريط وإشعارات الصفوف</button>
             <button class="side-nav-btn" data-ttab="t-tab-schedule-mgr" type="button">🗓️ إدارة جدول المواعيد</button>
             <button class="side-nav-btn" data-ttab="t-tab-qr-scan" type="button">📷 ماسح QR وكاميرا الحضور</button>
             <button class="side-nav-btn" data-ttab="t-tab-payments" type="button">💳 المشتركون والإيصالات</button>
             <button class="side-nav-btn" data-ttab="t-tab-leaderboard-mgr" type="button">🏆 إدارة لوحة الشرف</button>
             <button class="side-nav-btn" data-ttab="t-tab-prices" type="button">💰 أسعار الحصص الفردية</button>
-            <button class="side-nav-btn" data-ttab="t-tab-promos" type="button">🎟️ كروت شحن الحصص</button>
+            <button class="side-nav-btn" data-ttab="t-tab-promos" type="button">🎟️ كروت شحن الحصص والاشتراكات</button>
             <button class="side-nav-btn" data-ttab="t-tab-student-codes" type="button">🪪 أكواد تسجيل السنتر الحصرية</button>
             <button class="side-nav-btn" data-ttab="t-tab-video" type="button">📹 رفع وتعديل المحاضرات</button>
             <button class="side-nav-btn" data-ttab="t-tab-quiz" type="button">✍️ بنك الأسئلة والامتحانات</button>
@@ -936,8 +974,52 @@
         </aside>
 
         <main class="main-content-panel">
+          <!-- 0. لوحة الإحصائيات والتحليلات التعليمية للمعلم -->
+          <div id="t-sec-analytics" class="teacher-content-tab active anime-fade-in">
+            <div class="dash-box" style="margin-bottom:15px; border-color:var(--primary-glow);">
+              <h3 class="box-title" style="color:var(--primary-glow);">📈 مؤشرات المتابعة الأكاديمية ونشاط الطلاب</h3>
+              <div class="student-analytics-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="stat-analytics-box">
+                  <div class="sa-icon">👥</div>
+                  <div class="sa-info">
+                    <h4>الطلاب المسجلين</h4>
+                    <span id="stat-an-students" class="sa-val">0</span>
+                  </div>
+                </div>
+                <div class="stat-analytics-box">
+                  <div class="sa-icon">🎥</div>
+                  <div class="sa-info">
+                    <h4>إجمالي المحاضرات</h4>
+                    <span id="stat-an-lessons" class="sa-val">0</span>
+                  </div>
+                </div>
+                <div class="stat-analytics-box">
+                  <div class="sa-icon">📝</div>
+                  <div class="sa-info">
+                    <h4>الواجبات المسلمة</h4>
+                    <span id="stat-an-hw" class="sa-val">0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-box" style="border-color:var(--danger);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 class="box-title" style="color:var(--danger); margin:0;">⚠️ قائمة الطلاب المحتاجين متابعة (لم يسلموا واجبات أو اختبارات)</h3>
+              </div>
+              <div class="table-responsive" style="max-height:260px; overflow-y:auto;">
+                <table class="custom-table">
+                  <thead>
+                    <tr><th>اسم الطالب</th><th>الصف</th><th>هاتف ولي الأمر</th><th>الحالة</th><th>تنبيه فوري</th></tr>
+                  </thead>
+                  <tbody id="teacher-inactive-students-table"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
           <!-- 1. شريط الإعلانات -->
-          <div id="t-sec-announcement" class="teacher-content-tab active anime-fade-in">
+          <div id="t-sec-announcement" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box" style="margin-bottom:15px;">
               <h3 class="box-title">📢 تحديث شريط الإعلانات العام (لكل الطلاب)</h3>
               <div style="display: flex; gap: 8px;">
@@ -1092,11 +1174,11 @@
             </div>
           </div>
 
-          <!-- 7. كروت شحن الحصص -->
+          <!-- 7. كروت شحن الحصص مع تحديد الصلاحية وتاريخ الانتهاء -->
           <div id="t-sec-promos" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">🎟️ توليد كروت شحن الحصص (تفعل فيديو واحد فقط المرتبط بالكرت)</h3>
-              <div class="grid-2col">
+              <h3 class="box-title">🎟️ توليد كروت شحن الحصص (مع تحديد تاريخ الصلاحية ونطاق الكرت)</h3>
+              <div class="grid-2col" style="margin-bottom:10px;">
                 <select id="promo-grade-select">
                   <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
                   <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
@@ -1108,12 +1190,15 @@
                   <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
                   <option value="الصف الثالث الإعدادي" selected>الصف الثالث الإعدادي</option>
                 </select>
-                <div style="display: flex; gap: 6px; flex-wrap:wrap;">
-                  <input type="number" id="promo-count-input" placeholder="عدد الكروت" min="1" max="50" value="6" style="max-width:100px;">
-                  <button id="btn-generate-promos" class="btn btn-accent btn-sm" type="button">توليد جديدة</button>
-                  <button onclick="window.print()" class="btn btn-primary btn-sm" type="button">🖨️ طباعة</button>
-                  <button id="btn-clear-all-promos" class="btn btn-danger btn-sm" type="button">🗑️ حذف الكل</button>
+                <div class="input-field" style="margin:0;">
+                  <input type="date" id="promo-expire-date-input" title="تاريخ انتهاء صلاحية الكرت (اختياري)">
                 </div>
+              </div>
+              <div style="display: flex; gap: 6px; flex-wrap:wrap; margin-bottom:10px;">
+                <input type="number" id="promo-count-input" placeholder="عدد الكروت" min="1" max="50" value="6" style="max-width:100px;">
+                <button id="btn-generate-promos" class="btn btn-accent btn-sm" type="button">توليد جديدة</button>
+                <button onclick="window.print()" class="btn btn-primary btn-sm" type="button">🖨️ طباعة</button>
+                <button id="btn-clear-all-promos" class="btn btn-danger btn-sm" type="button">🗑️ حذف الكل</button>
               </div>
               <div id="printable-cards-container" class="printable-cards-grid"></div>
             </div>
@@ -1600,12 +1685,19 @@
 
   <script>
     const firebaseConfig = {
-      databaseURL: "https://mr-youssef-academy-default-rtdb.firebaseio.com"
+      databaseURL: "https://mr-youssef-academy-default-rtdb.firebaseio.com",
+      storageBucket: "mr-youssef-academy.appspot.com"
     };
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
     const rdb = firebase.database();
+    let storageRef = null;
+    try {
+      storageRef = firebase.storage ? firebase.storage().ref() : null;
+    } catch (e) {
+      console.log("Firebase Storage initialized in fallback mode");
+    }
 
     const currentYear = new Date().getFullYear();
     document.getElementById("dynamic-academic-year-badge").innerText = `العام الدراسي ${currentYear}`;
@@ -1617,6 +1709,42 @@
       const regex = /^01[0-9]{9}$/;
       return regex.test(phone);
     }
+
+    // تجهيز PWA تلقائياً في المتصفح
+    (function initPWA() {
+      const manifest = {
+        name: "منصة مستر يوسف خميس",
+        short_name: "Youssef Academy",
+        start_url: "./",
+        display: "standalone",
+        background_color: "#0f172a",
+        theme_color: "#1e1b4b",
+        icons: [{
+          src: "https://cdn.phototourl.com/free/2026-08-26-3e6bf12d-7dec-4e3b-8799-9d76eaa2db5e.jpg",
+          sizes: "512x512",
+          type: "image/jpeg"
+        }]
+      };
+      const stringManifest = JSON.stringify(manifest);
+      const blob = new Blob([stringManifest], {type: 'application/json'});
+      const manifestURL = URL.createObjectURL(blob);
+      const link = document.getElementById('manifest-placeholder');
+      if (link) link.setAttribute('href', manifestURL);
+
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const pwaBtn = document.getElementById('btn-pwa-install');
+        if (pwaBtn) {
+          pwaBtn.classList.remove('hidden');
+          pwaBtn.onclick = () => {
+            pwaBtn.classList.add('hidden');
+            deferredPrompt.prompt();
+          };
+        }
+      });
+    })();
 
     // دالة ضغط الصور الذكية
     function compressImageFile(file, maxWidth = 1000, quality = 0.75) {
@@ -1648,6 +1776,20 @@
         };
         reader.readAsDataURL(file);
       });
+    }
+
+    // دالة رفع الملفات إما لـ Firebase Storage مباشرة أو كـ Base64 مضغوط
+    async function uploadFileSmart(file, path) {
+      if (storageRef && file) {
+        try {
+          const fileRef = storageRef.child(`${path}/${Date.now()}_${file.name}`);
+          const snap = await fileRef.put(file);
+          return await snap.ref.getDownloadURL();
+        } catch (err) {
+          console.warn("Storage upload fallback to DataURL", err);
+        }
+      }
+      return await compressImageFile(file, 900, 0.75);
     }
 
     function getDeviceFingerprint() {
@@ -2275,6 +2417,10 @@
         const targetTab = btn.getAttribute("data-ttab");
         document.querySelectorAll(".teacher-content-tab").forEach(sec => sec.classList.add("hidden"));
 
+        if (targetTab === "t-tab-analytics") {
+          document.getElementById("t-sec-analytics").classList.remove("hidden");
+          renderTeacherAcademicAnalytics();
+        }
         if (targetTab === "t-tab-announcement") document.getElementById("t-sec-announcement").classList.remove("hidden");
         if (targetTab === "t-tab-schedule-mgr") document.getElementById("t-sec-schedule-mgr").classList.remove("hidden");
         if (targetTab === "t-tab-qr-scan") document.getElementById("t-sec-qr-scan").classList.remove("hidden");
@@ -2359,7 +2505,7 @@
       const file = e.target.files[0];
       if (!file) return;
 
-      const newAvatar = await compressImageFile(file, 400, 0.8);
+      const newAvatar = await uploadFileSmart(file, `avatars/${currentActiveStudent.code}`);
       if (document.getElementById("drawer-avatar-img")) document.getElementById("drawer-avatar-img").src = newAvatar;
       if (document.getElementById("profile-main-avatar-img")) document.getElementById("profile-main-avatar-img").src = newAvatar;
 
@@ -2370,7 +2516,7 @@
         currentActiveStudent.avatar = newAvatar;
         saveStudents(students);
         localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
-        alert("✅ تم قص وتحديث صورة البروفايل الشخصية بدقة!");
+        alert("✅ تم رفع وتحديث صورة البروفايل بنجاح!");
       }
     }
 
@@ -2379,6 +2525,26 @@
     }
     if (document.getElementById("profile-avatar-upload")) {
       document.getElementById("profile-avatar-upload").addEventListener("change", handleStudentAvatarUpload);
+    }
+
+    function updateStudentProgressIndicators(student) {
+      const curr = getCurriculum();
+      const lessons = curr[student.grade] || [];
+      const totalLessons = lessons.length;
+      const completedCount = (student.completedLessons && Array.isArray(student.completedLessons)) ? student.completedLessons.length : 0;
+      
+      let progressPercent = 0;
+      if (totalLessons > 0) {
+        progressPercent = Math.min(100, Math.round((completedCount / totalLessons) * 100));
+      }
+
+      const pText = document.getElementById("std-progress-percent-text");
+      const pFill = document.getElementById("std-progress-bar-fill");
+      const completedBox = document.getElementById("std-completed-lessons-count");
+
+      if (pText) pText.innerText = `${progressPercent}% (${completedCount}/${totalLessons} محاضرة)`;
+      if (pFill) pFill.style.width = `${progressPercent}%`;
+      if (completedBox) completedBox.innerText = `${completedCount} حصة`;
     }
 
     function loadStudentDashboard(student) {
@@ -2417,6 +2583,7 @@
       }
       document.getElementById("std-avg-exam").innerText = `${avgExam}%`;
 
+      updateStudentProgressIndicators(student);
       renderStudentHomeworkHistory(student);
       renderStudentExamStatus(student);
       renderStudentHomeworkCatalog(student);
@@ -2753,7 +2920,6 @@
       }
     }
 
-    // خوارزمية Fisher-Yates لخلط وترتيب الأسئلة والخيارات عشوائياً
     function shuffleArray(array) {
       let shuffled = [...array];
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -2785,7 +2951,6 @@
 
       activeExamLessonId = lessonId;
       
-      // ميزة ترتيب الأسئلة والخيارات عشوائياً لكل طالب مع الحفاظ على مطابقة الإجابات الصحيحة
       const rawQuestions = lesson.exam.questions || [];
       const shuffledQuestions = shuffleArray(rawQuestions).map(q => {
         if (q.type === 'mcq') {
@@ -2812,7 +2977,7 @@
       startQuizTimer(duration);
     };
 
-    document.getElementById("btn-submit-multiple-hw").onclick = () => {
+    document.getElementById("btn-submit-multiple-hw").onclick = async () => {
       const notes = document.getElementById("std-hw-notes-input").value.trim();
       const filesInput = document.getElementById("std-hw-files");
       const resMsg = document.getElementById("interactive-hw-result");
@@ -2823,35 +2988,31 @@
         return;
       }
 
-      let uploadedFilesCount = 0;
-      let filesDataArr = [];
+      resMsg.innerText = "⏳ جاري رفع الواجب السحابي...";
+      resMsg.style.color = "var(--primary-glow)";
 
-      Array.from(filesInput.files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          filesDataArr.push(e.target.result);
-          uploadedFilesCount++;
-          if (uploadedFilesCount === filesInput.files.length) {
-            const allHW = getHomework();
-            allHW.unshift({
-              id: Date.now(),
-              studentName: currentActiveStudent.name,
-              grade: currentActiveStudent.grade,
-              notes: notes || "صور صفحات الواجب",
-              files: filesDataArr,
-              status: "قيد المراجعة من المستر",
-              score: "",
-              feedback: "انتظر تصحيح المستر قريباً",
-              time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
-            });
-            saveHomework(allHW);
-            resMsg.innerText = "✅ تم إرسال الواجب بنجاح للمستر!";
-            resMsg.style.color = "var(--success)";
-            renderStudentHomeworkHistory(currentActiveStudent);
-          }
-        };
-        reader.readAsDataURL(file);
+      let filesDataArr = [];
+      for (const file of Array.from(filesInput.files)) {
+        const uploadedUrl = await uploadFileSmart(file, `homework/${currentActiveStudent.code}`);
+        filesDataArr.push(uploadedUrl);
+      }
+
+      const allHW = getHomework();
+      allHW.unshift({
+        id: Date.now(),
+        studentName: currentActiveStudent.name,
+        grade: currentActiveStudent.grade,
+        notes: notes || "صور صفحات الواجب",
+        files: filesDataArr,
+        status: "قيد المراجعة من المستر",
+        score: "",
+        feedback: "انتظر تصحيح المستر قريباً",
+        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
+      saveHomework(allHW);
+      resMsg.innerText = "✅ تم إرسال الواجب بنجاح للمستر!";
+      resMsg.style.color = "var(--success)";
+      renderStudentHomeworkHistory(currentActiveStudent);
     };
 
     document.getElementById("btn-apply-promo").addEventListener("click", () => {
@@ -2861,6 +3022,16 @@
 
       if (idx !== -1) {
         const promoItem = promos[idx];
+        
+        // التحقق من تاريخ انتهاء الصلاحية
+        if (promoItem.expireDate) {
+          const nowStr = new Date().toISOString().slice(0, 10);
+          if (nowStr > promoItem.expireDate) {
+            alert(`❌ هذا الكود انتهت صلاحيته بتاريخ (${promoItem.expireDate}).`);
+            return;
+          }
+        }
+
         if (promoItem.grade && promoItem.grade !== currentActiveStudent.grade) {
           alert(`❌ هذا الكود مخصص لـ (${promoItem.grade}) وليس لصفك الدراسي.`);
           return;
@@ -2891,13 +3062,13 @@
       }
     });
 
-    document.getElementById("btn-request-activation").addEventListener("click", () => {
+    document.getElementById("btn-request-activation").addEventListener("click", async () => {
       const senderPhone = document.getElementById("pay-sender-phone").value.trim();
       const fileInput = document.getElementById("pay-receipt-file");
       const statusMsg = document.getElementById("payment-status-msg");
 
       if (!isValidEgyptianPhone(senderPhone)) {
-        statusMsg.innerText = "⚠️ يرجى إدخال رقم محفظة مصري صحيح يبدأ بـ 01 ومكون من 11 رقماً.";
+        statusMsg.innerText = "⚠️ يرجى إدخال رقم محفظة مصري صحيح يبدأ بـ (010, 011, 012, 015).";
         statusMsg.style.color = "var(--danger)";
         return;
       }
@@ -2907,26 +3078,25 @@
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const receiptImg = e.target.result;
-        const students = getStudents();
-        const idx = students.findIndex(s => s.code === currentActiveStudent.code);
-        if (idx !== -1) {
-          students[idx].senderWallet = senderPhone;
-          students[idx].receiptImg = receiptImg;
-          students[idx].pendingLessonId = window.targetLessonToUnlock || "";
-          saveStudents(students);
-          currentActiveStudent = students[idx];
-          localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
-          statusMsg.innerText = "✅ تم إرسال الإيصال وطلب التفعيل للمستر بنجاح!";
-          statusMsg.style.color = "var(--success)";
+      statusMsg.innerText = "⏳ جاري رفع الإيصال...";
+      statusMsg.style.color = "var(--primary-glow)";
 
-          const waMsg = encodeURIComponent(`طلب تفعيل حصة للطالب: ${currentActiveStudent.name} (${currentActiveStudent.grade})\nرقم المحفظة: ${senderPhone}`);
-          window.open(`https://wa.me/201152039710?text=${waMsg}`, "_blank");
-        }
-      };
-      reader.readAsDataURL(fileInput.files[0]);
+      const receiptImg = await uploadFileSmart(fileInput.files[0], `receipts/${currentActiveStudent.code}`);
+      const students = getStudents();
+      const idx = students.findIndex(s => s.code === currentActiveStudent.code);
+      if (idx !== -1) {
+        students[idx].senderWallet = senderPhone;
+        students[idx].receiptImg = receiptImg;
+        students[idx].pendingLessonId = window.targetLessonToUnlock || "";
+        saveStudents(students);
+        currentActiveStudent = students[idx];
+        localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
+        statusMsg.innerText = "✅ تم إرسال الإيصال وطلب التفعيل للمستر بنجاح!";
+        statusMsg.style.color = "var(--success)";
+
+        const waMsg = encodeURIComponent(`طلب تفعيل حصة للطالب: ${currentActiveStudent.name} (${currentActiveStudent.grade})\nرقم المحفظة: ${senderPhone}`);
+        window.open(`https://wa.me/201152039710?text=${waMsg}`, "_blank");
+      }
     });
 
     let activeVideoElForTimestamp = null;
@@ -2954,7 +3124,6 @@
       activeVideoElForTimestamp = null;
       hasCountedThisSession = false;
 
-      // مفتاح حفظ موضع الفيديو المخصص لكل طالب ولكل درس
       const resumeStorageKey = `yk_video_pos_${student.code}_${lesson.id}`;
       const savedPosition = parseFloat(localStorage.getItem(resumeStorageKey)) || 0;
 
@@ -2968,6 +3137,7 @@
             saveStudents(students);
             localStorage.setItem("yk_active_student_data", JSON.stringify(student));
             renderStudentExamStatus(student);
+            updateStudentProgressIndicators(student);
           }
         }
       };
@@ -2982,7 +3152,6 @@
         vContainer.appendChild(videoEl);
         activeVideoElForTimestamp = videoEl;
 
-        // استئناف الفيديو تلقائياً من حيث توقف الطالب
         videoEl.onloadedmetadata = () => {
           if (savedPosition > 2 && savedPosition < (videoEl.duration - 5)) {
             videoEl.currentTime = savedPosition;
@@ -3031,7 +3200,6 @@
       const savedNotesKey = `yk_notes_${student.code}_${lesson.id}`;
       document.getElementById("live-notes-input").value = localStorage.getItem(savedNotesKey) || "";
 
-      // زر الملاحظات المختومة بالوقت
       document.getElementById("btn-add-timestamp-note").onclick = () => {
         let currentSeconds = 0;
         if (activeVideoElForTimestamp) {
@@ -3354,6 +3522,7 @@
     function loadTeacherPanel() {
       const announcementInput = document.getElementById("teacher-announcement-input");
       if (announcementInput) announcementInput.value = getAnnouncement();
+      renderTeacherAcademicAnalytics();
       renderTeacherPayments();
       renderTeacherLeaderboardMgr();
       renderTeacherPrices();
@@ -3365,6 +3534,55 @@
       renderTeacherScheduleTable();
       renderTeacherQA();
       renderTeacherProfits();
+    }
+
+    // إحصائيات المعلم وتحليل الطلاب المتعثرين
+    function renderTeacherAcademicAnalytics() {
+      const students = getStudents();
+      const curr = getCurriculum();
+      const allHW = getHomework();
+      const allResults = getExamResults();
+
+      let totalLessons = 0;
+      Object.keys(curr).forEach(k => {
+        totalLessons += Array.isArray(curr[k]) ? curr[k].length : 0;
+      });
+
+      const statStd = document.getElementById("stat-an-students");
+      const statLes = document.getElementById("stat-an-lessons");
+      const statHw = document.getElementById("stat-an-hw");
+
+      if (statStd) statStd.innerText = students.length;
+      if (statLes) statLes.innerText = totalLessons;
+      if (statHw) statHw.innerText = allHW.length;
+
+      const inactiveTbody = document.getElementById("teacher-inactive-students-table");
+      if (!inactiveTbody) return;
+      inactiveTbody.innerHTML = "";
+
+      const inactiveStudents = students.filter(s => {
+        const myHw = allHW.filter(h => h.studentName === s.name);
+        const myRes = allResults.filter(r => r.name === s.name);
+        return myHw.length === 0 || myRes.length === 0;
+      });
+
+      if (inactiveStudents.length === 0) {
+        inactiveTbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--success); font-weight:bold;'>🎉 جميع الطلاب متفاعلون ومسلمون لواجباتهم!</td></tr>";
+        return;
+      }
+
+      inactiveStudents.forEach(s => {
+        const tr = document.createElement("tr");
+        const msg = encodeURIComponent(`تنبيه متابعة: نود تذكيركم بضرورة متابعة الطالب (${s.name}) في حل واجبات واختبارات منصة مستر يوسف خميس للغة الإنجليزية.`);
+        tr.innerHTML = `
+          <td><strong>${escapeHTML(s.name)}</strong></td>
+          <td>${escapeHTML(s.grade)}</td>
+          <td>${s.parentPhone}</td>
+          <td><span class="status-badge-pending">متأخر في التسليمات</span></td>
+          <td><a href="https://wa.me/2${s.parentPhone}?text=${msg}" target="_blank" class="btn btn-sm btn-whatsapp" style="padding:2px 8px; font-size:0.75rem;">📲 راسل ولي الأمر</a></td>
+        `;
+        inactiveTbody.appendChild(tr);
+      });
     }
 
     // حساب وعرض إحصائيات الأرباح والمشتركين
@@ -3694,6 +3912,7 @@
     document.getElementById("btn-generate-promos").addEventListener("click", () => {
       const grade = document.getElementById("promo-grade-select").value;
       const count = parseInt(document.getElementById("promo-count-input").value) || 6;
+      const expireDate = document.getElementById("promo-expire-date-input").value;
       let promos = getPromos();
       const curr = getCurriculum();
       const lessons = curr[grade] || [];
@@ -3704,7 +3923,7 @@
         do {
           uniqueCode = "PR-" + Math.random().toString(36).substring(2, 7).toUpperCase();
         } while (promos.some(p => p.code === uniqueCode));
-        promos.unshift({ code: uniqueCode, grade: grade, lessonId: latestLessonId, used: false, usedBy: "" });
+        promos.unshift({ code: uniqueCode, grade: grade, lessonId: latestLessonId, expireDate: expireDate || null, used: false, usedBy: "" });
       }
 
       savePromos(promos);
@@ -3733,6 +3952,7 @@
           <h5>🌟 Mr. Youssef Academy</h5>
           <p style="font-size:0.75rem; color:#64748b;">${p.grade}</p>
           <div class="card-code-val">${p.code}</div>
+          ${p.expireDate ? `<p style="font-size:0.68rem; color:#b45309;">صالح حتى: ${p.expireDate}</p>` : ''}
           <p style="font-size:0.7rem; color:${p.used ? '#ef4444' : '#10b981'}; font-weight:bold;">${p.used ? '❌ مستخدم' : '✅ متاح'}</p>
         `;
         container.appendChild(card);
@@ -3771,7 +3991,7 @@
       });
     }
 
-    document.getElementById("form-manage-video").addEventListener("submit", (e) => {
+    document.getElementById("form-manage-video").addEventListener("submit", async (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
       const title = document.getElementById("teacher-v-title").value.trim();
@@ -3786,32 +4006,36 @@
         return { word: parts[0].trim(), meaning: parts[1].trim() };
       });
 
-      const handleSave = (videoUrl, pdfData = "") => {
-        const curr = getCurriculum();
-        if (!curr[grade] || !Array.isArray(curr[grade])) curr[grade] = [];
-        const finalThumb = customThumb || (type === 'youtube' ? getYoutubeThumbnail(videoUrl) : '');
-        curr[grade].push({
-          id: "les_" + Date.now(),
-          videoTitle: title,
-          price, isFree: price === 0,
-          thumbnailUrl: finalThumb,
-          videoType: type,
-          videoUrl, pdfData, vocab: parsedVocab, exam: null
-        });
-        saveCurriculum(curr);
-        alert(`✅ تم نشر المحاضرة بنجاح!`);
-        document.getElementById("form-manage-video").reset();
-        renderTeacherCurriculumTable();
-        renderTeacherPricesUI();
-      };
-
+      let uploadedPdfUrl = "";
       if (pdfFileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (e) => handleSave(type === 'youtube' ? parseVideoUrl(document.getElementById("teacher-v-url").value.trim()) : document.getElementById("teacher-v-file").files[0], e.target.result);
-        reader.readAsDataURL(pdfFileInput.files[0]);
-      } else {
-        handleSave(type === 'youtube' ? parseVideoUrl(document.getElementById("teacher-v-url").value.trim()) : "");
+        uploadedPdfUrl = await uploadFileSmart(pdfFileInput.files[0], `pdf/${grade}`);
       }
+
+      let videoUrl = "";
+      if (type === 'youtube') {
+        videoUrl = parseVideoUrl(document.getElementById("teacher-v-url").value.trim());
+      } else if (type === 'local' && document.getElementById("teacher-v-file").files[0]) {
+        videoUrl = await uploadFileSmart(document.getElementById("teacher-v-file").files[0], `videos/${grade}`);
+      }
+
+      const curr = getCurriculum();
+      if (!curr[grade] || !Array.isArray(curr[grade])) curr[grade] = [];
+      const finalThumb = customThumb || (type === 'youtube' ? getYoutubeThumbnail(videoUrl) : '');
+      
+      curr[grade].push({
+        id: "les_" + Date.now(),
+        videoTitle: title,
+        price, isFree: price === 0,
+        thumbnailUrl: finalThumb,
+        videoType: type,
+        videoUrl, pdfData: uploadedPdfUrl, vocab: parsedVocab, exam: null
+      });
+      saveCurriculum(curr);
+      alert(`✅ تم نشر المحاضرة بنجاح!`);
+      document.getElementById("form-manage-video").reset();
+      renderTeacherCurriculumTable();
+      renderTeacherPricesUI();
+      renderTeacherAcademicAnalytics();
     });
 
     document.getElementById("teacher-v-type").addEventListener("change", (e) => {
@@ -3980,10 +4204,11 @@
       }
       saveStudents(getStudents());
       renderTeacherPayments();
+      renderTeacherAcademicAnalytics();
     };
 
     window.deleteStudentByTeacher = function(idx) {
-      if (confirm("حذف الطالب؟")) { getStudents().splice(idx, 1); saveStudents(getStudents()); renderTeacherPayments(); }
+      if (confirm("حذف الطالب؟")) { getStudents().splice(idx, 1); saveStudents(getStudents()); renderTeacherPayments(); renderTeacherAcademicAnalytics(); }
     };
 
     function renderTeacherHomework() {
@@ -4080,13 +4305,9 @@
     document.getElementById("teacher-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); teacherDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
     document.getElementById("dev-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); devDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
 
-    // طبقة تحقق إضافية على مستوى الواجهة. لا تعتبر بديلاً عن Firebase Rules.
     window.addEventListener("unhandledrejection", (event) => {
       console.error("Unhandled promise rejection", event.reason);
     });
-
-    // لا تحفظ كلمات المرور أو الأسرار الحقيقية في localStorage أو داخل HTML.
-    // يجب نقل اعتماد المعلم/المطور إلى Firebase Authentication أو Backend قبل النشر العام.
   </script>
 </body>
 </html>
