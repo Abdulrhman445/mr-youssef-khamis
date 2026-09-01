@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>منصة مستر يوسف خميس - English Academy</title>
   
-  <meta name="description" content="منصة مستر يوسف خميس لتعليم اللغة الإنجليزية للمراحل الابتدائية والإعدادية">
+  <!-- وسوم الـ SEO وعنوان محركات البحث (جوجل) -->
+  <title>منصة مستر يوسف خميس - Mr. Youssef Khamis English Academy</title>
+  <meta name="description" content="الموقع الرسمي لمنصة مستر يوسف خميس لتعليم اللغة الإنجليزية للمراحل الابتدائية والإعدادية - Mr. Youssef Khamis English Academy">
+  <meta name="keywords" content="مستر يوسف خميس, مستر يوسف انجليزي, منصة مستر يوسف خميس, Mr Youssef Khamis, English Academy, دروس انجليزي online, يوسف خميس">
   <meta name="author" content="الباشمهندس عبدالرحمن أحمد">
   <meta name="robots" content="index, follow">
 
@@ -1685,6 +1687,8 @@
             localStorage.setItem("yk_active_student_code", updated.code);
             localStorage.setItem("yk_active_student_data", JSON.stringify(updated));
             loadStudentDashboard(updated);
+          } else {
+            renderStudentNotifications(currentActiveStudent);
           }
         }
       }
