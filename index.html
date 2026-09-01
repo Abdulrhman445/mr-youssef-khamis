@@ -300,7 +300,6 @@
     .badge-xp { background: #fef08a; color: #854d0e; padding: 2px 8px; border-radius: 12px; font-weight: 900; font-size: 0.78rem; }
     .badge-score-pill { background: #dbeafe; color: #1e40af; padding: 3px 10px; border-radius: 12px; font-weight: 900; font-size: 0.85rem; }
 
-    /* شريط ونسب التقدم المئوية للطالب */
     .progress-bar-container {
       width: 100%; background: #e2e8f0; border-radius: 10px; height: 10px; overflow: hidden; margin-top: 6px;
     }
@@ -522,7 +521,6 @@
       <span>🌟 Mr. Youssef Academy</span>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
-      <!-- زر تثبيت المنصة كتطبيق PWA على الهاتف والكمبيوتر -->
       <button id="btn-pwa-install" class="btn btn-sm btn-accent hidden" type="button" style="width:auto; padding:4px 10px; font-size:0.8rem;">📲 تثبيت التطبيق</button>
       
       <div id="student-notification-bell-wrapper" class="notification-bell-container hidden">
@@ -604,15 +602,15 @@
         <button id="tab-parent-login" class="tab-btn" type="button" style="color:var(--accent-gold);">👨‍👩‍👦 ولي الأمر</button>
       </div>
 
-      <!-- نموذج تسجيل دخول الطالب / الإدارة -->
+      <!-- نموذج تسجيل الدخول الموحد للطلاب حصراً -->
       <form id="unified-login-form" class="auth-form anime-slide-up">
         <div class="input-field">
-          <label>👤 اسم المستخدم / البريد الإلكتروني</label>
-          <input type="text" id="login-identifier" placeholder="اسمك الثلاثي (للطلاب) أو البريد (للإدارة)" required>
+          <label>👤 اسم الطالب</label>
+          <input type="text" id="login-identifier" placeholder="اكتب اسم الطالب ثلاثي" required>
         </div>
         <div class="input-field">
-          <label>🔑 كود الطالب / كلمة المرور</label>
-          <input type="password" id="login-credential" placeholder="أدخل الكود الخاص بك أو كلمة المرور" required>
+          <label>🔑 كود الطالب</label>
+          <input type="password" id="login-credential" placeholder="ادخل كود الطالب الخاص بك" required>
         </div>
         <button type="submit" class="btn btn-primary pulse-btn">🚀 دخول المنصة</button>
       </form>
@@ -3023,7 +3021,6 @@
       if (idx !== -1) {
         const promoItem = promos[idx];
         
-        // التحقق من تاريخ انتهاء الصلاحية
         if (promoItem.expireDate) {
           const nowStr = new Date().toISOString().slice(0, 10);
           if (nowStr > promoItem.expireDate) {
