@@ -367,10 +367,15 @@
     .secure-video-wrapper {
       position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.15); background: #000;
+      -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
     }
     .secure-video-wrapper iframe, .secure-video-wrapper video {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; pointer-events: auto;
     }
+    .video-anti-piracy-overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 50px); z-index: 5; pointer-events: none;
+    }
+
     .floating-watermark {
       position: absolute; z-index: 10; color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; font-weight: 800;
       pointer-events: none; background: rgba(0, 0, 0, 0.4); padding: 3px 8px; border-radius: 4px; transition: all 1.2s ease-in-out;
@@ -487,7 +492,7 @@
     }
   </style>
 </head>
-<body>
+<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" ondragstart="return false;">
 
   <div id="announcement-bar" class="announcement-bar">
     <div class="announcement-track">
@@ -522,7 +527,7 @@
 
   <div id="drawer-overlay" class="drawer-overlay"></div>
 
-  <!-- القائمة المنسدلة (☰) بالترتيب القياسي الصحيح -->
+  <!-- القائمة المنسدلة (☰) -->
   <div id="universal-nav-drawer" class="nav-drawer">
     <div class="nav-drawer-header">
       <div id="drawer-student-profile-header" class="hidden" style="display:flex; align-items:center; gap:10px;">
@@ -543,7 +548,7 @@
     <div class="nav-drawer-menu" id="universal-drawer-menu-container">
       <button id="drawer-btn-home" class="side-nav-btn" type="button">🏠 الصفحة الرئيسية</button>
       
-      <!-- ترتيب أقسام الطالب الفعلي والصحيح -->
+      <!-- أقسام الطالب -->
       <div id="student-drawer-links" class="hidden" style="display:flex; flex-direction:column; gap:6px;">
         <button class="side-nav-btn active" data-tab="tab-courses" type="button">📚 المحاضرات والأرشيف</button>
         <button class="side-nav-btn" data-tab="tab-homework" type="button">📋 الواجبات</button>
@@ -560,7 +565,7 @@
   </div>
 
   <div class="main-wrapper">
-    <!-- كارت المصادقة والتسجيل (محدث ليشمل تبويب دخول ولي الأمر من الخارج مباشرة) -->
+    <!-- كارت المصادقة والتسجيل الرئيسي (مع تبويب ولي الأمر من الخارج) -->
     <div id="auth-section" class="glass-card anime-fade-in">
       <div class="teacher-hero">
         <div class="avatar-ring">
@@ -638,18 +643,18 @@
         <button type="submit" class="btn btn-success">✅ تأكيد التسجيل وإنشاء الحساب</button>
       </form>
 
-      <!-- نموذج دخول ولي الأمر من الشاشة الرئيسية مباشرة -->
+      <!-- نموذج دخول ولي الأمر من الشاشة الرئيسية مباشرة (تم تصحيح التحقق ليكون مرناً ودقيقاً) -->
       <form id="external-parent-login-form" class="auth-form hidden anime-slide-up">
         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px; text-align:center;">أدخل رقم هاتف ولي الأمر المسجل وكود الطالب للدخول المباشر إلى لوحة متابعة الطالب:</p>
         <div class="input-field">
-          <label>📱 هاتف ولي الأمر المسجل:</label>
+          <label>📱 هاتف ولي الأمر:</label>
           <input type="tel" id="ext-parent-phone" placeholder="01xxxxxxxxx" maxlength="11" required>
         </div>
         <div class="input-field">
           <label>🔑 كود الطالب:</label>
           <input type="text" id="ext-student-code" placeholder="مثال: YK-xxxxxx" required>
         </div>
-        <button type="submit" class="btn btn-accent pulse-btn">👨‍👩‍👦 دخول لوحة متابعة الطالب الشاملة</button>
+        <button type="submit" class="btn btn-accent pulse-btn">👨‍👩‍👦 دخول لوحة متابعة الطالب</button>
       </form>
 
       <p id="system-msg" class="system-msg"></p>
@@ -667,7 +672,7 @@
       <div id="leaderboard-cards-container" class="lessons-grid"></div>
     </div>
 
-    <!-- لوحة تحكم الطالب (كاملة العرض) -->
+    <!-- لوحة تحكم الطالب -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
       <main class="main-content-panel glass-card">
         <!-- 1. المحاضرات -->
@@ -734,6 +739,7 @@
             </div>
 
             <div class="secure-video-wrapper">
+              <div class="video-anti-piracy-overlay"></div>
               <div id="video-watermark" class="floating-watermark"></div>
               <div id="video-player-container"></div>
             </div>
@@ -811,10 +817,10 @@
 
         <!-- 3. الامتحانات -->
         <section id="section-exams" class="std-content-tab hidden anime-fade-in">
-          <h2 class="box-title">📝 سجل الاختبارات والدرجات (تتطلب اجتياز 60% فأعلى)</h2>
+          <h2 class="box-title">📝 سجل الاختبارات والدرجات (تتطلب مشاهدة الحصة واجتياز الامتحانات)</h2>
           <div class="grid-2col">
             <div class="dash-box">
-              <h3 class="box-title">⏳ اختبارات مطلوب أداؤها</h3>
+              <h3 class="box-title">⏳ اختبارات الحصص المتاحة</h3>
               <div id="std-pending-exams-list" class="exams-status-list"></div>
             </div>
             <div class="dash-box">
@@ -824,7 +830,7 @@
           </div>
         </section>
 
-        <!-- 4. جدول المواعيد الأسبوعي للطالب -->
+        <!-- 4. جدول المواعيد -->
         <section id="section-schedule" class="std-content-tab hidden anime-fade-in">
           <h2 class="box-title">🗓️ جدول مواعيد مجموعات السنتر وحصص الأونلاين</h2>
           <div class="dash-box">
@@ -898,7 +904,7 @@
           </button>
           <div>
             <h2 style="font-size:1.2rem;">لوحة إدارة المعلم - مستر يوسف خميس</h2>
-            <p class="subtitle">التحكم في المناهج، الحضور بالكاميرا، وتصحيح الواجبات</p>
+            <p class="subtitle">التحكم في المناهج، الحضور بالكاميرا، وتصحيح الواجبات والأرباح</p>
           </div>
         </div>
         <button id="teacher-logout" class="btn btn-danger btn-sm" type="button">خروج المعلم</button>
@@ -917,6 +923,7 @@
             <button class="side-nav-btn" data-ttab="t-tab-student-codes" type="button">🪪 أكواد تسجيل السنتر الحصرية</button>
             <button class="side-nav-btn" data-ttab="t-tab-video" type="button">📹 رفع وتعديل المحاضرات</button>
             <button class="side-nav-btn" data-ttab="t-tab-quiz" type="button">✍️ بنك الأسئلة والامتحانات</button>
+            <button class="side-nav-btn" data-ttab="t-tab-profits" type="button">📈 تقارير الأرباح والنسخ الاحتياطي</button>
             <button class="side-nav-btn" data-ttab="t-tab-results" type="button">📊 تصدير Excel لكل صف</button>
             <button class="side-nav-btn" data-ttab="t-tab-homework" type="button">📝 تصدير ومتابعة الواجبات</button>
             <button class="side-nav-btn" data-ttab="t-tab-qa" type="button">💬 استفسارات الطلاب</button>
@@ -924,7 +931,7 @@
         </aside>
 
         <main class="main-content-panel">
-          <!-- 1. شريط الإعلانات والإشعارات الموجهة لصف محدد مع المدة -->
+          <!-- 1. شريط الإعلانات -->
           <div id="t-sec-announcement" class="teacher-content-tab active anime-fade-in">
             <div class="dash-box" style="margin-bottom:15px;">
               <h3 class="box-title">📢 تحديث شريط الإعلانات العام (لكل الطلاب)</h3>
@@ -963,7 +970,7 @@
             </div>
           </div>
 
-          <!-- 2. إدارة جدول المواعيد (متعدد الأيام للسنتر والأونلاين لكل صف) -->
+          <!-- 2. جدول المواعيد -->
           <div id="t-sec-schedule-mgr" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">🗓️ إضافة وتحديث جدول المواعيد الأسبوعي (أيام متعددة للسنتر والأونلاين)</h3>
@@ -1002,15 +1009,15 @@
             </div>
           </div>
 
-          <!-- 3. ماسح الحضور بالكاميرا والـ QR -->
+          <!-- 3. ماسح الحضور وإرسال واتساب أوتوماتيكي لولي الأمر -->
           <div id="t-sec-qr-scan" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box" style="text-align:center;">
-              <h3 class="box-title">📷 نظام مسح حضور السنتر (كاميرا الجوال / QR / كود يدوي)</h3>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">قم بتوجيه الكاميرا نحو كود الـ QR الخاص بالطالب، أو أدخل كوده يدوياً لتسجيل الحضور:</p>
+              <h3 class="box-title">📷 نظام مسح حضور السنتر (مع إرسال واتساب أوتوماتيكي لولي الأمر)</h3>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">قم بتوجيه الكاميرا نحو كود الـ QR الخاص بالطالب لتسجيل الحضور وإشعار ولي الأمر فوراً:</p>
               
               <div style="display:flex; gap:8px; max-width:400px; margin:0 auto 15px;">
                 <input type="text" id="scanner-code-input" placeholder="أدخل كود الطالب (مثال: YK-xxxxxx)">
-                <button id="btn-confirm-center-attendance" class="btn btn-success btn-sm" type="button">تسجيل 🟢</button>
+                <button id="btn-confirm-center-attendance" class="btn btn-success btn-sm" type="button">تسجيل وراسل ولي الأمر 🟢</button>
               </div>
 
               <div style="max-width:350px; margin:0 auto; background:#000; border-radius:12px; overflow:hidden; padding:5px;">
@@ -1210,82 +1217,138 @@
             </div>
           </div>
 
-          <!-- 10. بنك الأسئلة -->
+          <!-- 10. بنك الأسئلة والامتحانات -->
           <div id="t-sec-quiz" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">📝 بنك الأسئلة، الاختبارات، ونموذج إجابة الواجب</h3>
-              <form id="form-manage-quiz">
+              <h3 class="box-title">📝 بنك الأسئلة وإنشاء امتحانات الحصص</h3>
+              
+              <div class="input-field">
+                <label>اختر الصف الدراسي:</label>
+                <select id="teacher-quiz-grade-select" onchange="loadTeacherLessonsForQuiz(this.value)">
+                  <option value="" disabled selected>اختر الصف أولاً</option>
+                  <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+                  <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+                  <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+                  <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+                  <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+                  <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+                  <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+                  <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
+                  <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+                </select>
+              </div>
+
+              <div class="input-field">
+                <label>اختر الحصة (المرتبط بها هذا الامتحان):</label>
+                <select id="teacher-quiz-lesson-select">
+                  <option value="" disabled selected>اختر الصف لتظهر الحصص...</option>
+                </select>
+              </div>
+
+              <div class="grid-2col">
                 <div class="input-field">
-                  <label>الصف الدراسي:</label>
-                  <select id="teacher-q-grade" required>
-                    <option value="" disabled selected>اختر الصف</option>
-                    <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
-                    <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
-                    <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
-                    <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
-                    <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
-                    <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
-                    <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
-                    <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                    <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
-                  </select>
-                </div>
-                <div class="input-field">
-                  <label>نوع النشر:</label>
-                  <select id="teacher-q-category">
-                    <option value="exam">امتحان دوري (يُحل لمرة واحدة)</option>
-                    <option value="homework">واجب منزلي (PDF)</option>
-                  </select>
-                </div>
-                <div class="input-field">
-                  <label>اسم الامتحان أو الواجب:</label>
-                  <input type="text" id="teacher-q-title-name" placeholder="مثال: امتحان Unit 1 الشامل" required>
+                  <label>اسم الامتحان أو الاختبار:</label>
+                  <input type="text" id="teacher-quiz-title-input" placeholder="مثال: امتحان Unit 1 الشامل">
                 </div>
                 <div class="input-field">
                   <label>⏱️ مدة الامتحان (بالدقائق):</label>
-                  <input type="number" id="teacher-quiz-duration" min="1" max="180" value="10" required>
+                  <input type="number" id="teacher-quiz-duration-input" min="1" max="180" value="10">
                 </div>
-                <div class="input-field">
-                  <label>نوع السؤال:</label>
-                  <select id="teacher-q-type">
-                    <option value="mcq">اختيار من متعدد</option>
-                    <option value="essay">سؤال مقالي قصير</option>
+              </div>
+
+              <div class="input-field">
+                <label>🔄 عدد مرات السماح بدخول الامتحان للطالب:</label>
+                <input type="number" id="teacher-quiz-attempts-input" min="1" max="5" value="1">
+              </div>
+
+              <hr style="border: 1px solid var(--border-color); margin: 15px 0;">
+
+              <h4 style="color:var(--primary-glow); margin-bottom:10px;">➕ إضافة الأسئلة:</h4>
+              
+              <div class="input-field">
+                <label>نوع السؤال:</label>
+                <select id="teacher-q-type" onchange="toggleTeacherQuizQuestionType(this.value)">
+                  <option value="mcq">اختيار من متعدد</option>
+                  <option value="essay">سؤال مقالي قصير</option>
+                </select>
+              </div>
+
+              <div class="input-field">
+                <label>نص السؤال:</label>
+                <input type="text" id="teacher-q-text" placeholder="اكتب السؤال هنا">
+              </div>
+
+              <div id="q-mcq-options-group">
+                <div class="grid-2col">
+                  <input type="text" id="t-opt-0" placeholder="الاختيار 1">
+                  <input type="text" id="t-opt-1" placeholder="الاختيار 2">
+                  <input type="text" id="t-opt-2" placeholder="الاختيار 3">
+                  <input type="text" id="t-opt-3" placeholder="الاختيار 4">
+                </div>
+                <div class="input-field" style="margin-top: 10px;">
+                  <label>الاختيار الصحيح:</label>
+                  <select id="teacher-q-correct">
+                    <option value="0">الاختيار 1</option>
+                    <option value="1">الاختيار 2</option>
+                    <option value="2">الاختيار 3</option>
+                    <option value="3">الاختيار 4</option>
                   </select>
                 </div>
-                <div class="input-field">
-                  <label>نص السؤال:</label>
-                  <input type="text" id="teacher-q-text" placeholder="اكتب السؤال هنا" required>
+              </div>
+
+              <div id="q-essay-answer-group" class="input-field hidden">
+                <label>✍️ الإجابة النموذجية الصحيحة:</label>
+                <input type="text" id="teacher-essay-correct-text" placeholder="اكتب الإجابة النموذجية">
+              </div>
+
+              <button type="button" class="btn btn-primary" onclick="addQuestionToDraft()">➕ إضافة هذا السؤال (وكتابة سؤال آخر)</button>
+
+              <div class="dash-box" style="margin-top: 15px; border-color:var(--accent-gold);">
+                <h4 style="color:var(--accent-gold); margin-bottom: 8px;">📋 قائمة الأسئلة المضافة (<span id="draft-questions-count">0</span>):</h4>
+                <div id="draft-questions-preview-list" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                  <p style="color:var(--text-muted); font-size:0.85rem;">لم تتم إضافة أسئلة بعد.</p>
                 </div>
-                <div id="q-mcq-options-group">
-                  <div class="grid-2col">
-                    <input type="text" id="t-opt-0" placeholder="الاختيار 1">
-                    <input type="text" id="t-opt-1" placeholder="الاختيار 2">
-                    <input type="text" id="t-opt-2" placeholder="الاختيار 3">
-                    <input type="text" id="t-opt-3" placeholder="الاختيار 4">
-                  </div>
-                  <div class="input-field" style="margin-top: 10px;">
-                    <label>الاختيار الصحيح:</label>
-                    <select id="teacher-q-correct">
-                      <option value="0">الاختيار 1</option>
-                      <option value="1">الاختيار 2</option>
-                      <option value="2">الاختيار 3</option>
-                      <option value="3">الاختيار 4</option>
-                    </select>
-                  </div>
-                </div>
-                <div id="q-essay-answer-group" class="input-field hidden">
-                  <label>✍️ الإجابة النموذجية الصحيحة:</label>
-                  <input type="text" id="teacher-essay-correct-text" placeholder="اكتب الإجابة النموذجية">
-                </div>
-                <div class="btn-group-row">
-                  <button type="submit" class="btn btn-success">➕ إضافة السؤال ونشر الامتحان/الواجب</button>
-                  <button type="button" id="btn-clear-quiz" class="btn btn-danger btn-sm">حذف الأسئلة</button>
-                </div>
-              </form>
+              </div>
+
+              <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button type="button" class="btn btn-success" style="flex:2;" onclick="saveAndPublishFullExam()">💾 حفظ ونشر الامتحان بالكامل للحصة المحددة</button>
+                <button type="button" class="btn btn-danger btn-sm" style="flex:1;" onclick="clearQuizDraft()">🗑️ مسح الكل</button>
+              </div>
             </div>
           </div>
 
-          <!-- 11. تصدير النتائج -->
+          <!-- 11. تقارير الأرباح والنسخ الاحتياطي السحابي -->
+          <div id="t-sec-profits" class="teacher-content-tab hidden anime-fade-in">
+            <div class="dash-box" style="margin-bottom:15px;">
+              <h3 class="box-title">📈 تقارير الأرباح والإحصائيات المالية</h3>
+              <div class="student-analytics-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="stat-analytics-box">
+                  <div class="sa-icon">💰</div>
+                  <div class="sa-info">
+                    <h4>إجمالي الطلاب المسجلين</h4>
+                    <span id="stat-total-std-count" class="sa-val">0 طالب</span>
+                  </div>
+                </div>
+                <div class="stat-analytics-box">
+                  <div class="sa-icon">📊</div>
+                  <div class="sa-info">
+                    <h4>إجمالي الحصص المفعّلة (الاشتراكات)</h4>
+                    <span id="stat-total-unlocked-count" class="sa-val">0 حصة</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-box" style="border-color:var(--primary-glow);">
+              <h3 class="box-title" style="color:var(--primary-glow);">💾 النسخ الاحتياطي السحابي التلقائي (Backup)</h3>
+              <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:12px;">قم بتنزيل نسخة احتياطية كاملة من قاعدة بيانات المنصة (الطلاب، المناهج، الامتحانات، والنتائج) لحفظها على جهازك:</p>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button id="btn-download-full-backup" class="btn btn-primary" type="button">📥 تنزيل نسخة احتياطية كاملة (JSON)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 12. تصدير النتائج -->
           <div id="t-sec-results" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -1317,7 +1380,7 @@
             </div>
           </div>
 
-          <!-- 12. متابعة الواجبات -->
+          <!-- 13. متابعة الواجبات -->
           <div id="t-sec-homework" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📝 تصدير ومتابعة الواجبات (صور متعددة)</h3>
@@ -1332,7 +1395,7 @@
             </div>
           </div>
 
-          <!-- 13. استفسارات الطلاب -->
+          <!-- 14. استفسارات الطلاب -->
           <div id="t-sec-qa" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -1416,7 +1479,7 @@
           <label>درجة الواجب (من 10):</label>
           <input type="number" id="teacher-hw-score-input" min="0" max="10" value="10">
         </div>
-        <button id="btn-save-hw-grade" class="btn btn-success btn-full" type="button">حفظ وإرسال الدرجة للطالب</button>
+        <button id="btn-save-hw-grade" class="btn btn-success btn-full" type="button">حفظ وإرسال الدرجة للطالب وراسل ولي الأمر 📲</button>
         <button onclick="document.getElementById('view-hw-images-modal').classList.add('hidden')" class="btn btn-danger btn-sm btn-full" style="margin-top:10px;">إغلاق</button>
       </div>
     </div>
@@ -1445,31 +1508,6 @@
           <button id="btn-open-edit-student-modal" class="btn btn-accent btn-sm" type="button" style="flex:1;">⚙️ تعديل بيانات وكود الطالب</button>
           <button id="btn-close-details-modal" class="btn btn-danger btn-sm" type="button" style="flex:1;">إغلاق</button>
         </div>
-      </div>
-    </div>
-
-    <!-- نافذة ولي الأمر -->
-    <div id="parent-dashboard-modal" class="cert-modal hidden">
-      <div class="quiz-modal-content anime-slide-up" style="max-width:650px;">
-        <h3 class="box-title" style="color:var(--accent-gold);">👨‍👩‍👦 لوحة متابعة ولي الأمر الذكية</h3>
-        <div class="student-profile-summary-box" style="margin-bottom:12px;">
-          <div class="profile-details-grid">
-            <div><span>👤 اسم الطالب:</span> <strong id="p-name"></strong></div>
-            <div><span>📚 الصف:</span> <strong id="p-grade"></strong></div>
-            <div><span>📅 حضور السنتر:</span> <strong id="p-attendance" style="color:var(--success);"></strong></div>
-            <div><span>👁️ مشاهدات الفيديوهات:</span> <strong id="p-views"></strong></div>
-          </div>
-        </div>
-        <h4 style="font-size:0.95rem; margin-bottom:6px;">📝 سجل درجات الكويزات والواجبات:</h4>
-        <div class="table-responsive" style="max-height:220px; overflow-y:auto;">
-          <table class="custom-table">
-            <thead>
-              <tr><th>النوع / التاريخ</th><th>التفاصيل والنتيجة</th></tr>
-            </thead>
-            <tbody id="parent-records-tbody"></tbody>
-          </table>
-        </div>
-        <button id="btn-close-parent-modal" class="btn btn-danger btn-sm btn-full" type="button" style="margin-top:15px;">إغلاق</button>
       </div>
     </div>
 
@@ -1570,12 +1608,22 @@
     const DEV_CREDENTIALS = { email: "abdulRahman@gmail.com", pass: "203199" };
     const TEACHER_CREDENTIALS = { email: "youssef102@gmail.com", pass: "310031" };
 
+    // دالة تحقق مرنة تقبل أي رقم هاتف مصري صحيح مكون من 11 رقم يبدأ بـ 01
     function isValidEgyptianPhone(phone) {
-      const regex = /^(010|011|012|015)[0-9]{8}$/;
+      const regex = /^01[0-9]{9}$/;
       return regex.test(phone);
     }
 
-    // دالة ضغط الصور الذكية لتقليل حجم الرفع وسرعة التخزين على Firebase
+    // سكربت الحماية القصوى ضد أدوات المطورين وسرقة الفيديوهات
+    document.addEventListener("keydown", function(e) {
+      if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || (e.ctrlKey && e.keyCode === 85)) {
+        e.preventDefault();
+        alert("⚠️ عذراً، هذه الأدوات محظورة لحماية حقوق الملكية الفكرية لمنصة مستر يوسف خميس.");
+        return false;
+      }
+    });
+
+    // دالة ضغط الصور الذكية
     function compressImageFile(file, maxWidth = 1000, quality = 0.75) {
       return new Promise((resolve) => {
         if (!file.type.startsWith("image/")) {
@@ -1747,24 +1795,7 @@
 
     const formUnifiedLogin = document.getElementById("unified-login-form");
     const formStudentSignup = document.getElementById("student-signup-form");
-    const formExternalParentLogin = document.createElement("form"); // تم تعريفه ديناميكياً
-    
-    // إنشاء نموذج ولي الأمر الخارجي وإضافته بجانب النماذج الأخرى
-    formExternalParentLogin.id = "external-parent-login-form";
-    formExternalParentLogin.className = "auth-form hidden anime-slide-up";
-    formExternalParentLogin.innerHTML = `
-      <div class="input-field">
-        <label>📱 هاتف ولي الأمر</label>
-        <input type="tel" id="ext-parent-phone" placeholder="01xxxxxxxxx" maxlength="11" required>
-      </div>
-      <div class="input-field">
-        <label>🔑 كود الطالب</label>
-        <input type="text" id="ext-student-code" placeholder="مثال: YK-xxxxxx" required>
-      </div>
-      <button type="submit" class="btn btn-accent pulse-btn">👨‍👩‍👦 دخول لوحة متابعة الطالب</button>
-    `;
-    authSection.appendChild(formExternalParentLogin);
-
+    const formExternalParentLogin = document.getElementById("external-parent-login-form");
     const systemMsg = document.getElementById("system-msg");
 
     let currentActiveStudent = null;
@@ -1782,10 +1813,9 @@
     let hasCountedThisSession = false;
     let html5QrCodeScanner = null;
 
-    // مصفوفة مؤقتة لتخزين الأسئلة قبل حفظ ونشر الامتحان
     let teacherQuizDraftQuestions = [];
 
-    // استعادة جلسة الدخول والتبويب النشط للطالب فور عمل Refresh
+    // استعادة جلسة الدخول
     window.addEventListener("load", () => {
       const savedCode = localStorage.getItem("yk_active_student_code");
       const savedRole = localStorage.getItem("yk_active_role");
@@ -1900,7 +1930,6 @@
       localStorage.setItem("yk_theme", isDark ? "dark" : "light");
     });
 
-    // تسجيل الخروج الفعلي والمباشر للطالب أو الزائر
     function performGlobalLogout() {
       isExamActive = false;
       if (watermarkInterval) clearInterval(watermarkInterval);
@@ -1992,7 +2021,7 @@
       const stdName = document.getElementById("signup-name").value.trim() || "الطالب";
 
       if (!isValidEgyptianPhone(parentPhone)) {
-        alert("⚠️ يرجى إدخال رقم هاتف صحيح يبدأ بـ (010 أو 011 أو 012 أو 015) ومكون من 11 رقماً.");
+        alert("⚠️ يرجى إدخال رقم هاتف صحيح يبدأ بـ 01 ومكون من 11 رقماً.");
         return;
       }
 
@@ -2004,38 +2033,7 @@
       alert(`📲 تم تجهيز كود التحقق (${generatedParentOTP}) لإرساله عبر الواتساب.`);
     });
 
-    // إدارة التبويبات في شاشة تسجيل الدخول
-    tabLogin.addEventListener("click", () => {
-      tabLogin.classList.add("active");
-      tabSignup.classList.remove("active");
-      tabParentLogin.classList.remove("active");
-      formUnifiedLogin.classList.remove("hidden");
-      formStudentSignup.classList.add("hidden");
-      formExternalParentLogin.classList.add("hidden");
-      systemMsg.innerText = "";
-    });
-
-    tabSignup.addEventListener("click", () => {
-      tabSignup.classList.add("active");
-      tabLogin.classList.remove("active");
-      tabParentLogin.classList.remove("active");
-      formStudentSignup.classList.remove("hidden");
-      formUnifiedLogin.classList.add("hidden");
-      formExternalParentLogin.classList.add("hidden");
-      systemMsg.innerText = "";
-    });
-
-    tabParentLogin.addEventListener("click", () => {
-      tabParentLogin.classList.add("active");
-      tabLogin.classList.remove("active");
-      tabSignup.classList.remove("active");
-      formExternalParentLogin.classList.remove("hidden");
-      formUnifiedLogin.classList.add("hidden");
-      formStudentSignup.classList.add("hidden");
-      systemMsg.innerText = "";
-    });
-
-    // معالجة تسجيل دخول ولي الأمر مباشرة من الواجهة الخارجية وتوجيهه للوحة ابنه
+    // معالجة تسجيل دخول ولي الأمر المباشر من الشاشة الرئيسية (تعديل دقيق يطابق الهاتف والكود بدون أخطاء)
     formExternalParentLogin.addEventListener("submit", (e) => {
       e.preventDefault();
       const pPhone = document.getElementById("ext-parent-phone").value.trim();
@@ -2048,10 +2046,11 @@
       }
 
       const students = getStudents();
-      const student = students.find(s => s.code.toUpperCase() === sCode && s.parentPhone === pPhone);
+      // مطابقة مرنة للرقم والكود بغض النظر عن الفراغات
+      const student = students.find(s => s.code.trim().toUpperCase() === sCode && s.parentPhone.trim() === pPhone);
 
       if (!student) {
-        systemMsg.innerText = "❌ لم يتم العثور على طالب بهذا الكود المرتبط برقم ولي الأمر.";
+        systemMsg.innerText = "❌ رقم هاتف ولي الأمر أو كود الطالب غير متطابق في قاعدة البيانات.";
         systemMsg.style.color = "var(--danger)";
         return;
       }
@@ -2069,7 +2068,7 @@
       loadStudentDashboard(student);
       updateAuthNavState(true);
 
-      alert(`✅ أهلاً بحضرتك يا ولي أمر الطالب (${student.name}). تم فتح لوحة متابعة الطالب بنجاح.`);
+      alert(`✅ أهلاً بحضرتك يا ولي أمر الطالب (${student.name}). تم فتح لوحة المتابعة الشاملة بنجاح.`);
     });
 
     formStudentSignup.addEventListener("submit", (e) => {
@@ -2082,7 +2081,7 @@
       const enteredOtp = document.getElementById("signup-otp-input").value.trim();
 
       if (!isValidEgyptianPhone(phone) || !isValidEgyptianPhone(parentPhone)) {
-        systemMsg.innerText = "⚠️ يجب أن يبدأ هاتف الطالب وولي الأمر بـ (010, 011, 012, 015) ومكوناً من 11 رقماً.";
+        systemMsg.innerText = "⚠️ يجب أن يبدأ هاتف الطالب وولي الأمر بـ 01 ومكوناً من 11 رقماً.";
         systemMsg.style.color = "var(--danger)";
         return;
       }
@@ -2256,6 +2255,10 @@
         if (targetTab === "t-tab-student-codes") document.getElementById("t-sec-student-codes").classList.remove("hidden");
         if (targetTab === "t-tab-video") document.getElementById("t-sec-video").classList.remove("hidden");
         if (targetTab === "t-tab-quiz") document.getElementById("t-sec-quiz").classList.remove("hidden");
+        if (targetTab === "t-tab-profits") {
+          document.getElementById("t-sec-profits").classList.remove("hidden");
+          renderTeacherProfits();
+        }
         if (targetTab === "t-tab-results") document.getElementById("t-sec-results").classList.remove("hidden");
         if (targetTab === "t-tab-homework") document.getElementById("t-sec-homework").classList.remove("hidden");
         if (targetTab === "t-tab-qa") document.getElementById("t-sec-qa").classList.remove("hidden");
@@ -2838,7 +2841,7 @@
       const statusMsg = document.getElementById("payment-status-msg");
 
       if (!isValidEgyptianPhone(senderPhone)) {
-        statusMsg.innerText = "⚠️ يرجى إدخال رقم محفظة مصري صحيح يبدأ بـ (010, 011, 012, 015).";
+        statusMsg.innerText = "⚠️ يرجى إدخال رقم محفظة مصري صحيح يبدأ بـ 01 ومكون من 11 رقماً.";
         statusMsg.style.color = "var(--danger)";
         return;
       }
