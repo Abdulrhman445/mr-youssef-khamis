@@ -558,7 +558,6 @@
         <button class="side-nav-btn" data-tab="tab-profile" type="button">🪪 بياناتي والـ QR</button>
       </div>
 
-      <button id="drawer-btn-parent-portal" class="side-nav-btn" type="button" style="background:rgba(245, 158, 11, 0.15); border:1px solid var(--accent-gold); color:var(--accent-gold);">👨‍👩‍👦 بوابة ولي الأمر (متابعة)</button>
       <button id="drawer-btn-leaderboard" class="side-nav-btn" type="button">🏆 لوحة شرف المتفوقين</button>
       <button id="drawer-btn-theme" class="side-nav-btn" type="button">🌙 تبديل الوضع (ليلي / نهاري)</button>
       <button id="drawer-btn-auth" class="side-nav-btn btn-logout-side" type="button">🚪 تسجيل الخروج</button>
@@ -566,7 +565,7 @@
   </div>
 
   <div class="main-wrapper">
-    <!-- كارت المصادقة والتسجيل -->
+    <!-- كارت المصادقة والتسجيل الرئيسي (مع تبويب ولي الأمر من الخارج) -->
     <div id="auth-section" class="glass-card anime-fade-in">
       <div class="teacher-hero">
         <div class="avatar-ring">
@@ -581,9 +580,11 @@
 
       <div class="tabs-nav">
         <button id="tab-login" class="tab-btn active" type="button">تسجيل الدخول</button>
-        <button id="tab-signup" class="tab-btn" type="button">حساب طالب جديد (بكود السنتر الحصري)</button>
+        <button id="tab-signup" class="tab-btn" type="button">حساب طالب جديد</button>
+        <button id="tab-parent-login" class="tab-btn" type="button" style="color:var(--accent-gold);">👨‍👩‍👦 ولي الأمر</button>
       </div>
 
+      <!-- نموذج تسجيل دخول الطالب / الإدارة -->
       <form id="unified-login-form" class="auth-form anime-slide-up">
         <div class="input-field">
           <label>👤 اسم المستخدم / البريد الإلكتروني</label>
@@ -596,6 +597,7 @@
         <button type="submit" class="btn btn-primary pulse-btn">🚀 دخول المنصة</button>
       </form>
 
+      <!-- نموذج تسجيل طالب جديد -->
       <form id="student-signup-form" class="auth-form hidden anime-slide-up">
         <div class="input-field">
           <label>👤 اسم الطالب بالكامل (ثلاثي مطابق لكارت السنتر)</label>
@@ -618,7 +620,7 @@
         </div>
         <div class="grid-2col">
           <div class="input-field">
-            <label>📱 هاتف الطالب (010, 011, 012, 015)</label>
+            <label>📱 هاتف الطالب</label>
             <input type="tel" id="signup-phone" placeholder="01xxxxxxxxx" maxlength="11" required>
           </div>
           <div class="input-field">
@@ -630,15 +632,28 @@
           </div>
         </div>
         <div id="otp-verification-field" class="input-field hidden">
-          <label>🔐 كود تأكيد هاتف ولي الأمر (المستلم على الواتساب):</label>
+          <label>🔐 كود تأكيد هاتف ولي الأمر:</label>
           <input type="text" id="signup-otp-input" placeholder="أدخل كود التأكيد">
         </div>
         <div class="input-field">
-          <label>🔑 كود تسجيل السنتر الحصري (المخصص لك فقط)</label>
+          <label>🔑 كود تسجيل السنتر الحصري</label>
           <input type="text" id="signup-code" placeholder="أدخل كود السنتر (مثال: YK-xxxxxx)" required>
-          <small style="color:var(--text-muted); font-size:0.75rem;">ملاحظة: الكود مرتبط باسمك حصراً ولا يمكن استخدامه من شخص آخر.</small>
         </div>
         <button type="submit" class="btn btn-success">✅ تأكيد التسجيل وإنشاء الحساب</button>
+      </form>
+
+      <!-- نموذج دخول ولي الأمر المباشر من الشاشة الرئيسية -->
+      <form id="external-parent-login-form" class="auth-form hidden anime-slide-up">
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px; text-align:center;">أدخل رقم هاتف ولي الأمر المسجل وكود الطالب للدخول المباشر إلى لوحة متابعة الطالب:</p>
+        <div class="input-field">
+          <label>📱 هاتف ولي الأمر المسجل:</label>
+          <input type="tel" id="ext-parent-phone" placeholder="01xxxxxxxxx" maxlength="11" required>
+        </div>
+        <div class="input-field">
+          <label>🔑 كود الطالب:</label>
+          <input type="text" id="ext-student-code" placeholder="مثال: YK-xxxxxx" required>
+        </div>
+        <button type="submit" class="btn btn-accent pulse-btn">👨‍👩‍👦 دخول لوحة المتابعة الشاملة</button>
       </form>
 
       <p id="system-msg" class="system-msg"></p>
@@ -656,26 +671,7 @@
       <div id="leaderboard-cards-container" class="lessons-grid"></div>
     </div>
 
-    <!-- نافذة تسجيل دخول ولي الأمر (Parent Portal Modal) -->
-    <div id="parent-login-modal" class="cert-modal hidden">
-      <div class="quiz-modal-content anime-slide-up" style="max-width:450px;">
-        <h3 class="box-title" style="color:var(--accent-gold);">👨‍👩‍👦 بوابة ولي الأمر الذكية (متابعة الأبناء)</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">أدخل هاتف ولي الأمر المسجل وكود الطالب لمتابعة الحضور والدرجات فوراً:</p>
-        <div class="input-field">
-          <label>📱 هاتف ولي الأمر:</label>
-          <input type="tel" id="parent-login-phone" placeholder="01xxxxxxxxx" maxlength="11">
-        </div>
-        <div class="input-field">
-          <label>🔑 كود الطالب:</label>
-          <input type="text" id="parent-login-code" placeholder="مثال: YK-xxxxxx">
-        </div>
-        <button id="btn-submit-parent-login" class="btn btn-accent btn-full" type="button">دخول لوحة متابعة ولي الأمر</button>
-        <div id="parent-login-msg" class="system-msg"></div>
-        <button onclick="document.getElementById('parent-login-modal').classList.add('hidden')" class="btn btn-danger btn-sm btn-full" style="margin-top:10px;">إغلاق</button>
-      </div>
-    </div>
-
-    <!-- لوحة تحكم الطالب (كاملة العرض) -->
+    <!-- لوحة تحكم الطالب (تستخدم أيضاً لدخول ولي الأمر المباشر) -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
       <main class="main-content-panel glass-card">
         <!-- 1. المحاضرات -->
@@ -820,10 +816,10 @@
 
         <!-- 3. الامتحانات -->
         <section id="section-exams" class="std-content-tab hidden anime-fade-in">
-          <h2 class="box-title">📝 سجل الاختبارات والدرجات (تتطلب اجتياز 60% فأعلى)</h2>
+          <h2 class="box-title">📝 سجل الاختبارات والدرجات (تتطلب مشاهدة الحصة واجتياز الامتحانات)</h2>
           <div class="grid-2col">
             <div class="dash-box">
-              <h3 class="box-title">⏳ اختبارات مطلوب أداؤها</h3>
+              <h3 class="box-title">⏳ اختبارات الحصص المتاحة</h3>
               <div id="std-pending-exams-list" class="exams-status-list"></div>
             </div>
             <div class="dash-box">
@@ -833,7 +829,7 @@
           </div>
         </section>
 
-        <!-- 4. جدول المواعيد الأسبوعي للطالب -->
+        <!-- 4. جدول المواعيد -->
         <section id="section-schedule" class="std-content-tab hidden anime-fade-in">
           <h2 class="box-title">🗓️ جدول مواعيد مجموعات السنتر وحصص الأونلاين</h2>
           <div class="dash-box">
@@ -1646,7 +1642,7 @@
       return regex.test(phone);
     }
 
-    // سكربت الحماية القصوى ضد أدوات المطورين وسرقة الفيديوهات
+    // سكربت الحماية ضد أدوات المطورين وسرقة الفيديوهات
     document.addEventListener("keydown", function(e) {
       if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || (e.ctrlKey && e.keyCode === 85)) {
         e.preventDefault();
@@ -1655,7 +1651,7 @@
       }
     });
 
-    // دالة ضغط الصور الذكية لتقليل حجم الرفع وسرعة التخزين على Firebase
+    // دالة ضغط الصور الذكية
     function compressImageFile(file, maxWidth = 1000, quality = 0.75) {
       return new Promise((resolve) => {
         if (!file.type.startsWith("image/")) {
@@ -1823,8 +1819,11 @@
 
     const tabLogin = document.getElementById("tab-login");
     const tabSignup = document.getElementById("tab-signup");
+    const tabParentLogin = document.getElementById("tab-parent-login");
+
     const formUnifiedLogin = document.getElementById("unified-login-form");
     const formStudentSignup = document.getElementById("student-signup-form");
+    const formExternalParentLogin = document.getElementById("external-parent-login-form");
     const systemMsg = document.getElementById("system-msg");
 
     let currentActiveStudent = null;
@@ -1834,7 +1833,6 @@
     let studentAnswersObj = {};
     let watermarkInterval = null;
     let quizTimerInterval = null;
-    let selectedStudentForWhatsApp = null;
     let isExamActive = false;
     let cheatWarningsCount = 0;
     let generatedParentOTP = null;
@@ -1937,66 +1935,6 @@
         authSection.classList.remove("hidden");
         tabLogin.click();
       }
-    });
-
-    // زر فتح بوابة ولي الأمر المستقلة من القائمة
-    document.getElementById("drawer-btn-parent-portal").addEventListener("click", () => {
-      closeNavDrawer();
-      document.getElementById("parent-login-modal").classList.remove("hidden");
-    });
-
-    // معالجة تسجيل دخول ولي الأمر بوابته الخاصة
-    document.getElementById("btn-submit-parent-login").addEventListener("click", () => {
-      const pPhone = document.getElementById("parent-login-phone").value.trim();
-      const sCode = document.getElementById("parent-login-code").value.trim().toUpperCase();
-      const msg = document.getElementById("parent-login-msg");
-
-      if (!isValidEgyptianPhone(pPhone) || !sCode) {
-        msg.innerText = "⚠️ يرجى إدخال هاتف ولي الأمر (11 رقماً) وكود الطالب بدقة.";
-        msg.style.color = "var(--danger)";
-        return;
-      }
-
-      const students = getStudents();
-      const student = students.find(s => s.code.toUpperCase() === sCode && s.parentPhone === pPhone);
-
-      if (!student) {
-        msg.innerText = "❌ لم يتم العثور على طالب بهذا الكود المرتبط برقم ولي الأمر.";
-        msg.style.color = "var(--danger)";
-        return;
-      }
-
-      msg.innerText = "";
-      document.getElementById("parent-login-modal").classList.add("hidden");
-      document.getElementById("parent-login-phone").value = "";
-      document.getElementById("parent-login-code").value = "";
-
-      // تعبئة لوحة متابعة ولي الأمر
-      document.getElementById("pp-name").innerText = student.name;
-      document.getElementById("pp-grade").innerText = student.grade;
-      document.getElementById("pp-code").innerText = student.code;
-      document.getElementById("pp-attendance").innerText = student.attendance ? student.attendance[0] : "مسجل ومتابع ✅";
-      document.getElementById("pp-views").innerText = `${student.views || 0} / 5 مشاهدات`;
-      document.getElementById("pp-xp").innerText = `${student.xp || 50} XP`;
-
-      const tbody = document.getElementById("pp-exams-tbody");
-      tbody.innerHTML = "";
-      const results = getExamResults().filter(r => r.name === student.name);
-
-      if (results.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='2' style='text-align:center; color:var(--text-muted);'>لم يؤدِ الطالب أي امتحانات بعد.</td></tr>";
-      } else {
-        results.forEach(r => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td><strong>${r.examTitle || 'امتحان دوري'}</strong> <small>(${r.time})</small></td>
-            <td><span style="color:${r.isCheated ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">${r.score} (${r.percentage}) - ${r.status}</span></td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      document.getElementById("parent-portal-dashboard-modal").classList.remove("hidden");
     });
 
     document.getElementById("drawer-btn-leaderboard").addEventListener("click", () => {
@@ -2122,21 +2060,6 @@
       alert(`📲 تم تجهيز كود التحقق (${generatedParentOTP}) لإرساله عبر الواتساب.`);
     });
 
-    tabLogin.addEventListener("click", () => {
-      tabLogin.classList.add("active");
-      tabSignup.classList.remove("active");
-      formUnifiedLogin.classList.remove("hidden");
-      formStudentSignup.classList.add("hidden");
-      systemMsg.innerText = "";
-    });
-    tabSignup.addEventListener("click", () => {
-      tabSignup.classList.add("active");
-      tabLogin.classList.remove("active");
-      formStudentSignup.classList.remove("hidden");
-      formUnifiedLogin.classList.add("hidden");
-      systemMsg.innerText = "";
-    });
-
     formStudentSignup.addEventListener("submit", (e) => {
       e.preventDefault();
       const name = document.getElementById("signup-name").value.trim();
@@ -2211,9 +2134,6 @@
       document.getElementById("login-credential").value = code;
       systemMsg.innerText = "🎉 تم إنشاء حسابك بنجاح! يمكنك الدخول الآن.";
       systemMsg.style.color = "var(--success)";
-
-      const welcomeText = encodeURIComponent(`مرحباً بك يا ${name} في أكاديمية مستر يوسف خميس للغة الإنجليزية! تم تسجيل حسابك بنجاح.`);
-      window.open(`https://wa.me/2${phone}?text=${welcomeText}`, "_blank");
     });
 
     formUnifiedLogin.addEventListener("submit", (e) => {
@@ -2278,6 +2198,44 @@
         systemMsg.innerText = "❌ البيانات غير صحيحة، تأكد من كتابة الاسم وكود السنتر بدقة.";
         systemMsg.style.color = "var(--danger)";
       }
+    });
+
+    // معالجة تسجيل دخول ولي الأمر من الواجهة الرئيسية مباشرة وتوجيهه للوحة الطالب
+    formExternalParentLogin.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const pPhone = document.getElementById("ext-parent-phone").value.trim();
+      const sCode = document.getElementById("ext-student-code").value.trim().toUpperCase();
+
+      if (!isValidEgyptianPhone(pPhone) || !sCode) {
+        systemMsg.innerText = "⚠️ يرجى إدخال هاتف ولي الأمر (11 رقماً) وكود الطالب بدقة.";
+        systemMsg.style.color = "var(--danger)";
+        return;
+      }
+
+      const students = getStudents();
+      const student = students.find(s => s.code.toUpperCase() === sCode && s.parentPhone === pPhone);
+
+      if (!student) {
+        systemMsg.innerText = "❌ لم يتم العثور على طالب بهذا الكود المرتبط برقم ولي الأمر.";
+        systemMsg.style.color = "var(--danger)";
+        return;
+      }
+
+      systemMsg.innerText = "";
+      formExternalParentLogin.reset();
+
+      // حفظ جلسة الطالب ليعمل لوحة التحكم الخاصة به مباشرة وليتمكن ولي الأمر من متابعة كل شيء
+      localStorage.setItem("yk_active_student_code", student.code);
+      localStorage.setItem("yk_active_student_data", JSON.stringify(student));
+      localStorage.setItem("yk_active_student_tab", "tab-courses");
+
+      currentActiveStudent = student;
+      authSection.classList.add("hidden");
+      studentDashboard.classList.remove("hidden");
+      loadStudentDashboard(student);
+      updateAuthNavState(true);
+
+      alert(`✅ أهلاً بحضرتك يا ولي أمر الطالب (${student.name}). تم فتح لوحة المتابعة بنجاح.`);
     });
 
     document.querySelectorAll("#student-drawer-links .side-nav-btn[data-tab]").forEach(btn => {
@@ -2517,6 +2475,7 @@
               title: "📢 تنبيه خاص لصفك الدراسي",
               text: tAnnounce.text,
               time: tAnnounce.time || "تنبيه",
+              type: "targeted",
               isSpecialFree: false
             });
           }
@@ -2528,6 +2487,7 @@
         title: "🎉 مرحباً بك في المنصة!",
         text: `أهلاً بك يا ${student.name} في منصة مستر يوسف خميس للغة الإنجليزية!`,
         time: "تنبيه دائم",
+        type: "welcome",
         isSpecialFree: false,
         actionCallback: () => {
           document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-profile']").click();
@@ -2541,7 +2501,11 @@
           title: "💬 رد جديد من مستر يوسف",
           text: `سؤالك: "${qa.question}"\n👈 رد المستر: "${qa.reply}"`,
           time: "حديث",
-          isSpecialFree: false
+          type: "reply",
+          isSpecialFree: false,
+          actionCallback: () => {
+            document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
+          }
         });
       });
 
@@ -2550,12 +2514,14 @@
       if (lessons.length > 0) {
         lessons.forEach((lesson, lIdx) => {
           const isFree = lesson.isFree === true || lesson.price === 0;
+
           if (isFree) {
             rawNotifs.push({
               id: "notif_free_lesson_" + (lesson.id || lIdx),
               title: "🎁 هدية مجانية من مستر يوسف! (FREE VIP)",
               text: `🔥 تم فتح محاضرة "${lesson.videoTitle || 'حصة مميزة'}" مجاناً بالكامل بلا قيود!`,
               time: "حصري ومجاني 🌟",
+              type: "free_course",
               isSpecialFree: true,
               actionCallback: () => {
                 document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
@@ -2580,6 +2546,7 @@
       notifs.forEach(n => {
         const card = document.createElement("div");
         card.className = n.isSpecialFree ? "notif-item-card notif-free-special" : "notif-item-card";
+        
         card.innerHTML = `
           <button class="btn-notif-delete" type="button" title="حذف">✕</button>
           <div class="notif-item-header">
@@ -2588,17 +2555,21 @@
           </div>
           <div class="notif-item-body">${n.text.replace(/\n/g, '<br>')}</div>
         `;
-        card.querySelector(".btn-notif-delete").onclick = (e) => {
+
+        const delBtn = card.querySelector(".btn-notif-delete");
+        delBtn.onclick = (e) => {
           e.stopPropagation();
           let currentDismissed = JSON.parse(localStorage.getItem(`yk_dismissed_notifs_${student.code}`) || "[]");
           currentDismissed.push(n.id);
           localStorage.setItem(`yk_dismissed_notifs_${student.code}`, JSON.stringify(currentDismissed));
           renderStudentNotifications(student);
         };
+
         card.onclick = () => {
           notificationsDropdown.classList.remove("show");
           if (n.actionCallback) n.actionCallback();
         };
+
         listContainer.appendChild(card);
       });
     }
@@ -2625,6 +2596,7 @@
 
         const card = document.createElement("div");
         card.className = isFree ? "lesson-card free-lesson-card" : "lesson-card";
+        
         card.innerHTML = `
           ${isCompleted ? '<div class="completed-badge-ribbon">مكتملة ✅</div>' : ''}
           ${isFree ? '<div class="free-ribbon">FREE</div>' : ''}
@@ -3637,7 +3609,7 @@
       });
 
       if (!hasLessons) {
-        container.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لا توجد محاضرات مرفوعة حالياً.</p>";
+        container.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لا توجد محاضرات مرفوعة حالياً لتحديد أسعارها.</p>";
       }
     }
 
@@ -3683,7 +3655,7 @@
     };
 
     document.getElementById("btn-clear-all-promos").addEventListener("click", () => {
-      if (confirm("حذف كل كروت الشحن؟")) { savePromos([]); renderPromosList(); }
+      if (confirm("⚠️ حذف جميع كروت الشحن؟")) { savePromos([]); renderPromosList(); }
     });
 
     function renderPromosList() {
@@ -3696,7 +3668,7 @@
         card.innerHTML = `
           <button class="btn-card-del" onclick="deletePromoCard('${p.code}')">✕</button>
           <h5>🌟 Mr. Youssef Academy</h5>
-          <p style="font-size:0.75rem;">${p.grade}</p>
+          <p style="font-size:0.75rem; color:#64748b;">${p.grade}</p>
           <div class="card-code-val">${p.code}</div>
           <p style="font-size:0.7rem; color:${p.used ? '#ef4444' : '#10b981'}; font-weight:bold;">${p.used ? '❌ مستخدم' : '✅ متاح'}</p>
         `;
@@ -3708,14 +3680,14 @@
       const stdName = document.getElementById("exclusive-student-name").value.trim();
       const grade = document.getElementById("exclusive-student-grade").value;
 
-      if (!stdName) { alert("أدخل اسم الطالب."); return; }
+      if (!stdName) { alert("⚠️ يرجى إدخال اسم الطالب الثلاثي لتوليد كود حصري مخصص له."); return; }
       let exclusiveCodes = getExclusiveCodes();
       let uniqueCode = "YK-" + Math.floor(100000 + Math.random() * 900000);
       exclusiveCodes.unshift({ code: uniqueCode, name: stdName, grade, used: false });
       saveExclusiveCodes(exclusiveCodes);
       document.getElementById("exclusive-student-name").value = "";
       renderExclusiveCodesMgr();
-      alert(`✅ تم توليد كود السنتر الحصري (${uniqueCode}) بنجاح!`);
+      alert(`✅ تم توليد الكود الحصري (${uniqueCode}) للطالب (${stdName}) بنجاح!`);
     });
 
     window.deleteExclusiveCode = function(code) {
@@ -3972,7 +3944,6 @@
       document.getElementById("view-hw-images-modal").classList.remove("hidden");
     };
 
-    // تصحيح الواجب وإرسال النتيجة أوتوماتيكياً عبر واتساب لولي الأمر
     document.getElementById("btn-save-hw-grade").onclick = () => {
       if (currentReviewingHwIndex === null) return;
       const score = document.getElementById("teacher-hw-score-input").value;
