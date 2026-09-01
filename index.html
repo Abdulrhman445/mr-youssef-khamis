@@ -580,7 +580,7 @@
 
       <div class="tabs-nav">
         <button id="tab-login" class="tab-btn active" type="button">تسجيل الدخول</button>
-        <button id="tab-signup" class="tab-btn" type="button">حساب طالب جديد</button>
+        <button id="tab-signup" class="tab-btn" type="button">حساب طالب جديد (بكود السنتر الحصري)</button>
         <button id="tab-parent-login" class="tab-btn" type="button" style="color:var(--accent-gold);">👨‍👩‍👦 ولي الأمر</button>
       </div>
 
@@ -620,7 +620,7 @@
         </div>
         <div class="grid-2col">
           <div class="input-field">
-            <label>📱 هاتف الطالب</label>
+            <label>📱 هاتف الطالب (010, 011, 012, 015)</label>
             <input type="tel" id="signup-phone" placeholder="01xxxxxxxxx" maxlength="11" required>
           </div>
           <div class="input-field">
@@ -632,17 +632,18 @@
           </div>
         </div>
         <div id="otp-verification-field" class="input-field hidden">
-          <label>🔐 كود تأكيد هاتف ولي الأمر:</label>
+          <label>🔐 كود تأكيد هاتف ولي الأمر (المستلم على الواتساب):</label>
           <input type="text" id="signup-otp-input" placeholder="أدخل كود التأكيد">
         </div>
         <div class="input-field">
-          <label>🔑 كود تسجيل السنتر الحصري</label>
+          <label>🔑 كود تسجيل السنتر الحصري (المخصص لك فقط)</label>
           <input type="text" id="signup-code" placeholder="أدخل كود السنتر (مثال: YK-xxxxxx)" required>
+          <small style="color:var(--text-muted); font-size:0.75rem;">ملاحظة: الكود مرتبط باسمك حصراً ولا يمكن استخدامه من شخص آخر.</small>
         </div>
         <button type="submit" class="btn btn-success">✅ تأكيد التسجيل وإنشاء الحساب</button>
       </form>
 
-      <!-- نموذج دخول ولي الأمر المباشر من الشاشة الرئيسية -->
+      <!-- نموذج دخول ولي الأمر من الشاشة الرئيسية مباشرة -->
       <form id="external-parent-login-form" class="auth-form hidden anime-slide-up">
         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px; text-align:center;">أدخل رقم هاتف ولي الأمر المسجل وكود الطالب للدخول المباشر إلى لوحة متابعة الطالب:</p>
         <div class="input-field">
@@ -1408,36 +1409,6 @@
       </div>
     </div>
 
-    <!-- نافذة داشبورد ولي الأمر المستقلة (Parent Portal Dashboard Modal) -->
-    <div id="parent-portal-dashboard-modal" class="cert-modal hidden">
-      <div class="quiz-modal-content anime-slide-up" style="max-width:700px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:15px;">
-          <h3 class="box-title" style="color:var(--accent-gold); margin:0;">👨‍👩‍👦 بوابة ولي الأمر الأكاديمية (متابعة الأبناء)</h3>
-          <button onclick="document.getElementById('parent-portal-dashboard-modal').classList.add('hidden')" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
-        </div>
-        <div class="student-profile-summary-box" style="margin-bottom:15px;">
-          <div class="profile-details-grid">
-            <div><span>👤 اسم الطالب:</span> <strong id="pp-name"></strong></div>
-            <div><span>📚 الصف:</span> <strong id="pp-grade"></strong></div>
-            <div><span>🔑 كود السنتر:</span> <strong id="pp-code"></strong></div>
-            <div><span>📅 حضور السنتر:</span> <strong id="pp-attendance" style="color:var(--success);"></strong></div>
-            <div><span>👁️ مشاهدات الحصص:</span> <strong id="pp-views"></strong></div>
-            <div><span>⚡ نقاط XP:</span> <strong id="pp-xp" style="color:var(--accent-gold);"></strong></div>
-          </div>
-        </div>
-        <h4 style="font-size:0.95rem; margin-bottom:6px;">📝 سجل درجات الامتحانات والتقييمات:</h4>
-        <div class="table-responsive" style="max-height:220px; overflow-y:auto; margin-bottom:15px;">
-          <table class="custom-table">
-            <thead>
-              <tr><th>اسم الامتحان / التاريخ</th><th>النتيجة والنسبة</th></tr>
-            </thead>
-            <tbody id="pp-exams-tbody"></tbody>
-          </table>
-        </div>
-        <button onclick="document.getElementById('parent-portal-dashboard-modal').classList.add('hidden')" class="btn btn-danger btn-sm btn-full" type="button">إغلاق</button>
-      </div>
-    </div>
-
     <!-- نافذة تعديل بيانات الطالب للمستر -->
     <div id="teacher-edit-student-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
@@ -1642,7 +1613,7 @@
       return regex.test(phone);
     }
 
-    // سكربت الحماية ضد أدوات المطورين وسرقة الفيديوهات
+    // سكربت الحماية القصوى ضد أدوات المطورين وسرقة الفيديوهات
     document.addEventListener("keydown", function(e) {
       if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || (e.ctrlKey && e.keyCode === 85)) {
         e.preventDefault();
@@ -2134,6 +2105,9 @@
       document.getElementById("login-credential").value = code;
       systemMsg.innerText = "🎉 تم إنشاء حسابك بنجاح! يمكنك الدخول الآن.";
       systemMsg.style.color = "var(--success)";
+
+      const welcomeText = encodeURIComponent(`مرحباً بك يا ${name} في أكاديمية مستر يوسف خميس للغة الإنجليزية! تم تسجيل حسابك بنجاح.`);
+      window.open(`https://wa.me/2${phone}?text=${welcomeText}`, "_blank");
     });
 
     formUnifiedLogin.addEventListener("submit", (e) => {
@@ -2200,7 +2174,7 @@
       }
     });
 
-    // معالجة تسجيل دخول ولي الأمر من الواجهة الرئيسية مباشرة وتوجيهه للوحة الطالب
+    // معالجة تسجيل دخول ولي الأمر المباشر وتوجيهه للوحة الطالب لمتابعة كل شيء
     formExternalParentLogin.addEventListener("submit", (e) => {
       e.preventDefault();
       const pPhone = document.getElementById("ext-parent-phone").value.trim();
@@ -2224,7 +2198,6 @@
       systemMsg.innerText = "";
       formExternalParentLogin.reset();
 
-      // حفظ جلسة الطالب ليعمل لوحة التحكم الخاصة به مباشرة وليتمكن ولي الأمر من متابعة كل شيء
       localStorage.setItem("yk_active_student_code", student.code);
       localStorage.setItem("yk_active_student_data", JSON.stringify(student));
       localStorage.setItem("yk_active_student_tab", "tab-courses");
@@ -3941,6 +3914,7 @@
       const container = document.getElementById("hw-images-container");
       container.innerHTML = "";
       if (hw.files) hw.files.forEach(src => { const img = document.createElement("img"); img.src = src; img.style.maxWidth = "100%"; container.appendChild(img); });
+      document.getElementById("view-hw-images-modal").classList.add("hidden"); // اصلاح منطقي للاستدعاء
       document.getElementById("view-hw-images-modal").classList.remove("hidden");
     };
 
@@ -4014,8 +3988,8 @@
       } catch (e) { alert("خطأ في تنسيق JSON"); }
     });
 
-    document.getElementById("teacher-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); teacherDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
-    document.getElementById("dev-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); devDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
+    document.getElementById("teacher-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); teacherDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); tabLogin.click(); });
+    document.getElementById("dev-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); devDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); tabLogin.click(); });
   </script>
 </body>
 </html>
