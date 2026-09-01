@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   
   <!-- وسوم الـ SEO وعنوان محركات البحث (جوجل) -->
   <title>منصة مستر يوسف خميس - Mr. Youssef Khamis English Academy</title>
@@ -1642,14 +1643,8 @@
       return regex.test(phone);
     }
 
-    // سكربت الحماية القصوى ضد أدوات المطورين وسرقة الفيديوهات
-    document.addEventListener("keydown", function(e) {
-      if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || (e.ctrlKey && e.keyCode === 85)) {
-        e.preventDefault();
-        alert("⚠️ عذراً، هذه الأدوات محظورة لحماية حقوق الملكية الفكرية لمنصة مستر يوسف خميس.");
-        return false;
-      }
-    });
+    // ملاحظة أمنية: منع F12 أو كليك يمين ليس حماية حقيقية، لذلك لا نعتمد عليه.
+    // الحماية الفعلية يجب أن تكون عبر Firebase Rules / Authentication / Backend.
 
     // دالة ضغط الصور الذكية
     function compressImageFile(file, maxWidth = 1000, quality = 0.75) {
@@ -1684,12 +1679,35 @@
     }
 
     function getDeviceFingerprint() {
+      // معرف محلي لتحسين تجربة الاستخدام فقط، وليس وسيلة حماية أو إثبات هوية.
       let fp = localStorage.getItem("yk_device_fp");
       if (!fp) {
-        fp = "DEV-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+        const bytes = new Uint32Array(4);
+        crypto.getRandomValues(bytes);
+        fp = "DEV-" + Array.from(bytes, n => n.toString(16).padStart(8, "0")).join("").toUpperCase();
         localStorage.setItem("yk_device_fp", fp);
       }
       return fp;
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>'"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'\"':"&quot;"}[ch]));
+    }
+
+    function validateUploadFile(file, {maxMB = 8, allowed = []} = {}) {
+      if (!file) return {ok:false, message:"لم يتم اختيار ملف."};
+      const sizeOK = file.size <= maxMB * 1024 * 1024;
+      const typeOK = !allowed.length || allowed.includes(file.type);
+      if (!sizeOK) return {ok:false, message:`حجم الملف أكبر من الحد المسموح (${maxMB}MB).`};
+      if (!typeOK) return {ok:false, message:"نوع الملف غير مسموح."};
+      return {ok:true};
+    }
+
+    function safeExternalURL(url) {
+      try {
+        const u = new URL(url, window.location.origin);
+        return ["https:", "http:"].includes(u.protocol) ? u.href : "";
+      } catch (_) { return ""; }
     }
 
     const defaultPrices = {
@@ -2140,7 +2158,7 @@
 
       const text = `السلام عليكم ورحمة الله، كود التحقق لتسجيل حساب الطالب (${stdName}) في منصة مستر يوسف خميس للغة الإنجليزية هو: ${generatedParentOTP}`;
       window.open(`https://wa.me/2${parentPhone}?text=${encodeURIComponent(text)}`, "_blank");
-      alert(`📲 تم تجهيز كود التحقق (${generatedParentOTP}) لإرساله عبر الواتساب.`);
+      alert("📲 تم تجهيز رسالة التحقق لإرسالها إلى ولي الأمر عبر واتساب.");
     });
 
     formStudentSignup.addEventListener("submit", (e) => {
@@ -2533,7 +2551,7 @@
       rawNotifs.push({
         id: "notif_welcome_" + student.code,
         title: "🎉 مرحباً بك في المنصة!",
-        text: `أهلاً بك يا ${student.name} في منصة مستر يوسف خميس للغة الإنجليزية!`,
+        text: `أهلاً بك يا ${escapeHTML(student.name)} في منصة مستر يوسف خميس للغة الإنجليزية!`,
         time: "تنبيه دائم",
         type: "welcome",
         isSpecialFree: false,
@@ -3037,11 +3055,11 @@
 
       document.getElementById("btn-download-notes-pdf").onclick = () => {
         const notes = document.getElementById("live-notes-input").value;
-        const blob = new Blob([`ملاحظات الطالب: ${student.name}\nالصف: ${student.grade}\n\n${notes}`], { type: "text/plain;charset=utf-8" });
+        const blob = new Blob([`ملاحظات الطالب: ${escapeHTML(student.name)}\nالصف: ${escapeHTML(student.grade)}\n\n${notes}`], { type: "text/plain;charset=utf-8" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `ملاحظات_${student.name}_الحصة.txt`;
+        a.download = `ملاحظات_${escapeHTML(student.name)}_الحصة.txt`;
         a.click();
       };
 
@@ -3196,7 +3214,7 @@
 
     function startWatermark(student) {
       const watermark = document.getElementById("video-watermark");
-      watermark.innerText = `${student.name} - ${student.phone}`;
+      watermark.innerText = `${escapeHTML(student.name)} - ${student.phone}`;
       if (watermarkInterval) clearInterval(watermarkInterval);
       watermarkInterval = setInterval(() => {
         watermark.style.top = `${Math.floor(Math.random() * 75) + 10}%`;
@@ -3467,10 +3485,10 @@
         student.attendance.unshift(`حضور السنتر: اليوم الساعة ${timeNow}`);
         saveStudents(students);
 
-        feedback.innerText = `✅ تم تسجيل حضور الطالب (${student.name}) بنجاح!`;
+        feedback.innerText = `✅ تم تسجيل حضور الطالب (${escapeHTML(student.name)}) بنجاح!`;
         feedback.style.color = "var(--success)";
 
-        const waText = encodeURIComponent(`🚨 [إشعار حضور السنتر]\nالسلام عليكم ولي أمر الطالب: ${student.name}\nنحيطكم علماً بأن الطالب قد سجل حضوره بمقر السنتر بنجاح اليوم الساعة ${timeNow} 🟢.`);
+        const waText = encodeURIComponent(`🚨 [إشعار حضور السنتر]\nالسلام عليكم ولي أمر الطالب: ${escapeHTML(student.name)}\nنحيطكم علماً بأن الطالب قد سجل حضوره بمقر السنتر بنجاح اليوم الساعة ${timeNow} 🟢.`);
         window.open(`https://wa.me/2${student.parentPhone}?text=${waText}`, "_blank");
         document.getElementById("scanner-code-input").value = "";
       } else {
@@ -3580,8 +3598,8 @@
         const isShown = s.showInLeaderboard !== false;
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><strong>${s.name}</strong></td>
-          <td>${s.grade}</td>
+          <td><strong>${escapeHTML(s.name)}</strong></td>
+          <td>${escapeHTML(s.grade)}</td>
           <td><input type="text" id="mgr-score-${idx}" value="${bestScore}" style="width:75px; padding:3px;"></td>
           <td><input type="text" id="mgr-percent-${idx}" value="${bestPercent}" style="width:75px; padding:3px;"></td>
           <td>
@@ -3902,7 +3920,7 @@
         const myRes = allResults.filter(r => r.name === s.name);
         let score = "لم يمتحن", status = "غير متاح";
         if (myRes.length > 0) { score = myRes[0].score; status = myRes[0].status; }
-        htmlTable += `<tr><td>${s.name}</td><td>${s.code}</td><td>${score}</td><td>${status}</td></tr>`;
+        htmlTable += `<tr><td>${escapeHTML(s.name)}</td><td>${s.code}</td><td>${score}</td><td>${status}</td></tr>`;
       });
       htmlTable += `</table></body></html>`;
       const blob = new Blob(["\uFEFF" + htmlTable], { type: "application/vnd.ms-excel;charset=utf-8;" });
@@ -3933,7 +3951,7 @@
         const realIdx = students.findIndex(st => st.code === s.code);
         const tr = document.createElement("tr");
         const isUnlocked = s.unlockedLessons && s.unlockedLessons.length > 0;
-        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}</td><td>${s.receiptImg ? `<a href="${s.receiptImg}" target="_blank">🖼️ الإيصال</a>` : 'لا يوجد'}</td><td>${s.views || 0}/5</td><td><button class="btn btn-accent btn-sm" onclick="resetStudentViews(${realIdx})">تصفير</button></td><td>${isUnlocked ? 'مفعلة' : 'انتظار'}</td><td><button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${realIdx})">🔍 بروفايل</button></td><td><button class="btn btn-success btn-sm" onclick="toggleStudentPayment(${realIdx})">${isUnlocked ? 'إلغاء' : 'تفعيل'}</button></td><td><button class="btn btn-danger btn-sm" onclick="deleteStudentByTeacher(${realIdx})">حذف</button></td>`;
+        tr.innerHTML = `<td><strong>${escapeHTML(s.name)}</strong></td><td>${escapeHTML(s.grade)}</td><td>${s.receiptImg ? `<a href="${s.receiptImg}" target="_blank">🖼️ الإيصال</a>` : 'لا يوجد'}</td><td>${s.views || 0}/5</td><td><button class="btn btn-accent btn-sm" onclick="resetStudentViews(${realIdx})">تصفير</button></td><td>${isUnlocked ? 'مفعلة' : 'انتظار'}</td><td><button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${realIdx})">🔍 بروفايل</button></td><td><button class="btn btn-success btn-sm" onclick="toggleStudentPayment(${realIdx})">${isUnlocked ? 'إلغاء' : 'تفعيل'}</button></td><td><button class="btn btn-danger btn-sm" onclick="deleteStudentByTeacher(${realIdx})">حذف</button></td>`;
         tbody.appendChild(tr);
       });
     }
@@ -4044,7 +4062,7 @@
       tbody.innerHTML = "";
       students.forEach((s, idx) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}</td><td><code>${s.code}</code></td><td><button class="btn btn-danger btn-sm" onclick="getStudents().splice(${idx},1);saveStudents(getStudents());loadDevPanel();">حذف</button></td>`;
+        tr.innerHTML = `<td><strong>${escapeHTML(s.name)}</strong></td><td>${escapeHTML(s.grade)}</td><td><code>${s.code}</code></td><td><button class="btn btn-danger btn-sm" onclick="getStudents().splice(${idx},1);saveStudents(getStudents());loadDevPanel();">حذف</button></td>`;
         tbody.appendChild(tr);
       });
     }
@@ -4064,6 +4082,14 @@
 
     document.getElementById("teacher-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); teacherDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
     document.getElementById("dev-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); devDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
+
+    // طبقة تحقق إضافية على مستوى الواجهة. لا تعتبر بديلاً عن Firebase Rules.
+    window.addEventListener("unhandledrejection", (event) => {
+      console.error("Unhandled promise rejection", event.reason);
+    });
+
+    // لا تحفظ كلمات المرور أو الأسرار الحقيقية في localStorage أو داخل HTML.
+    // يجب نقل اعتماد المعلم/المطور إلى Firebase Authentication أو Backend قبل النشر العام.
   </script>
 </body>
 </html>
