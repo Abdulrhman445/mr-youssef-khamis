@@ -6,9 +6,8 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="theme-color" content="#1e1b4b">
   
-  <!-- أيقونة الموقع في المتصفح (Favicon) -->
-  <link rel="icon" type="image/jpeg" href="https://cdn.phototourl.com/free/2026-08-26-3e6bf12d-7dec-4e3b-8799-9d76eaa2db5e.jpg">
-  <link rel="shortcut icon" type="image/jpeg" href="https://cdn.phototourl.com/free/2026-08-26-3e6bf12d-7dec-4e3b-8799-9d76eaa2db5e.jpg">
+  <!-- أيقونة الموقع الدائرية في المتصفح (Circular Favicon) -->
+  <link id="dynamic-circular-favicon" rel="icon" type="image/png" href="https://cdn.phototourl.com/free/2026-08-26-3e6bf12d-7dec-4e3b-8799-9d76eaa2db5e.jpg">
   <link rel="apple-touch-icon" href="https://cdn.phototourl.com/free/2026-08-26-3e6bf12d-7dec-4e3b-8799-9d76eaa2db5e.jpg">
 
   <!-- إعدادات تطبيق الويب التقدمي (PWA Meta Tags) -->
@@ -1687,6 +1686,31 @@
   </div>
 
   <script>
+    // توليد الأيقونة الدائرية تلقائياً لسان المتصفح
+    (function setCircularFavicon() {
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.src = "https://cdn.phototourl.com/free/2026-08-26-3e6bf12d-7dec-4e3b-8799-9d76eaa2db5e.jpg";
+      img.onload = function () {
+        const canvas = document.createElement("canvas");
+        const size = 128;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+
+        ctx.drawImage(img, 0, 0, size, size);
+
+        const circularDataUrl = canvas.toDataURL("image/png");
+        const link = document.getElementById("dynamic-circular-favicon");
+        if (link) link.href = circularDataUrl;
+      };
+    })();
+
     const firebaseConfig = {
       databaseURL: "https://mr-youssef-academy-default-rtdb.firebaseio.com",
       storageBucket: "mr-youssef-academy.appspot.com"
