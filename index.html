@@ -565,7 +565,7 @@
   </div>
 
   <div class="main-wrapper">
-    <!-- كارت المصادقة والتسجيل الرئيسي (مع تبويب ولي الأمر من الخارج) -->
+    <!-- كارت المصادقة والتسجيل (محدث ليشمل تبويب دخول ولي الأمر من الخارج مباشرة) -->
     <div id="auth-section" class="glass-card anime-fade-in">
       <div class="teacher-hero">
         <div class="avatar-ring">
@@ -580,11 +580,11 @@
 
       <div class="tabs-nav">
         <button id="tab-login" class="tab-btn active" type="button">تسجيل الدخول</button>
-        <button id="tab-signup" class="tab-btn" type="button">حساب طالب جديد (بكود السنتر الحصري)</button>
+        <button id="tab-signup" class="tab-btn" type="button">حساب طالب جديد</button>
         <button id="tab-parent-login" class="tab-btn" type="button" style="color:var(--accent-gold);">👨‍👩‍👦 ولي الأمر</button>
       </div>
 
-      <!-- نموذج تسجيل دخول الطالب / الإدارة -->
+      <!-- نموذج دخول الطالب / الإدارة -->
       <form id="unified-login-form" class="auth-form anime-slide-up">
         <div class="input-field">
           <label>👤 اسم المستخدم / البريد الإلكتروني</label>
@@ -620,11 +620,11 @@
         </div>
         <div class="grid-2col">
           <div class="input-field">
-            <label>📱 هاتف الطالب (010, 011, 012, 015)</label>
+            <label>📱 هاتف الطالب</label>
             <input type="tel" id="signup-phone" placeholder="01xxxxxxxxx" maxlength="11" required>
           </div>
           <div class="input-field">
-            <label>👨‍👩‍👦 هاتف ولي الأمر (010, 011, 012, 015)</label>
+            <label>👨‍👩‍👦 هاتف ولي الأمر</label>
             <div style="display:flex; gap:6px;">
               <input type="tel" id="signup-parent-phone" placeholder="01xxxxxxxxx" maxlength="11" required>
               <button id="btn-send-parent-otp" class="btn btn-accent btn-sm" type="button" style="white-space:nowrap;">📲 تأكيد واتساب</button>
@@ -632,29 +632,28 @@
           </div>
         </div>
         <div id="otp-verification-field" class="input-field hidden">
-          <label>🔐 كود تأكيد هاتف ولي الأمر (المستلم على الواتساب):</label>
+          <label>🔐 كود تأكيد هاتف ولي الأمر:</label>
           <input type="text" id="signup-otp-input" placeholder="أدخل كود التأكيد">
         </div>
         <div class="input-field">
-          <label>🔑 كود تسجيل السنتر الحصري (المخصص لك فقط)</label>
+          <label>🔑 كود تسجيل السنتر الحصري</label>
           <input type="text" id="signup-code" placeholder="أدخل كود السنتر (مثال: YK-xxxxxx)" required>
-          <small style="color:var(--text-muted); font-size:0.75rem;">ملاحظة: الكود مرتبط باسمك حصراً ولا يمكن استخدامه من شخص آخر.</small>
         </div>
         <button type="submit" class="btn btn-success">✅ تأكيد التسجيل وإنشاء الحساب</button>
       </form>
 
-      <!-- نموذج دخول ولي الأمر من الشاشة الرئيسية مباشرة (تم تصحيح التحقق ليكون مرناً ودقيقاً) -->
+      <!-- نموذج دخول ولي الأمر من الخارج مباشرة -->
       <form id="external-parent-login-form" class="auth-form hidden anime-slide-up">
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px; text-align:center;">أدخل رقم هاتف ولي الأمر المسجل وكود الطالب للدخول المباشر إلى لوحة متابعة الطالب:</p>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px; text-align:center;">تابع حضور ابنك، مشاهداته، ودرجات امتحاناته وسجله بالكامل فوراً:</p>
         <div class="input-field">
-          <label>📱 هاتف ولي الأمر:</label>
+          <label>📱 هاتف ولي الأمر المسجل:</label>
           <input type="tel" id="ext-parent-phone" placeholder="01xxxxxxxxx" maxlength="11" required>
         </div>
         <div class="input-field">
           <label>🔑 كود الطالب:</label>
           <input type="text" id="ext-student-code" placeholder="مثال: YK-xxxxxx" required>
         </div>
-        <button type="submit" class="btn btn-accent pulse-btn">👨‍👩‍👦 دخول لوحة متابعة الطالب</button>
+        <button type="submit" class="btn btn-accent pulse-btn">👨‍👩‍👦 دخول لوحة متابعة ولي الأمر</button>
       </form>
 
       <p id="system-msg" class="system-msg"></p>
@@ -672,7 +671,7 @@
       <div id="leaderboard-cards-container" class="lessons-grid"></div>
     </div>
 
-    <!-- لوحة تحكم الطالب -->
+    <!-- لوحة تحكم الطالب (كاملة العرض) -->
     <div id="student-dashboard" class="dashboard-layout-wrapper hidden">
       <main class="main-content-panel glass-card">
         <!-- 1. المحاضرات -->
@@ -724,7 +723,7 @@
             </div>
           </div>
 
-          <!-- مشغل الفيديو -->
+          <!-- مشغل الفيديو المحمي ضد سرقة المحتوى -->
           <div id="student-lesson-viewer" class="dash-box hidden anime-fade-in">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap:wrap; gap:8px;">
               <h3 id="std-video-title" class="box-title" style="margin: 0;">عنوان المحاضرة</h3>
@@ -1409,6 +1408,36 @@
       </div>
     </div>
 
+    <!-- نافذة داشبورد ولي الأمر المستقلة (Parent Portal Dashboard Modal) -->
+    <div id="parent-portal-dashboard-modal" class="cert-modal hidden">
+      <div class="quiz-modal-content anime-slide-up" style="max-width:700px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:15px;">
+          <h3 class="box-title" style="color:var(--accent-gold); margin:0;">👨‍👩‍👦 بوابة ولي الأمر الأكاديمية (متابعة الأبناء)</h3>
+          <button onclick="document.getElementById('parent-portal-dashboard-modal').classList.add('hidden')" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+        </div>
+        <div class="student-profile-summary-box" style="margin-bottom:15px;">
+          <div class="profile-details-grid">
+            <div><span>👤 اسم الطالب:</span> <strong id="pp-name"></strong></div>
+            <div><span>📚 الصف:</span> <strong id="pp-grade"></strong></div>
+            <div><span>🔑 كود السنتر:</span> <strong id="pp-code"></strong></div>
+            <div><span>📅 حضور السنتر:</span> <strong id="pp-attendance" style="color:var(--success);"></strong></div>
+            <div><span>👁️ مشاهدات الحصص:</span> <strong id="pp-views"></strong></div>
+            <div><span>⚡ نقاط XP:</span> <strong id="pp-xp" style="color:var(--accent-gold);"></strong></div>
+          </div>
+        </div>
+        <h4 style="font-size:0.95rem; margin-bottom:6px;">📝 سجل درجات الامتحانات والتقييمات:</h4>
+        <div class="table-responsive" style="max-height:220px; overflow-y:auto; margin-bottom:15px;">
+          <table class="custom-table">
+            <thead>
+              <tr><th>اسم الامتحان / التاريخ</th><th>النتيجة والنسبة</th></tr>
+            </thead>
+            <tbody id="pp-exams-tbody"></tbody>
+          </table>
+        </div>
+        <button onclick="document.getElementById('parent-portal-dashboard-modal').classList.add('hidden')" class="btn btn-danger btn-sm btn-full" type="button">إغلاق</button>
+      </div>
+    </div>
+
     <!-- نافذة تعديل بيانات الطالب للمستر -->
     <div id="teacher-edit-student-modal" class="cert-modal hidden">
       <div class="quiz-modal-content anime-slide-up" style="max-width:550px;">
@@ -1608,9 +1637,8 @@
     const DEV_CREDENTIALS = { email: "abdulRahman@gmail.com", pass: "203199" };
     const TEACHER_CREDENTIALS = { email: "youssef102@gmail.com", pass: "310031" };
 
-    // دالة تحقق مرنة تقبل أي رقم هاتف مصري صحيح مكون من 11 رقم يبدأ بـ 01
     function isValidEgyptianPhone(phone) {
-      const regex = /^01[0-9]{9}$/;
+      const regex = /^(010|011|012|015)[0-9]{8}$/;
       return regex.test(phone);
     }
 
@@ -1769,7 +1797,7 @@
       if (!url) return "";
       const videoId = extractYouTubeID(url);
       if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}`;
+        return `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&iv_load_policy=3`;
       }
       return url;
     }
@@ -1805,7 +1833,6 @@
     let studentAnswersObj = {};
     let watermarkInterval = null;
     let quizTimerInterval = null;
-    let selectedStudentForWhatsApp = null;
     let isExamActive = false;
     let cheatWarningsCount = 0;
     let generatedParentOTP = null;
@@ -1814,6 +1841,89 @@
     let html5QrCodeScanner = null;
 
     let teacherQuizDraftQuestions = [];
+
+    // إدارة التبويبات الثلاثة في شاشة الدخول (دخول، تسجيل، ولي أمر)
+    tabLogin.addEventListener("click", () => {
+      tabLogin.classList.add("active");
+      tabSignup.classList.remove("active");
+      tabParentLogin.classList.remove("active");
+      formUnifiedLogin.classList.remove("hidden");
+      formStudentSignup.classList.add("hidden");
+      formExternalParentLogin.classList.add("hidden");
+      systemMsg.innerText = "";
+    });
+
+    tabSignup.addEventListener("click", () => {
+      tabSignup.classList.add("active");
+      tabLogin.classList.remove("active");
+      tabParentLogin.classList.remove("active");
+      formStudentSignup.classList.remove("hidden");
+      formUnifiedLogin.classList.add("hidden");
+      formExternalParentLogin.classList.add("hidden");
+      systemMsg.innerText = "";
+    });
+
+    tabParentLogin.addEventListener("click", () => {
+      tabParentLogin.classList.add("active");
+      tabLogin.classList.remove("active");
+      tabSignup.classList.remove("active");
+      formExternalParentLogin.classList.remove("hidden");
+      formUnifiedLogin.classList.add("hidden");
+      formStudentSignup.classList.add("hidden");
+      systemMsg.innerText = "";
+    });
+
+    // معالجة تسجيل دخول ولي الأمر الخارجي المباشر من واجهة اللوجن
+    formExternalParentLogin.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const pPhone = document.getElementById("ext-parent-phone").value.trim();
+      const sCode = document.getElementById("ext-student-code").value.trim().toUpperCase();
+
+      if (!isValidEgyptianPhone(pPhone) || !sCode) {
+        systemMsg.innerText = "⚠️ يرجى إدخال رقم هاتف ولي الأمر (11 رقماً) وكود الطالب بدقة.";
+        systemMsg.style.color = "var(--danger)";
+        return;
+      }
+
+      const students = getStudents();
+      const student = students.find(s => s.code.toUpperCase() === sCode && s.parentPhone === pPhone);
+
+      if (!student) {
+        systemMsg.innerText = "❌ لم يتم العثور على طالب بهذا الكود المرتبط برقم ولي الأمر.";
+        systemMsg.style.color = "var(--danger)";
+        return;
+      }
+
+      systemMsg.innerText = "";
+      formExternalParentLogin.reset();
+
+      // تعبئة وعرض لوحة متابعة ولي الأمر
+      document.getElementById("pp-name").innerText = student.name;
+      document.getElementById("pp-grade").innerText = student.grade;
+      document.getElementById("pp-code").innerText = student.code;
+      document.getElementById("pp-attendance").innerText = student.attendance ? student.attendance[0] : "مسجل ومتابع ✅";
+      document.getElementById("pp-views").innerText = `${student.views || 0} / 5 مشاهدات`;
+      document.getElementById("pp-xp").innerText = `${student.xp || 50} XP`;
+
+      const tbody = document.getElementById("pp-exams-tbody");
+      tbody.innerHTML = "";
+      const results = getExamResults().filter(r => r.name === student.name);
+
+      if (results.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='2' style='text-align:center; color:var(--text-muted);'>لم يؤدِ الطالب أي امتحانات بعد.</td></tr>";
+      } else {
+        results.forEach(r => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><strong>${r.examTitle || 'امتحان دوري'}</strong> <small>(${r.time})</small></td>
+            <td><span style="color:${r.isCheated ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">${r.score} (${r.percentage}) - ${r.status}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById("parent-portal-dashboard-modal").classList.remove("hidden");
+    });
 
     // استعادة جلسة الدخول
     window.addEventListener("load", () => {
@@ -2021,7 +2131,7 @@
       const stdName = document.getElementById("signup-name").value.trim() || "الطالب";
 
       if (!isValidEgyptianPhone(parentPhone)) {
-        alert("⚠️ يرجى إدخال رقم هاتف صحيح يبدأ بـ 01 ومكون من 11 رقماً.");
+        alert("⚠️ يرجى إدخال رقم هاتف صحيح يبدأ بـ (010 أو 011 أو 012 أو 015) ومكون من 11 رقماً.");
         return;
       }
 
@@ -2031,44 +2141,6 @@
       const text = `السلام عليكم ورحمة الله، كود التحقق لتسجيل حساب الطالب (${stdName}) في منصة مستر يوسف خميس للغة الإنجليزية هو: ${generatedParentOTP}`;
       window.open(`https://wa.me/2${parentPhone}?text=${encodeURIComponent(text)}`, "_blank");
       alert(`📲 تم تجهيز كود التحقق (${generatedParentOTP}) لإرساله عبر الواتساب.`);
-    });
-
-    // معالجة تسجيل دخول ولي الأمر المباشر من الشاشة الرئيسية (تعديل دقيق يطابق الهاتف والكود بدون أخطاء)
-    formExternalParentLogin.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const pPhone = document.getElementById("ext-parent-phone").value.trim();
-      const sCode = document.getElementById("ext-student-code").value.trim().toUpperCase();
-
-      if (!isValidEgyptianPhone(pPhone) || !sCode) {
-        systemMsg.innerText = "⚠️ يرجى إدخال هاتف ولي الأمر (11 رقماً) وكود الطالب بدقة.";
-        systemMsg.style.color = "var(--danger)";
-        return;
-      }
-
-      const students = getStudents();
-      // مطابقة مرنة للرقم والكود بغض النظر عن الفراغات
-      const student = students.find(s => s.code.trim().toUpperCase() === sCode && s.parentPhone.trim() === pPhone);
-
-      if (!student) {
-        systemMsg.innerText = "❌ رقم هاتف ولي الأمر أو كود الطالب غير متطابق في قاعدة البيانات.";
-        systemMsg.style.color = "var(--danger)";
-        return;
-      }
-
-      systemMsg.innerText = "";
-      formExternalParentLogin.reset();
-
-      localStorage.setItem("yk_active_student_code", student.code);
-      localStorage.setItem("yk_active_student_data", JSON.stringify(student));
-      localStorage.setItem("yk_active_student_tab", "tab-courses");
-
-      currentActiveStudent = student;
-      authSection.classList.add("hidden");
-      studentDashboard.classList.remove("hidden");
-      loadStudentDashboard(student);
-      updateAuthNavState(true);
-
-      alert(`✅ أهلاً بحضرتك يا ولي أمر الطالب (${student.name}). تم فتح لوحة المتابعة الشاملة بنجاح.`);
     });
 
     formStudentSignup.addEventListener("submit", (e) => {
@@ -2081,7 +2153,7 @@
       const enteredOtp = document.getElementById("signup-otp-input").value.trim();
 
       if (!isValidEgyptianPhone(phone) || !isValidEgyptianPhone(parentPhone)) {
-        systemMsg.innerText = "⚠️ يجب أن يبدأ هاتف الطالب وولي الأمر بـ 01 ومكوناً من 11 رقماً.";
+        systemMsg.innerText = "⚠️ يجب أن يبدأ هاتف الطالب وولي الأمر بـ (010, 011, 012, 015) ومكوناً من 11 رقماً.";
         systemMsg.style.color = "var(--danger)";
         return;
       }
@@ -2841,7 +2913,7 @@
       const statusMsg = document.getElementById("payment-status-msg");
 
       if (!isValidEgyptianPhone(senderPhone)) {
-        statusMsg.innerText = "⚠️ يرجى إدخال رقم محفظة مصري صحيح يبدأ بـ 01 ومكون من 11 رقماً.";
+        statusMsg.innerText = "⚠️ يرجى إدخال رقم محفظة مصري صحيح يبدأ بـ (010, 011, 012, 015).";
         statusMsg.style.color = "var(--danger)";
         return;
       }
@@ -3277,7 +3349,46 @@
       renderTeacherHomework();
       renderTeacherScheduleTable();
       renderTeacherQA();
+      renderTeacherProfits();
     }
+
+    // حساب وعرض إحصائيات الأرباح والمشتركين
+    function renderTeacherProfits() {
+      const students = getStudents();
+      const stdCountEl = document.getElementById("stat-total-std-count");
+      const unlockedCountEl = document.getElementById("stat-total-unlocked-count");
+      if (!stdCountEl) return;
+
+      stdCountEl.innerText = `${students.length} طالب`;
+      let totalUnlocked = 0;
+      students.forEach(s => {
+        if (s.unlockedLessons && Array.isArray(s.unlockedLessons)) {
+          totalUnlocked += s.unlockedLessons.length;
+        }
+      });
+      unlockedCountEl.innerText = `${totalUnlocked} اشتراك مفعل`;
+    }
+
+    // تنزيل نسخة احتياطية سحابية كاملة بصيغة JSON
+    document.getElementById("btn-download-full-backup").addEventListener("click", () => {
+      const backupData = {
+        timestamp: new Date().toISOString(),
+        students: getStudents(),
+        curriculum: getCurriculum(),
+        prices: getPrices(),
+        results: getExamResults(),
+        promos: getPromos(),
+        exclusiveCodes: getExclusiveCodes(),
+        schedules: getSchedules(),
+        qa: getQuestions(),
+        hw: getHomework()
+      };
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `Youssef_Academy_Backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    });
 
     document.getElementById("btn-update-announcement").addEventListener("click", () => {
       const text = document.getElementById("teacher-announcement-input").value.trim();
@@ -3951,8 +4062,8 @@
       } catch (e) { alert("خطأ في تنسيق JSON"); }
     });
 
-    document.getElementById("teacher-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); teacherDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); tabLogin.click(); });
-    document.getElementById("dev-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); devDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); tabLogin.click(); });
+    document.getElementById("teacher-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); teacherDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
+    document.getElementById("dev-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); devDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
   </script>
 </body>
 </html>
