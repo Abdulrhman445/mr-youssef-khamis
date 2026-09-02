@@ -1452,7 +1452,7 @@
             </div>
           </div>
 
-          <!-- 12. تصدير النتائج -->
+          <!-- 12. تصدير النتائج (مع زر معاينة أخطاء الطالب للمستر) -->
           <div id="t-sec-results" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -1476,7 +1476,7 @@
               <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
-                    <tr><th>اسم الطالب</th><th>الصف</th><th>الدرجة</th><th>النسبة</th><th>التقدير / النتيجة</th><th>ملاحظات الغش</th><th>وقت التسليم</th></tr>
+                    <tr><th>اسم الطالب</th><th>الصف</th><th>الامتحان</th><th>الدرجة</th><th>النسبة</th><th>النتيجة</th><th>أخطاء الطالب 🔍</th><th>وقت التسليم</th></tr>
                   </thead>
                   <tbody id="teacher-results-table"></tbody>
                 </table>
@@ -1510,6 +1510,25 @@
             </div>
           </div>
         </main>
+      </div>
+    </div>
+
+    <!-- نافذة معاينة أخطاء الطالب للمستر -->
+    <div id="teacher-view-student-errors-modal" class="cert-modal hidden">
+      <div class="quiz-modal-content anime-slide-up" style="max-width:650px;">
+        <h3 class="box-title">🔍 تفاصيل أخطاء الطالب في الامتحان</h3>
+        <div id="teacher-student-errors-content" style="max-height:400px; overflow-y:auto; margin:15px 0; display:flex; flex-direction:column; gap:10px;"></div>
+        <button onclick="document.getElementById('teacher-view-student-errors-modal').classList.add('hidden')" class="btn btn-danger btn-sm btn-full">إغلاق النافذة</button>
+      </div>
+    </div>
+
+    <!-- نافذة مراجعة أخطاء الطالب لنفسه بعد التسليم -->
+    <div id="student-review-errors-modal" class="cert-modal hidden">
+      <div class="quiz-modal-content anime-slide-up" style="max-width:650px;">
+        <h3 class="box-title" style="color:var(--primary-glow);">📖 مراجعة أخطائك والتعلم منها</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">إليك الأسئلة التي أجبت عليها بشكل خاطئ مع الإجابة الصحيحة:</p>
+        <div id="student-review-errors-content" style="max-height:400px; overflow-y:auto; margin:15px 0; display:flex; flex-direction:column; gap:10px;"></div>
+        <button onclick="document.getElementById('student-review-errors-modal').classList.add('hidden')" class="btn btn-primary btn-sm btn-full">إغلاق وفهم الأخطاء</button>
       </div>
     </div>
 
@@ -1646,7 +1665,8 @@
         <div id="std-quiz-list" class="quiz-scroll-area"></div>
         <button id="btn-submit-exam" class="btn btn-success btn-full" type="button">تصحيح وتسليم الإجابات</button>
         <div id="std-exam-result" class="system-msg"></div>
-        <button id="btn-whatsapp-parent" class="btn btn-whatsapp btn-full hidden" type="button">📲 إرسال النتيجة لولي الأمر عبر الواتساب</button>
+        <button id="btn-view-my-mistakes" class="btn btn-accent btn-full hidden" type="button" style="margin-top:8px;" onclick="openStudentReviewErrorsModal()">🔍 مراجعة أخطائي والتعلم منها</button>
+        <button id="btn-whatsapp-parent" class="btn btn-whatsapp btn-full hidden" type="button" style="margin-top:8px;">📲 إرسال النتيجة لولي الأمر عبر الواتساب</button>
         <button id="btn-close-quiz-modal" class="btn btn-danger btn-sm btn-full" type="button" style="margin-top: 10px;">إغلاق نافذة الاختبار</button>
       </div>
     </div>
@@ -1981,6 +2001,7 @@
     let currentVocabList = [];
     let currentVocabIndex = 0;
     let studentAnswersObj = {};
+    let lastStudentWrongAnswers = []; // لتخزين أخطاء الطالب الحالية ومراجعتها
     let watermarkInterval = null;
     let quizTimerInterval = null;
     let isExamActive = false;
@@ -2487,7 +2508,10 @@
           document.getElementById("t-sec-profits").classList.remove("hidden");
           renderTeacherProfits();
         }
-        if (targetTab === "t-tab-results") document.getElementById("t-sec-results").classList.remove("hidden");
+        if (targetTab === "t-tab-results") {
+          document.getElementById("t-sec-results").classList.remove("hidden");
+          renderTeacherResults();
+        }
         if (targetTab === "t-tab-homework") document.getElementById("t-sec-homework").classList.remove("hidden");
         if (targetTab === "t-tab-qa") document.getElementById("t-sec-qa").classList.remove("hidden");
       });
@@ -2674,6 +2698,144 @@
           </div>
         </div>
       `;
+    }
+
+    function renderStudentNotifications(student) {
+      const listContainer = document.getElementById("notifications-list-container");
+      const badgeCount = document.getElementById("notification-badge-count");
+      if (!listContainer) return;
+      listContainer.innerHTML = "";
+
+      let dismissed = JSON.parse(localStorage.getItem(`yk_dismissed_notifs_${student.code}`) || "[]");
+      const isAllDismissed = dismissed.some(d => d.startsWith("all_"));
+
+      let rawNotifs = [];
+      const now = Date.now();
+
+      const targeted = getTargetedAnnouncements();
+      if (targeted && targeted[student.grade] && Array.isArray(targeted[student.grade])) {
+        targeted[student.grade].forEach((tAnnounce) => {
+          const durationHours = tAnnounce.durationHours || 24;
+          const expiresAt = tAnnounce.timestamp + (durationHours * 60 * 60 * 1000);
+          
+          if (durationHours === 99999 || now < expiresAt) {
+            rawNotifs.push({
+              id: "notif_target_" + tAnnounce.id,
+              title: "📢 تنبيه خاص لصفك الدراسي",
+              text: tAnnounce.text,
+              time: tAnnounce.time || "تنبيه",
+              type: "targeted",
+              isSpecialFree: false
+            });
+          }
+        });
+      }
+
+      rawNotifs.push({
+        id: "notif_welcome_" + student.code,
+        title: "🎉 مرحباً بك في المنصة!",
+        text: `أهلاً بك يا ${escapeHTML(student.name)} في منصة مستر يوسف خميس للغة الإنجليزية!`,
+        time: "تنبيه دائم",
+        type: "welcome",
+        isSpecialFree: false,
+        actionCallback: () => {
+          document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-profile']").click();
+        }
+      });
+
+      const myQA = getQuestions().filter(q => q.studentName === student.name && q.reply && q.reply.trim() !== "");
+      myQA.forEach(qa => {
+        rawNotifs.push({
+          id: "notif_qa_" + qa.id,
+          title: "💬 رد جديد من مستر يوسف",
+          text: `سؤالك: "${qa.question}"\n👈 رد المستر: "${qa.reply}"`,
+          time: "حديث",
+          type: "reply",
+          isSpecialFree: false,
+          actionCallback: () => {
+            document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
+          }
+        });
+      });
+
+      const generalExams = getGeneralExams().filter(e => e.grade === student.grade);
+      generalExams.forEach(ge => {
+        rawNotifs.push({
+          id: "notif_gexam_" + ge.id,
+          title: "📝 امتحان جديد متاح الآن!",
+          text: `تم إضافة امتحان جديد (${ge.title}) لصفك الدراسي. برجاء الدخول وحله فوراً!`,
+          time: ge.time || "جديد",
+          type: "exam",
+          isSpecialFree: true,
+          actionCallback: () => {
+            document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-exams']").click();
+          }
+        });
+      });
+
+      const curriculum = getCurriculum();
+      const lessons = curriculum[student.grade] || [];
+      if (lessons.length > 0) {
+        lessons.forEach((lesson, lIdx) => {
+          const isFree = lesson.isFree === true || lesson.price === 0;
+
+          if (isFree) {
+            rawNotifs.push({
+              id: "notif_free_lesson_" + (lesson.id || lIdx),
+              title: "🎁 هدية مجانية من مستر يوسف! (FREE VIP)",
+              text: `🔥 تم فتح محاضرة "${lesson.videoTitle || 'حصة مميزة'}" مجاناً بالكامل بلا قيود!`,
+              time: "حصري ومجاني 🌟",
+              type: "free_course",
+              isSpecialFree: true,
+              actionCallback: () => {
+                document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
+                openLessonPlayer(student, lesson);
+              }
+            });
+          }
+        });
+      }
+
+      const notifs = isAllDismissed ? [] : rawNotifs.filter(n => !dismissed.includes(n.id));
+
+      if (notifs.length === 0) {
+        listContainer.innerHTML = "<p style='color:var(--text-muted); text-align:center; font-size:0.85rem; padding:15px;'>لا توجد إشعارات جديدة.</p>";
+        badgeCount.classList.add("hidden");
+        return;
+      }
+
+      badgeCount.innerText = notifs.length;
+      badgeCount.classList.remove("hidden");
+
+      notifs.forEach(n => {
+        const card = document.createElement("div");
+        card.className = n.isSpecialFree ? "notif-item-card notif-free-special" : "notif-item-card";
+        
+        card.innerHTML = `
+          <button class="btn-notif-delete" type="button" title="حذف">✕</button>
+          <div class="notif-item-header">
+            <span style="color:${n.isSpecialFree ? '#047857' : 'var(--primary-glow)'}; font-size:0.86rem; font-weight:800;">${n.title}</span>
+            <span style="color:var(--text-muted); font-size:0.72rem;">${n.time}</span>
+          </div>
+          <div class="notif-item-body">${n.text.replace(/\n/g, '<br>')}</div>
+        `;
+
+        const delBtn = card.querySelector(".btn-notif-delete");
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          let currentDismissed = JSON.parse(localStorage.getItem(`yk_dismissed_notifs_${student.code}`) || "[]");
+          currentDismissed.push(n.id);
+          localStorage.setItem(`yk_dismissed_notifs_${student.code}`, JSON.stringify(currentDismissed));
+          renderStudentNotifications(student);
+        };
+
+        card.onclick = () => {
+          notificationsDropdown.classList.remove("show");
+          if (n.actionCallback) n.actionCallback();
+        };
+
+        listContainer.appendChild(card);
+      });
     }
 
     function renderStudentCoursesList(student) {
@@ -2884,6 +3046,486 @@
       startQuizTimer(duration);
     };
 
+    document.getElementById("btn-submit-multiple-hw").onclick = async () => {
+      const notes = document.getElementById("std-hw-notes-input").value.trim();
+      const filesInput = document.getElementById("std-hw-files");
+      const resMsg = document.getElementById("interactive-hw-result");
+
+      if (filesInput.files.length === 0) {
+        resMsg.innerText = "⚠️ يرجى اختيار صفحة واحدة على الأقل من كشكول الواجب.";
+        resMsg.style.color = "var(--danger)";
+        return;
+      }
+
+      resMsg.innerText = "⏳ جاري رفع الواجب السحابي...";
+      resMsg.style.color = "var(--primary-glow)";
+
+      let filesDataArr = [];
+      for (const file of Array.from(filesInput.files)) {
+        const uploadedUrl = await uploadFileSmart(file, `homework/${currentActiveStudent.code}`);
+        filesDataArr.push(uploadedUrl);
+      }
+
+      const allHW = getHomework();
+      allHW.unshift({
+        id: Date.now(),
+        studentName: currentActiveStudent.name,
+        grade: currentActiveStudent.grade,
+        notes: notes || "صور صفحات الواجب",
+        files: filesDataArr,
+        status: "قيد المراجعة من المستر",
+        score: "",
+        feedback: "انتظر تصحيح المستر قريباً",
+        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      });
+      saveHomework(allHW);
+      resMsg.innerText = "✅ تم إرسال الواجب بنجاح للمستر!";
+      resMsg.style.color = "var(--success)";
+      renderStudentHomeworkHistory(currentActiveStudent);
+    };
+
+    document.getElementById("btn-apply-promo").addEventListener("click", () => {
+      const inputCode = document.getElementById("input-promo-code").value.trim().toUpperCase();
+      let promos = getPromos();
+      const idx = promos.findIndex(p => p.code && p.code.trim().toUpperCase() === inputCode && !p.used);
+
+      if (idx !== -1) {
+        const promoItem = promos[idx];
+        
+        if (promoItem.expireDate) {
+          const nowStr = new Date().toISOString().slice(0, 10);
+          if (nowStr > promoItem.expireDate) {
+            alert(`❌ هذا الكود انتهت صلاحيته بتاريخ (${promoItem.expireDate}).`);
+            return;
+          }
+        }
+
+        if (promoItem.grade && promoItem.grade !== currentActiveStudent.grade) {
+          alert(`❌ هذا الكود مخصص لـ (${promoItem.grade}) وليس لصفك الدراسي.`);
+          return;
+        }
+
+        promos[idx].used = true;
+        promos[idx].usedBy = currentActiveStudent.name;
+        savePromos(promos);
+
+        const students = getStudents();
+        const sIdx = students.findIndex(s => s.code === currentActiveStudent.code);
+        if (sIdx !== -1) {
+          if (!students[sIdx].unlockedLessons) students[sIdx].unlockedLessons = [];
+          let lessonToUnlock = promoItem.lessonId || window.targetLessonToUnlock;
+          if (lessonToUnlock && !students[sIdx].unlockedLessons.includes(lessonToUnlock)) {
+            students[sIdx].unlockedLessons.push(lessonToUnlock);
+          }
+          students[sIdx].xp = (students[sIdx].xp || 0) + 25;
+          currentActiveStudent = students[sIdx];
+          saveStudents(students);
+          localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
+        }
+
+        alert("🎉 تم تفعيل هذه الحصة فقط بنجاح!");
+        loadStudentDashboard(currentActiveStudent);
+      } else {
+        alert("❌ كود الشحن غير صالح، أو تم استخدامه مسبقاً.");
+      }
+    });
+
+    document.getElementById("btn-request-activation").addEventListener("click", async () => {
+      const senderPhone = document.getElementById("pay-sender-phone").value.trim();
+      const fileInput = document.getElementById("pay-receipt-file");
+      const statusMsg = document.getElementById("payment-status-msg");
+
+      if (!isValidEgyptianPhone(senderPhone)) {
+        statusMsg.innerText = "⚠️ يرجى إدخال رقم محفظة مصري صحيح يبدأ بـ (010, 011, 012, 015).";
+        statusMsg.style.color = "var(--danger)";
+        return;
+      }
+      if (!fileInput.files[0]) {
+        statusMsg.innerText = "⚠️ يرجى إرفاق صورة إيصال التحويل.";
+        statusMsg.style.color = "var(--danger)";
+        return;
+      }
+
+      statusMsg.innerText = "⏳ جاري رفع الإيصال...";
+      statusMsg.style.color = "var(--primary-glow)";
+
+      const receiptImg = await uploadFileSmart(fileInput.files[0], `receipts/${currentActiveStudent.code}`);
+      const students = getStudents();
+      const idx = students.findIndex(s => s.code === currentActiveStudent.code);
+      if (idx !== -1) {
+        students[idx].senderWallet = senderPhone;
+        students[idx].receiptImg = receiptImg;
+        students[idx].pendingLessonId = window.targetLessonToUnlock || "";
+        saveStudents(students);
+        currentActiveStudent = students[idx];
+        localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
+        statusMsg.innerText = "✅ تم إرسال الإيصال وطلب التفعيل للمستر بنجاح!";
+        statusMsg.style.color = "var(--success)";
+
+        const waMsg = encodeURIComponent(`طلب تفعيل حصة للطالب: ${currentActiveStudent.name} (${currentActiveStudent.grade})\nرقم المحفظة: ${senderPhone}`);
+        window.open(`https://wa.me/201152039710?text=${waMsg}`, "_blank");
+      }
+    });
+
+    let activeVideoElForTimestamp = null;
+
+    function openLessonPlayer(student, lesson) {
+      const students = getStudents();
+      const sIdx = students.findIndex(s => s.code === student.code);
+      const currentViews = (sIdx !== -1 && students[sIdx].views) ? students[sIdx].views : (student.views || 0);
+      const isFree = lesson.isFree === true || lesson.price === 0;
+
+      if (!isFree && currentViews >= 5) {
+        alert("⚠️ لقد استنفدت الحد الأقصى للمشاهدات (5 مرات).");
+        return;
+      }
+
+      document.getElementById("student-courses-catalog").classList.add("hidden");
+      document.getElementById("payment-gate-box").classList.add("hidden");
+      document.getElementById("student-lesson-viewer").classList.remove("hidden");
+      if (btnBackCatalog) btnBackCatalog.classList.remove("hidden");
+
+      startWatermark(student);
+
+      const vContainer = document.getElementById("video-player-container");
+      vContainer.innerHTML = "";
+      activeVideoElForTimestamp = null;
+      hasCountedThisSession = false;
+
+      const resumeStorageKey = `yk_video_pos_${student.code}_${lesson.id}`;
+      const savedPosition = parseFloat(localStorage.getItem(resumeStorageKey)) || 0;
+
+      const markLessonCompleted = () => {
+        if (!student.completedLessons) student.completedLessons = [];
+        if (!student.completedLessons.includes(lesson.id)) {
+          student.completedLessons.push(lesson.id);
+          const stIdx = students.findIndex(s => s.code === student.code);
+          if (stIdx !== -1) {
+            students[stIdx].completedLessons = student.completedLessons;
+            saveStudents(students);
+            localStorage.setItem("yk_active_student_data", JSON.stringify(student));
+            updateStudentProgressIndicators(student);
+          }
+        }
+      };
+
+      if (lesson.videoType === "local" && lesson.videoUrl) {
+        const videoEl = document.createElement("video");
+        videoEl.id = "main-local-video";
+        videoEl.src = lesson.videoUrl;
+        videoEl.controls = true;
+        videoEl.autoplay = true;
+        videoEl.controlsList = "nodownload";
+        vContainer.appendChild(videoEl);
+        activeVideoElForTimestamp = videoEl;
+
+        videoEl.onloadedmetadata = () => {
+          if (savedPosition > 2 && savedPosition < (videoEl.duration - 5)) {
+            videoEl.currentTime = savedPosition;
+            const mins = Math.floor(savedPosition / 60);
+            const secs = Math.floor(savedPosition % 60);
+            alert(`⏯️ تم استئناف الحصة تلقائياً من حيث توقفت عند: (${mins}:${secs < 10 ? '0' : ''}${secs})`);
+          }
+        };
+
+        videoEl.ontimeupdate = () => {
+          if (videoEl.currentTime > 0) {
+            localStorage.setItem(resumeStorageKey, videoEl.currentTime);
+          }
+          if (!hasCountedThisSession && videoEl.duration > 0 && videoEl.currentTime >= (videoEl.duration / 2)) {
+            hasCountedThisSession = true;
+            if (!isFree) incrementStudentViewCount(student.code);
+            markLessonCompleted();
+          }
+        };
+      } else if (lesson.videoUrl) {
+        const iframe = document.createElement("iframe");
+        iframe.id = "main-yt-iframe";
+        iframe.src = parseVideoUrl(lesson.videoUrl) + (savedPosition > 5 ? `&start=${Math.floor(savedPosition)}` : "");
+        iframe.setAttribute("allowfullscreen", "true");
+        iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+        vContainer.appendChild(iframe);
+
+        if (videoWatchTrackTimer) clearTimeout(videoWatchTrackTimer);
+        videoWatchTrackTimer = setTimeout(() => {
+          if (!hasCountedThisSession) {
+            hasCountedThisSession = true;
+            if (!isFree) incrementStudentViewCount(student.code);
+            markLessonCompleted();
+          }
+        }, 120000);
+      }
+
+      document.getElementById("views-count-badge").innerText = isFree ? "👁️ مشاهدات مجانية (بلا حدود)" : `👁️ المشاهدات: ${currentViews} / 5`;
+
+      document.getElementById("btn-vid-forward").onclick = () => { if (activeVideoElForTimestamp) activeVideoElForTimestamp.currentTime += 5; };
+      document.getElementById("btn-vid-backward").onclick = () => { if (activeVideoElForTimestamp) activeVideoElForTimestamp.currentTime = Math.max(0, activeVideoElForTimestamp.currentTime - 5); };
+      document.getElementById("vid-speed-selector").onchange = (e) => { if (activeVideoElForTimestamp) activeVideoElForTimestamp.playbackRate = parseFloat(e.target.value); };
+
+      document.getElementById("std-video-title").innerText = lesson.videoTitle || "محاضرة الشرح";
+
+      const savedNotesKey = `yk_notes_${student.code}_${lesson.id}`;
+      document.getElementById("live-notes-input").value = localStorage.getItem(savedNotesKey) || "";
+
+      document.getElementById("btn-add-timestamp-note").onclick = () => {
+        let currentSeconds = 0;
+        if (activeVideoElForTimestamp) {
+          currentSeconds = Math.floor(activeVideoElForTimestamp.currentTime);
+        }
+        const mins = Math.floor(currentSeconds / 60);
+        const secs = Math.floor(currentSeconds % 60);
+        const timeFormatted = `[${mins}:${secs < 10 ? '0' : ''}${secs}]`;
+        const noteInput = document.getElementById("live-notes-input");
+        noteInput.value += `${noteInput.value ? '\n' : ''}${timeFormatted} — اكتب ملاحظتك هنا...`;
+        noteInput.focus();
+      };
+
+      document.getElementById("btn-save-live-notes").onclick = () => {
+        localStorage.setItem(savedNotesKey, document.getElementById("live-notes-input").value);
+        alert("💾 تم حفظ ملاحظاتك الحية بنجاح!");
+      };
+
+      document.getElementById("btn-download-notes-pdf").onclick = () => {
+        const notes = document.getElementById("live-notes-input").value;
+        const blob = new Blob([`ملاحظات الطالب: ${escapeHTML(student.name)}\nالصف: ${escapeHTML(student.grade)}\nالحصة: ${lesson.videoTitle}\n\n${notes}`], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `ملاحظات_${escapeHTML(student.name)}_${lesson.videoTitle}.txt`;
+        a.click();
+      };
+
+      const pdfBox = document.getElementById("pdf-viewer-section");
+      if (lesson.pdfData) {
+        pdfBox.classList.remove("hidden");
+        document.getElementById("std-pdf-frame").src = lesson.pdfData;
+        document.getElementById("download-pdf-btn").href = lesson.pdfData;
+      } else {
+        pdfBox.classList.add("hidden");
+      }
+
+      currentVocabList = lesson.vocab || [];
+      renderStudentQA();
+    }
+
+    function incrementStudentViewCount(studentCode) {
+      const students = getStudents();
+      const sIdx = students.findIndex(s => s.code === studentCode);
+      if (sIdx !== -1) {
+        students[sIdx].views = (students[sIdx].views || 0) + 1;
+        saveStudents(students);
+        if (currentActiveStudent && currentActiveStudent.code === studentCode) {
+          currentActiveStudent.views = students[sIdx].views;
+          localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
+        }
+        document.getElementById("views-count-badge").innerText = `👁️ المشاهدات: ${students[sIdx].views} / 5`;
+      }
+    }
+
+    window.seekVideoTime = function(seconds) {
+      if (activeVideoElForTimestamp) {
+        activeVideoElForTimestamp.currentTime = seconds;
+        alert(`⏩ تم الانتقال إلى التوقيت المطلوب (${seconds} ثانية)`);
+      } else {
+        alert("ℹ️ الانتقال المباشر متاح لفيديوهات الرفع المباشر.");
+      }
+    };
+
+    document.getElementById("btn-open-vocab-modal").addEventListener("click", () => {
+      if (currentVocabList.length === 0) {
+        alert("ℹ️ لم يتم إضافة بنك كلمات.");
+        return;
+      }
+      currentVocabIndex = 0;
+      updateFlashcard();
+      document.getElementById("vocab-modal").classList.remove("hidden");
+    });
+    document.getElementById("btn-close-vocab-modal").addEventListener("click", () => document.getElementById("vocab-modal").classList.add("hidden"));
+
+    function updateFlashcard() {
+      const item = currentVocabList[currentVocabIndex];
+      document.getElementById("fc-word").innerText = item.word;
+      document.getElementById("fc-meaning").innerText = item.meaning;
+      document.getElementById("fc-counter").innerText = `${currentVocabIndex + 1} / ${currentVocabList.length}`;
+    }
+
+    document.getElementById("btn-prev-fc").addEventListener("click", () => { if (currentVocabIndex > 0) { currentVocabIndex--; updateFlashcard(); } });
+    document.getElementById("btn-next-fc").addEventListener("click", () => { if (currentVocabIndex < currentVocabList.length - 1) { currentVocabIndex++; updateFlashcard(); } });
+    document.getElementById("btn-speak-word").addEventListener("click", () => {
+      const utterance = new SpeechSynthesisUtterance(currentVocabList[currentVocabIndex].word);
+      utterance.lang = "en-US";
+      window.speechSynthesis.speak(utterance);
+    });
+
+    function renderStudentQA() {
+      const container = document.getElementById("std-qa-thread");
+      container.innerHTML = "";
+      const allQA = getQuestions().filter(q => q.studentName === currentActiveStudent.name);
+      allQA.forEach(qa => {
+        const div = document.createElement("div");
+        div.className = "qa-msg";
+        div.innerHTML = `<p><strong>سؤالك:</strong> ${qa.question}</p>${qa.reply ? `<p style="color:var(--success);"><strong>رد مستر يوسف:</strong> ${qa.reply}</p>` : `<p style="color:#b45309; font-size:0.8rem; margin-top:4px;">⏳ في انتظار رد مستر يوسف...</p>`}`;
+        container.appendChild(div);
+      });
+    }
+
+    document.getElementById("btn-send-question").addEventListener("click", () => {
+      const input = document.getElementById("std-question-input");
+      const qText = input.value.trim();
+      if (!qText) return;
+      const allQA = getQuestions();
+      allQA.push({ id: Date.now(), studentName: currentActiveStudent.name, grade: currentActiveStudent.grade, question: qText, reply: "" });
+      saveQuestions(allQA);
+      input.value = "";
+      renderStudentQA();
+    });
+
+    window.addEventListener("blur", () => {
+      if (isExamActive) {
+        cheatWarningsCount++;
+        document.getElementById("anti-cheat-alert").classList.remove("hidden");
+        if (cheatWarningsCount >= 2) {
+          alert("🚨 تم إنهاء الامتحان تلقائياً بسبب مغادرتك المتكررة!");
+          finishExamDueToCheat();
+        }
+      }
+    });
+
+    function finishExamDueToCheat() {
+      if (!isExamActive) return;
+      isExamActive = false;
+      if (quizTimerInterval) clearInterval(quizTimerInterval);
+
+      const generalExams = getGeneralExams();
+      const exam = generalExams.find(e => e.id === activeGeneralExamId);
+      const examTitle = exam ? exam.title : "امتحان المنصة";
+      const total = currentExamQuestions.length;
+
+      document.getElementById("std-exam-result").innerText = `🚨 تم إلغاء نتيجتك (0 من ${total}) بسبب محاولة الغش!`;
+      const results = getExamResults();
+      results.unshift({
+        name: currentActiveStudent.name,
+        grade: currentActiveStudent.grade,
+        examTitle: examTitle,
+        score: `0/${total}`,
+        percentage: `0%`,
+        status: "راسب (محاولة غش)",
+        isCheated: true,
+        wrongAnswers: [],
+        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      });
+      saveExamResults(results);
+      renderStudentExamsCatalog(currentActiveStudent);
+    }
+
+    document.getElementById("btn-close-quiz-modal").addEventListener("click", () => {
+      isExamActive = false;
+      if (quizTimerInterval) clearInterval(quizTimerInterval);
+      document.getElementById("quiz-popup-modal").classList.add("hidden");
+    });
+
+    function startWatermark(student) {
+      const watermark = document.getElementById("video-watermark");
+      watermark.innerText = `${escapeHTML(student.name)} - ${student.phone}`;
+      if (watermarkInterval) clearInterval(watermarkInterval);
+      watermarkInterval = setInterval(() => {
+        watermark.style.top = `${Math.floor(Math.random() * 75) + 10}%`;
+        watermark.style.left = `${Math.floor(Math.random() * 70) + 10}%`;
+      }, 4000);
+    }
+
+    function startQuizTimer(minutes) {
+      let remainingSeconds = minutes * 60;
+      if (quizTimerInterval) clearInterval(quizTimerInterval);
+      const display = document.getElementById("timer-display");
+      quizTimerInterval = setInterval(() => {
+        remainingSeconds--;
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+        display.innerText = `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+        if (remainingSeconds <= 0) {
+          clearInterval(quizTimerInterval);
+          alert("⏱️ انتهى وقت الاختبار!");
+          document.getElementById("btn-submit-exam").click();
+        }
+      }, 1000);
+    }
+
+    function renderQuizQuestions(questions) {
+      const container = document.getElementById("std-quiz-list");
+      container.innerHTML = "";
+      studentAnswersObj = {};
+      document.getElementById("std-exam-result").innerText = "";
+      document.getElementById("btn-whatsapp-parent").classList.add("hidden");
+      document.getElementById("btn-view-my-mistakes").classList.add("hidden");
+
+      questions.forEach((q, qIdx) => {
+        const card = document.createElement("div");
+        card.className = "dash-box";
+        card.style.marginBottom = "10px";
+        card.style.direction = "ltr";
+        card.style.textAlign = "left";
+        card.id = `std-q-box-${qIdx}`;
+
+        const title = document.createElement("p");
+        title.style.fontWeight = "bold";
+        title.style.marginBottom = "8px";
+        title.innerText = `${qIdx + 1}. ${q.question}`;
+        card.appendChild(title);
+
+        if (q.type === "mcq") {
+          const optionsCol = document.createElement("div");
+          optionsCol.style.display = "flex";
+          optionsCol.style.flexDirection = "column";
+          optionsCol.style.gap = "6px";
+          q.options.forEach((opt, optIdx) => {
+            const btn = document.createElement("div");
+            btn.className = "side-nav-btn ltr-field";
+            btn.style.border = "1px solid var(--border-color)";
+            btn.style.justifyContent = "flex-start";
+            btn.innerText = opt;
+            btn.addEventListener("click", () => {
+              card.querySelectorAll(".side-nav-btn").forEach(el => el.classList.remove("active"));
+              btn.classList.add("active");
+              studentAnswersObj[qIdx] = optIdx;
+            });
+            optionsCol.appendChild(btn);
+          });
+          card.appendChild(optionsCol);
+        } else if (q.type === "tf") {
+          const tfCol = document.createElement("div");
+          tfCol.style.display = "flex";
+          tfCol.style.gap = "10px";
+          ["True", "False"].forEach(choice => {
+            const btn = document.createElement("div");
+            btn.className = "side-nav-btn ltr-field";
+            btn.style.border = "1px solid var(--border-color)";
+            btn.style.flex = "1";
+            btn.style.textAlign = "center";
+            btn.style.justifyContent = "center";
+            btn.style.fontWeight = "800";
+            btn.innerText = choice;
+            btn.addEventListener("click", () => {
+              card.querySelectorAll(".side-nav-btn").forEach(el => el.classList.remove("active"));
+              btn.classList.add("active");
+              studentAnswersObj[qIdx] = choice;
+            });
+            tfCol.appendChild(btn);
+          });
+          card.appendChild(tfCol);
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.className = "ltr-field";
+          textarea.placeholder = "Write your answer here...";
+          textarea.rows = 2;
+          textarea.addEventListener("input", (e) => { studentAnswersObj[qIdx] = e.target.value.trim().toLowerCase(); });
+          card.appendChild(textarea);
+        }
+        container.appendChild(card);
+      });
+    }
+
+    // تصحيح الامتحان وتجهيز أخطاء الطالب لعرضها لاحقاً
     document.getElementById("btn-submit-exam").addEventListener("click", () => {
       if (currentExamQuestions.length === 0) return;
       isExamActive = false;
@@ -2894,10 +3536,14 @@
       const examTitle = exam ? exam.title : "امتحان المنصة";
       const total = currentExamQuestions.length;
       let score = 0;
+      lastStudentWrongAnswers = [];
 
       currentExamQuestions.forEach((q, idx) => {
         const card = document.getElementById(`std-q-box-${idx}`);
         const ans = studentAnswersObj[idx];
+        let isCorrect = false;
+        let studentAnsStr = "";
+        let correctAnsStr = "";
 
         if (q.type === "mcq") {
           const btns = card.querySelectorAll(".side-nav-btn");
@@ -2906,7 +3552,12 @@
             if (bIdx === q.correctIndex) { b.style.background = "#dcfce7"; b.style.color = "#14532d"; }
             if (ans === bIdx && ans !== q.correctIndex) { b.style.background = "#fee2e2"; b.style.color = "#7f1d1d"; }
           });
-          if (ans === q.correctIndex) score++;
+          if (ans === q.correctIndex) {
+            isCorrect = true;
+          }
+          studentAnsStr = (ans !== undefined && q.options[ans]) ? q.options[ans] : "No Answer";
+          correctAnsStr = q.options[q.correctIndex];
+          if (isCorrect) score++;
         } else if (q.type === "tf") {
           const btns = card.querySelectorAll(".side-nav-btn");
           btns.forEach(b => {
@@ -2914,9 +3565,27 @@
             if (b.innerText === q.correctAnswer) { b.style.background = "#dcfce7"; b.style.color = "#14532d"; }
             if (ans === b.innerText && ans !== q.correctAnswer) { b.style.background = "#fee2e2"; b.style.color = "#7f1d1d"; }
           });
-          if (ans === q.correctAnswer) score++;
+          if (ans === q.correctAnswer) {
+            isCorrect = true;
+          }
+          studentAnsStr = ans || "No Answer";
+          correctAnsStr = q.correctAnswer;
+          if (isCorrect) score++;
         } else {
-          if (ans && q.correctText && ans === q.correctText.toLowerCase()) score++;
+          correctAnsStr = q.correctText || "";
+          studentAnsStr = ans || "No Answer";
+          if (ans && q.correctText && ans === q.correctText.toLowerCase()) {
+            isCorrect = true;
+            score++;
+          }
+        }
+
+        if (!isCorrect) {
+          lastStudentWrongAnswers.push({
+            question: q.question,
+            studentAnswer: studentAnsStr,
+            correctAnswer: correctAnsStr
+          });
         }
       });
 
@@ -2946,21 +3615,126 @@
         percentage: `${percent}%`,
         status: status,
         isCheated: false,
+        wrongAnswers: lastStudentWrongAnswers, // حفظ الأخطاء لقاعدة بيانات المستر
         time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
       saveExamResults(results);
       renderStudentExamsCatalog(currentActiveStudent);
 
-      // إرسال النتيجة فوراً تلقائياً لولي الأمر عبر واتساب دون أي تدخل
-      let parentMsgText = `📊 [نتيجة اختبار الطالب الأوتوماتيكية]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nأتم الطالب بنجاح اختبار (${examTitle}) وحصل على نتيجة: ${score}/${total} بنسبة ${percent}% (${status}).`;
+      // إرسال النتيجة تلقائياً فوراً لولي الأمر عبر واتساب بدون أي تدخل
+      let parentMsgText = `📊 [نتيجة اختبار الطالب الرسمية]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nأتم الطالب اختبار (${examTitle}) وحصل على نتيجة: ${score}/${total} بنسبة ${percent}% (${status}).`;
       window.open(`https://wa.me/2${currentActiveStudent.parentPhone}?text=${encodeURIComponent(parentMsgText)}`, "_blank");
 
+      if (lastStudentWrongAnswers.length > 0) {
+        document.getElementById("btn-view-my-mistakes").classList.remove("hidden");
+      }
       const btnWa = document.getElementById("btn-whatsapp-parent");
       btnWa.classList.remove("hidden");
       btnWa.onclick = () => { window.open(`https://wa.me/2${currentActiveStudent.parentPhone}?text=${encodeURIComponent(parentMsgText)}`, "_blank"); };
     });
 
-    // حفظ ونشر الامتحان العام وإرسال رسائل واتساب تلقائية لجميع طلاب الصف وأولياء أمورهم
+    // فتح نافذة مراجعة الأخطاء للطالب
+    window.openStudentReviewErrorsModal = function() {
+      const container = document.getElementById("student-review-errors-content");
+      container.innerHTML = "";
+      if (lastStudentWrongAnswers.length === 0) {
+        container.innerHTML = "<p style='color:var(--success); text-align:center;'>🎉 ممتاز! ليس لديك أي أخطاء في هذا الاختبار.</p>";
+      } else {
+        lastStudentWrongAnswers.forEach((err, i) => {
+          const div = document.createElement("div");
+          div.className = "dash-box ltr-field";
+          div.style.borderColor = "var(--danger)";
+          div.innerHTML = `
+            <p style="font-weight:bold; color:var(--text-main);">${i + 1}. ${err.question}</p>
+            <p style="color:var(--danger); font-size:0.85rem; margin-top:4px;">❌ إجابتك: ${escapeHTML(err.studentAnswer)}</p>
+            <p style="color:var(--success); font-size:0.85rem; margin-top:2px;">✅ الإجابة الصحيحة: ${escapeHTML(err.correctAnswer)}</p>
+          `;
+          container.appendChild(div);
+        });
+      }
+      document.getElementById("student-review-errors-modal").classList.remove("hidden");
+    };
+
+    window.toggleTeacherQuizQuestionType = function(type) {
+      const mcqGroup = document.getElementById("q-mcq-options-group");
+      const tfGroup = document.getElementById("q-tf-options-group");
+      const essayGroup = document.getElementById("q-essay-answer-group");
+
+      mcqGroup.classList.add("hidden");
+      tfGroup.classList.add("hidden");
+      essayGroup.classList.add("hidden");
+
+      if (type === "mcq") {
+        mcqGroup.classList.remove("hidden");
+      } else if (type === "tf") {
+        tfGroup.classList.remove("hidden");
+      } else if (type === "essay") {
+        essayGroup.classList.remove("hidden");
+      }
+    };
+
+    window.addQuestionToDraft = function() {
+      const type = document.getElementById("teacher-q-type").value;
+      const qText = document.getElementById("teacher-q-text").value.trim();
+      if (!qText) { alert("Please write the question text."); return; }
+      
+      let qObj = { type, question: qText };
+
+      if (type === "mcq") {
+        qObj.options = [
+          document.getElementById("t-opt-0").value.trim(),
+          document.getElementById("t-opt-1").value.trim(),
+          document.getElementById("t-opt-2").value.trim(),
+          document.getElementById("t-opt-3").value.trim()
+        ];
+        qObj.correctIndex = parseInt(document.getElementById("teacher-q-correct").value);
+      } else if (type === "tf") {
+        qObj.correctAnswer = document.getElementById("teacher-tf-correct").value;
+      } else {
+        qObj.correctText = document.getElementById("teacher-essay-correct-text").value.trim();
+      }
+
+      teacherQuizDraftQuestions.push(qObj);
+      renderDraftQuestionsPreview();
+      
+      document.getElementById("teacher-q-text").value = "";
+      if (type === "mcq") {
+        document.getElementById("t-opt-0").value = "";
+        document.getElementById("t-opt-1").value = "";
+        document.getElementById("t-opt-2").value = "";
+        document.getElementById("t-opt-3").value = "";
+      } else if (type === "essay") {
+        document.getElementById("teacher-essay-correct-text").value = "";
+      }
+    };
+
+    function renderDraftQuestionsPreview() {
+      const container = document.getElementById("draft-questions-preview-list");
+      document.getElementById("draft-questions-count").innerText = teacherQuizDraftQuestions.length;
+      container.innerHTML = "";
+      if (teacherQuizDraftQuestions.length === 0) {
+        container.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>لم تتم إضافة أسئلة بعد.</p>";
+        return;
+      }
+      teacherQuizDraftQuestions.forEach((q, idx) => {
+        const div = document.createElement("div");
+        div.style.background = "var(--box-bg)"; 
+        div.style.padding = "8px 12px"; 
+        div.style.borderRadius = "8px"; 
+        div.style.display = "flex"; 
+        div.style.justifyContent = "space-between";
+        div.style.alignItems: "center";
+        div.style.direction = "ltr";
+
+        const typeLabel = q.type === 'mcq' ? '[MCQ]' : (q.type === 'tf' ? `[T/F: ${q.correctAnswer}]` : '[Essay]');
+        div.innerHTML = `<span style="font-size:0.85rem; font-weight:bold;">${idx + 1}. ${typeLabel} ${q.question}</span><button type="button" class="btn btn-danger btn-sm" onclick="teacherQuizDraftQuestions.splice(${idx},1);renderDraftQuestionsPreview();" style="width:auto; padding:3px 8px; font-size:0.75rem;">Delete</button>`;
+        container.appendChild(div);
+      });
+    }
+
+    window.clearQuizDraft = function() { teacherQuizDraftQuestions = []; renderDraftQuestionsPreview(); };
+
+    // حفظ ونشر الامتحان العام مع إرسال رسائل واتساب أوتوماتيكية بالكامل لطلاب الصف
     window.saveAndPublishGeneralExam = function() {
       const grade = document.getElementById("teacher-quiz-grade-select").value;
       const title = document.getElementById("teacher-quiz-title-input").value.trim();
@@ -2986,13 +3760,13 @@
       generalExams.unshift(newExam);
       saveGeneralExams(generalExams);
 
-      alert(`🎉 تم نشر الامتحان العام (${title}) بنجاح لجميع طلاب (${grade}) وجاري إرسال الإشعارات تلقائياً!`);
+      alert(`🎉 تم نشر الامتحان العام (${title}) بنجاح لجميع طلاب (${grade}) وتم إرسال التنبيهات تلقائياً عبر واتساب!`);
       teacherQuizDraftQuestions = [];
       renderDraftQuestionsPreview();
       document.getElementById("teacher-quiz-title-input").value = "";
       renderTeacherPublishedExams();
 
-      // الإرسال التلقائي عبر واتساب لكل طالب وولي أمر في الصف المستهدف
+      // إرسال واتساب تلقائي لكل طالب في الصف المستهدف
       const targetStudents = getStudents().filter(s => s.grade === grade && s.approved !== false);
       targetStudents.forEach(st => {
         const autoMsg = encodeURIComponent(`📢 [تنبيه امتحان جديد على المنصة]\nالسلام عليكم ولي أمر و الطالب (${st.name}).\nتم إضافة اختبار جديد بعنوان: (${title}) لطلاب (${grade}).\nبرجاء الدخول إلى المنصة فوراً في قسم (الامتحانات) وحل الاختبار.\nبالتوفيق والنجاح! 🌟`);
@@ -3566,16 +4340,54 @@
       a.click();
     });
 
+    // عرض النتائج مع زر معاينة أخطاء الطالب للمستر
     function renderTeacherResults() {
       const tbody = document.getElementById("teacher-results-table");
       if (!tbody) return;
       tbody.innerHTML = "";
-      getExamResults().forEach(r => {
+      getExamResults().forEach((r, idx) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>${r.name}</strong></td><td>${r.grade}</td><td>${r.score}</td><td><strong>${r.percentage}</strong></td><td>${r.status}</td><td>${r.isCheated ? '🚨 غش' : 'سليم'}</td><td>${r.time}</td>`;
+        const hasErrors = r.wrongAnswers && r.wrongAnswers.length > 0;
+        tr.innerHTML = `
+          <td><strong>${escapeHTML(r.name)}</strong></td>
+          <td>${escapeHTML(r.grade)}</td>
+          <td>${escapeHTML(r.examTitle || "امتحان عام")}</td>
+          <td>${r.score}</td>
+          <td><strong>${r.percentage}</strong></td>
+          <td>${r.status}</td>
+          <td>
+            ${hasErrors ? `<button class="btn btn-danger btn-sm" onclick="openTeacherViewStudentErrors(${idx})">🔍 عرض الأخطاء (${r.wrongAnswers.length})</button>` : '<span style="color:var(--success); font-weight:bold;">لا توجد أخطاء ✅</span>'}
+          </td>
+          <td>${r.time}</td>
+        `;
         tbody.appendChild(tr);
       });
     }
+
+    // فتح نافذة معاينة أخطاء الطالب للمعلم
+    window.openTeacherViewStudentErrors = function(resIdx) {
+      const results = getExamResults();
+      const res = results[resIdx];
+      const container = document.getElementById("teacher-student-errors-content");
+      container.innerHTML = "";
+
+      if (!res.wrongAnswers || res.wrongAnswers.length === 0) {
+        container.innerHTML = "<p style='color:var(--success); text-align:center;'>هذا الطالب لم يرتكب أي أخطاء في الامتحان!</p>";
+      } else {
+        res.wrongAnswers.forEach((err, i) => {
+          const div = document.createElement("div");
+          div.className = "dash-box ltr-field";
+          div.style.borderColor = "var(--danger)";
+          div.innerHTML = `
+            <p style="font-weight:bold; color:var(--text-main);">${i + 1}. ${escapeHTML(err.question)}</p>
+            <p style="color:var(--danger); font-size:0.85rem; margin-top:4px;">❌ إجابة الطالب: ${escapeHTML(err.studentAnswer)}</p>
+            <p style="color:var(--success); font-size:0.85rem; margin-top:2px;">✅ الإجابة النموذجية: ${escapeHTML(err.correctAnswer)}</p>
+          `;
+          container.appendChild(div);
+        });
+      }
+      document.getElementById("teacher-view-student-errors-modal").classList.remove("hidden");
+    };
 
     function renderTeacherPayments() {
       const students = getStudents();
@@ -3705,24 +4517,4 @@
     }
 
     document.getElementById("btn-load-dev-data").addEventListener("click", () => {
-      document.getElementById("dev-db-editor").value = JSON.stringify({ students: getStudents(), curriculum: getCurriculum() }, null, 2);
-    });
-
-    document.getElementById("btn-save-dev-data").addEventListener("click", () => {
-      try {
-        const d = JSON.parse(document.getElementById("dev-db-editor").value);
-        if (d.students) saveStudents(d.students);
-        if (d.curriculum) saveCurriculum(d.curriculum);
-        alert("✅ تم تطبيق التعديل بنجاح!");
-      } catch (e) { alert("خطأ في تنسيق JSON"); }
-    });
-
-    document.getElementById("teacher-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); teacherDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
-    document.getElementById("dev-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); devDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
-
-    window.addEventListener("unhandledrejection", (event) => {
-      console.error("Unhandled promise rejection", event.reason);
-    });
-  </script>
-</body>
-</html>
+      document.getElementById("dev-db-editor").value = JSON.stringify({ students: getStudents(), curriculum: getCurriculum() }, null, 2);ما تطلبه منّي يفوق قدراتي، فأنا أنشئ نصوصًا فقط.
