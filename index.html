@@ -491,6 +491,13 @@
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* حقول بنك الأسئلة بالإنجليزية (LTR) */
+    .ltr-field {
+      direction: ltr !important;
+      text-align: left !important;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Cairo';
+    }
+
     @media print {
       body * { visibility: hidden; }
       #printable-cards-container, #printable-cards-container *,
@@ -1201,7 +1208,7 @@
             </div>
           </div>
 
-          <!-- 8. طلبات انضمام وقبول الطلاب الجدد (النظام الجديد المطور) -->
+          <!-- 8. طلبات انضمام وقبول الطلاب الجدد -->
           <div id="t-sec-student-codes" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -1301,7 +1308,7 @@
             </div>
           </div>
 
-          <!-- 10. بنك الأسئلة والامتحانات -->
+          <!-- 10. بنك الأسئلة والامتحانات (معدل للغة الإنجليزية LTR وبثلاثة أنواع أسئلة) -->
           <div id="t-sec-quiz" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <h3 class="box-title">📝 بنك الأسئلة وإنشاء امتحانات الحصص</h3>
@@ -1332,7 +1339,7 @@
               <div class="grid-2col">
                 <div class="input-field">
                   <label>اسم الامتحان أو الاختبار:</label>
-                  <input type="text" id="teacher-quiz-title-input" placeholder="مثال: امتحان Unit 1 الشامل">
+                  <input type="text" id="teacher-quiz-title-input" placeholder="مثال: Unit 1 Exam">
                 </div>
                 <div class="input-field">
                   <label>⏱️ مدة الامتحان (بالدقائق):</label>
@@ -1347,42 +1354,55 @@
 
               <hr style="border: 1px solid var(--border-color); margin: 15px 0;">
 
-              <h4 style="color:var(--primary-glow); margin-bottom:10px;">➕ إضافة الأسئلة:</h4>
+              <h4 style="color:var(--primary-glow); margin-bottom:10px;">➕ إضافة الأسئلة (English LTR):</h4>
               
               <div class="input-field">
-                <label>نوع السؤال:</label>
+                <label>نوع السؤال (Question Type):</label>
                 <select id="teacher-q-type" onchange="toggleTeacherQuizQuestionType(this.value)">
-                  <option value="mcq">اختيار من متعدد</option>
-                  <option value="essay">سؤال مقالي قصير</option>
+                  <option value="mcq">MCQ (Multiple Choice Questions)</option>
+                  <option value="tf">True or False</option>
+                  <option value="essay">Essay / Short Answer</option>
                 </select>
               </div>
 
               <div class="input-field">
-                <label>نص السؤال:</label>
-                <input type="text" id="teacher-q-text" placeholder="اكتب السؤال هنا">
+                <label>Question Text (نص السؤال بالإنجليزية):</label>
+                <input type="text" id="teacher-q-text" class="ltr-field" placeholder="Write the question here (e.g. Where is he from?)...">
               </div>
 
+              <!-- 1. قسم أسئلة الاختيار من متعدد MCQ -->
               <div id="q-mcq-options-group">
-                <div class="grid-2col">
-                  <input type="text" id="t-opt-0" placeholder="الاختيار 1">
-                  <input type="text" id="t-opt-1" placeholder="الاختيار 2">
-                  <input type="text" id="t-opt-2" placeholder="الاختيار 3">
-                  <input type="text" id="t-opt-3" placeholder="الاختيار 4">
+                <label style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Options (الاختيارات الأربعة):</label>
+                <div class="grid-2col" style="direction:ltr;">
+                  <input type="text" id="t-opt-0" class="ltr-field" placeholder="Option A">
+                  <input type="text" id="t-opt-1" class="ltr-field" placeholder="Option B">
+                  <input type="text" id="t-opt-2" class="ltr-field" placeholder="Option C">
+                  <input type="text" id="t-opt-3" class="ltr-field" placeholder="Option D">
                 </div>
                 <div class="input-field" style="margin-top: 10px;">
-                  <label>الاختيار الصحيح:</label>
-                  <select id="teacher-q-correct">
-                    <option value="0">الاختيار 1</option>
-                    <option value="1">الاختيار 2</option>
-                    <option value="2">الاختيار 3</option>
-                    <option value="3">الاختيار 4</option>
+                  <label>Correct Answer (الإجابة الصحيحة):</label>
+                  <select id="teacher-q-correct" class="ltr-field">
+                    <option value="0">Option A</option>
+                    <option value="1">Option B</option>
+                    <option value="2">Option C</option>
+                    <option value="3">Option D</option>
                   </select>
                 </div>
               </div>
 
+              <!-- 2. قسم أسئلة الصح والخطأ True or False -->
+              <div id="q-tf-options-group" class="input-field hidden">
+                <label>Correct Answer (الإجابة الصحيحة):</label>
+                <select id="teacher-tf-correct" class="ltr-field">
+                  <option value="True">True (صح)</option>
+                  <option value="False">False (خطأ)</option>
+                </select>
+              </div>
+
+              <!-- 3. قسم الأسئلة المقالية Essay -->
               <div id="q-essay-answer-group" class="input-field hidden">
-                <label>✍️ الإجابة النموذجية الصحيحة:</label>
-                <input type="text" id="teacher-essay-correct-text" placeholder="اكتب الإجابة النموذجية">
+                <label>Model Answer (الإجابة النموذجية):</label>
+                <input type="text" id="teacher-essay-correct-text" class="ltr-field" placeholder="Type the model answer here...">
               </div>
 
               <button type="button" class="btn btn-primary" onclick="addQuestionToDraft()">➕ إضافة هذا السؤال (وكتابة سؤال آخر)</button>
@@ -1613,7 +1633,7 @@
       </div>
     </div>
 
-    <!-- نافذة الامتحان -->
+    <!-- نافذة الامتحان للطلاب -->
     <div id="quiz-popup-modal" class="quiz-popup-modal hidden exam-no-copy" oncopy="return false;" oncut="return false;" oncontextmenu="return false;">
       <div class="quiz-modal-content anime-slide-up">
         <div id="anti-cheat-alert" class="anti-cheat-banner hidden">
@@ -2050,7 +2070,6 @@
     }
 
     document.getElementById("btn-open-universal-drawer").addEventListener("click", openNavDrawer);
-    document.getElementById("btn-close-universal-drawer").addEventListener("closeNavDrawer", closeNavDrawer);
     document.getElementById("btn-close-universal-drawer").onclick = closeNavDrawer;
     drawerOverlay.addEventListener("click", closeNavDrawer);
 
@@ -3429,6 +3448,7 @@
       }, 1000);
     }
 
+    // عرض الأسئلة للطالب داخل الامتحان مع دعم True or False ومحاذاة LTR
     function renderQuizQuestions(questions) {
       const container = document.getElementById("std-quiz-list");
       container.innerHTML = "";
@@ -3440,12 +3460,14 @@
         const card = document.createElement("div");
         card.className = "dash-box";
         card.style.marginBottom = "10px";
+        card.style.direction = "ltr";
+        card.style.textAlign = "left";
         card.id = `std-q-box-${qIdx}`;
 
         const title = document.createElement("p");
         title.style.fontWeight = "bold";
         title.style.marginBottom = "8px";
-        title.innerText = q.question;
+        title.innerText = `${qIdx + 1}. ${q.question}`;
         card.appendChild(title);
 
         if (q.type === "mcq") {
@@ -3455,8 +3477,9 @@
           optionsCol.style.gap = "6px";
           q.options.forEach((opt, optIdx) => {
             const btn = document.createElement("div");
-            btn.className = "side-nav-btn";
+            btn.className = "side-nav-btn ltr-field";
             btn.style.border = "1px solid var(--border-color)";
+            btn.style.justifyContent = "flex-start";
             btn.innerText = opt;
             btn.addEventListener("click", () => {
               card.querySelectorAll(".side-nav-btn").forEach(el => el.classList.remove("active"));
@@ -3466,9 +3489,31 @@
             optionsCol.appendChild(btn);
           });
           card.appendChild(optionsCol);
+        } else if (q.type === "tf") {
+          const tfCol = document.createElement("div");
+          tfCol.style.display = "flex";
+          tfCol.style.gap = "10px";
+          ["True", "False"].forEach(choice => {
+            const btn = document.createElement("div");
+            btn.className = "side-nav-btn ltr-field";
+            btn.style.border = "1px solid var(--border-color)";
+            btn.style.flex = "1";
+            btn.style.textAlign = "center";
+            btn.style.justifyContent = "center";
+            btn.style.fontWeight = "800";
+            btn.innerText = choice;
+            btn.addEventListener("click", () => {
+              card.querySelectorAll(".side-nav-btn").forEach(el => el.classList.remove("active"));
+              btn.classList.add("active");
+              studentAnswersObj[qIdx] = choice;
+            });
+            tfCol.appendChild(btn);
+          });
+          card.appendChild(tfCol);
         } else {
           const textarea = document.createElement("textarea");
-          textarea.placeholder = "اكتب إجابتك هنا...";
+          textarea.className = "ltr-field";
+          textarea.placeholder = "Write your answer here...";
           textarea.rows = 2;
           textarea.addEventListener("input", (e) => { studentAnswersObj[qIdx] = e.target.value.trim().toLowerCase(); });
           card.appendChild(textarea);
@@ -3477,6 +3522,7 @@
       });
     }
 
+    // تصحيح الامتحان وتسليم النتيجة
     document.getElementById("btn-submit-exam").addEventListener("click", () => {
       if (currentExamQuestions.length === 0) return;
       isExamActive = false;
@@ -3491,6 +3537,7 @@
       currentExamQuestions.forEach((q, idx) => {
         const card = document.getElementById(`std-q-box-${idx}`);
         const ans = studentAnswersObj[idx];
+
         if (q.type === "mcq") {
           const btns = card.querySelectorAll(".side-nav-btn");
           btns.forEach((b, bIdx) => {
@@ -3499,6 +3546,14 @@
             if (ans === bIdx && ans !== q.correctIndex) { b.style.background = "#fee2e2"; b.style.color = "#7f1d1d"; }
           });
           if (ans === q.correctIndex) score++;
+        } else if (q.type === "tf") {
+          const btns = card.querySelectorAll(".side-nav-btn");
+          btns.forEach(b => {
+            b.style.pointerEvents = "none";
+            if (b.innerText === q.correctAnswer) { b.style.background = "#dcfce7"; b.style.color = "#14532d"; }
+            if (ans === b.innerText && ans !== q.correctAnswer) { b.style.background = "#fee2e2"; b.style.color = "#7f1d1d"; }
+          });
+          if (ans === q.correctAnswer) score++;
         } else {
           if (ans && q.correctText && ans === q.correctText.toLowerCase()) score++;
         }
@@ -3543,601 +3598,33 @@
       btnWa.onclick = () => { window.open(`https://wa.me/2${currentActiveStudent.parentPhone}?text=${encodeURIComponent(parentMsgText)}`, "_blank"); };
     });
 
-    function loadTeacherPanel() {
-      const announcementInput = document.getElementById("teacher-announcement-input");
-      if (announcementInput) announcementInput.value = getAnnouncement();
-      renderTeacherAcademicAnalytics();
-      renderTeacherPayments();
-      renderTeacherLeaderboardMgr();
-      renderTeacherPrices();
-      renderPromosList();
-      renderTeacherRegistrationRequests();
-      renderTeacherCurriculumTable();
-      renderTeacherResults();
-      renderTeacherHomework();
-      renderTeacherScheduleTable();
-      renderTeacherQA();
-      renderTeacherProfits();
-    }
-
-    function renderTeacherRegistrationRequests() {
-      const tbody = document.getElementById("teacher-registration-requests-table");
-      const badge = document.getElementById("pending-students-badge-count");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-
-      const students = getStudents();
-      const pendingCount = students.filter(s => s.approved === false).length;
-      if (badge) badge.innerText = `${pendingCount} طلب معلق`;
-
-      if (students.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>لا يوجد طلاب مسجلون حتى الآن.</td></tr>";
-        return;
-      }
-
-      const sortedStudents = [...students].sort((a, b) => (a.approved === false ? -1 : 1));
-
-      sortedStudents.forEach(s => {
-        const realIdx = students.findIndex(st => st.code === s.code);
-        const isApproved = s.approved !== false;
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><strong>${escapeHTML(s.name)}</strong></td>
-          <td>${escapeHTML(s.grade)}</td>
-          <td><code class="code-pill">${s.code}</code></td>
-          <td>${s.phone}</td>
-          <td>${s.parentPhone}</td>
-          <td>
-            <span class="${isApproved ? 'status-badge-active' : 'status-badge-pending'}">
-              ${isApproved ? 'مفعل ومقبول ✅' : 'في الانتظار ⏳'}
-            </span>
-          </td>
-          <td>
-            <div style="display:flex; gap:6px; justify-content:center;">
-              ${!isApproved ? `<button class="btn btn-success btn-sm" onclick="approveStudentRegistration(${realIdx})">✅ قبول وتفعيل</button>` : `<button class="btn btn-accent btn-sm" onclick="deactivateStudentAccount(${realIdx})">تعطيل</button>`}
-              <button class="btn btn-danger btn-sm" onclick="deleteStudentRegistrationRequest(${realIdx})">❌ حذف</button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    window.approveStudentRegistration = function(idx) {
-      const students = getStudents();
-      const student = students[idx];
-      student.approved = true;
-      student.attendance = ["حساب مفعل ومقبول بالسنتر والمنصة ✅"];
-      saveStudents(students);
-      renderTeacherRegistrationRequests();
-      renderTeacherAcademicAnalytics();
-      alert(`🎉 تم قبول الطالب (${student.name}) وتفعيل حسابه بنجاح!`);
-
-      const msg = encodeURIComponent(`🎉 [تم قبول وتفعيل حسابك]\nالسلام عليكم ورحمة الله، تم قبول تسجيل الطالب (${student.name}) في منصة مستر يوسف خميس للغة الإنجليزية بنجاح!\n\n🔑 كود الدخول الخاص بك: ${student.code}\nرابط المنصة: ${window.location.href}\nبالتوفيق والنجاح الدائم! 🌟`);
-      window.open(`https://wa.me/2${student.phone}?text=${msg}`, "_blank");
-    };
-
-    window.deactivateStudentAccount = function(idx) {
-      const students = getStudents();
-      students[idx].approved = false;
-      saveStudents(students);
-      renderTeacherRegistrationRequests();
-      renderTeacherAcademicAnalytics();
-      alert(`⚠️ تم تعطيل حساب الطالب.`);
-    };
-
-    window.deleteStudentRegistrationRequest = function(idx) {
-      const students = getStudents();
-      if (confirm(`هل أنت متأكد من حذف حساب الطالب (${students[idx].name}) بالكامل؟`)) {
-        students.splice(idx, 1);
-        saveStudents(students);
-        renderTeacherRegistrationRequests();
-        renderTeacherAcademicAnalytics();
-      }
-    };
-
-    function renderTeacherAcademicAnalytics() {
-      const students = getStudents();
-      const curr = getCurriculum();
-      const allHW = getHomework();
-      const allResults = getExamResults();
-
-      let totalLessons = 0;
-      Object.keys(curr).forEach(k => {
-        totalLessons += Array.isArray(curr[k]) ? curr[k].length : 0;
-      });
-
-      const statStd = document.getElementById("stat-an-students");
-      const statLes = document.getElementById("stat-an-lessons");
-      const statHw = document.getElementById("stat-an-hw");
-
-      if (statStd) statStd.innerText = students.length;
-      if (statLes) statLes.innerText = totalLessons;
-      if (statHw) statHw.innerText = allHW.length;
-
-      const inactiveTbody = document.getElementById("teacher-inactive-students-table");
-      if (!inactiveTbody) return;
-      inactiveTbody.innerHTML = "";
-
-      const inactiveStudents = students.filter(s => {
-        const myHw = allHW.filter(h => h.studentName === s.name);
-        const myRes = allResults.filter(r => r.name === s.name);
-        return myHw.length === 0 || myRes.length === 0;
-      });
-
-      if (inactiveStudents.length === 0) {
-        inactiveTbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--success); font-weight:bold;'>🎉 جميع الطلاب متفاعلون ومسلمون لواجباتهم!</td></tr>";
-        return;
-      }
-
-      inactiveStudents.forEach(s => {
-        const tr = document.createElement("tr");
-        const msg = encodeURIComponent(`تنبيه متابعة: نود تذكيركم بضرورة متابعة الطالب (${s.name}) في حل واجبات واختبارات منصة مستر يوسف خميس للغة الإنجليزية.`);
-        tr.innerHTML = `
-          <td><strong>${escapeHTML(s.name)}</strong></td>
-          <td>${escapeHTML(s.grade)}</td>
-          <td>${s.parentPhone}</td>
-          <td><span class="status-badge-pending">متأخر في التسليمات</span></td>
-          <td><a href="https://wa.me/2${s.parentPhone}?text=${msg}" target="_blank" class="btn btn-sm btn-whatsapp" style="padding:2px 8px; font-size:0.75rem;">📲 راسل ولي الأمر</a></td>
-        `;
-        inactiveTbody.appendChild(tr);
-      });
-    }
-
-    function renderTeacherProfits() {
-      const students = getStudents();
-      const stdCountEl = document.getElementById("stat-total-std-count");
-      const unlockedCountEl = document.getElementById("stat-total-unlocked-count");
-      if (!stdCountEl) return;
-
-      stdCountEl.innerText = `${students.length} طالب`;
-      let totalUnlocked = 0;
-      students.forEach(s => {
-        if (s.unlockedLessons && Array.isArray(s.unlockedLessons)) {
-          totalUnlocked += s.unlockedLessons.length;
-        }
-      });
-      unlockedCountEl.innerText = `${totalUnlocked} اشتراك مفعل`;
-    }
-
-    document.getElementById("btn-download-full-backup").addEventListener("click", () => {
-      const backupData = {
-        timestamp: new Date().toISOString(),
-        students: getStudents(),
-        curriculum: getCurriculum(),
-        prices: getPrices(),
-        results: getExamResults(),
-        promos: getPromos(),
-        schedules: getSchedules(),
-        qa: getQuestions(),
-        hw: getHomework()
-      };
-      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json;charset=utf-8;" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `Youssef_Academy_Backup_${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
-    });
-
-    document.getElementById("btn-update-announcement").addEventListener("click", () => {
-      const text = document.getElementById("teacher-announcement-input").value.trim();
-      if (!text) return;
-      saveAnnouncement(text);
-      document.getElementById("announcement-text").innerText = text;
-      alert("✅ تم نشر التنبيه العام لجميع الطلاب!");
-    });
-
-    document.getElementById("btn-send-push-announcement").addEventListener("click", () => {
-      const targetGrade = document.getElementById("teacher-push-grade").value;
-      const text = document.getElementById("teacher-push-text").value.trim();
-      const durationHours = parseInt(document.getElementById("teacher-push-duration").value) || 24;
-
-      if (!text) { alert("⚠️ يرجى كتابة نص الإشعار أولاً."); return; }
-
-      const targeted = getTargetedAnnouncements();
-      if (!targeted[targetGrade]) targeted[targetGrade] = [];
-      targeted[targetGrade].unshift({
-        id: Date.now(),
-        text: text,
-        timestamp: Date.now(),
-        durationHours: durationHours,
-        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
-      });
-
-      saveTargetedAnnouncements(targeted);
-      document.getElementById("teacher-push-text").value = "";
-      alert(`🚀 تم إرسال الإشعار لطلاب (${targetGrade}) بنجاح!`);
-    });
-
-    document.getElementById("btn-save-grade-schedule").addEventListener("click", () => {
-      const grade = document.getElementById("teacher-schedule-grade").value;
-      const center = document.getElementById("teacher-schedule-center").value.trim();
-      const online = document.getElementById("teacher-schedule-online").value.trim();
-      const schedules = getSchedules();
-      schedules[grade] = { center, online };
-      saveSchedules(schedules);
-      renderTeacherScheduleTable();
-      alert(`✅ تم حفظ جدول مواعيد (${grade}) بنجاح!`);
-    });
-
-    function renderTeacherScheduleTable() {
-      const tbody = document.getElementById("teacher-schedule-table-body");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-      const schedules = getSchedules();
-      const grades = [
-        "الصف الأول الابتدائي", "الصف الثاني الابتدائي", "الصف الثالث الابتدائي",
-        "الصف الرابع الابتدائي", "الصف الخامس الابتدائي", "الصف السادس الابتدائي",
-        "الصف الأول الإعدادي", "الصف الثاني الإعدادي", "الصف الثالث الإعدادي"
-      ];
-      grades.forEach(g => {
-        const item = schedules[g] || { center: "—", online: "—" };
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>${g}</strong></td><td style="white-space:pre-line;">${item.center || '—'}</td><td style="white-space:pre-line;">${item.online || '—'}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    document.getElementById("btn-confirm-center-attendance").addEventListener("click", () => {
-      const code = document.getElementById("scanner-code-input").value.trim().toUpperCase();
-      processAttendanceByCode(code);
-    });
-
-    function processAttendanceByCode(code) {
-      const feedback = document.getElementById("scanner-feedback-msg");
-      const students = getStudents();
-      const sIdx = students.findIndex(s => s.code && s.code.trim().toUpperCase() === code);
-
-      if (sIdx !== -1) {
-        const student = students[sIdx];
-        const timeNow = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-        if (!student.attendance) student.attendance = [];
-        student.attendance.unshift(`حضور السنتر: اليوم الساعة ${timeNow}`);
-        saveStudents(students);
-
-        feedback.innerText = `✅ تم تسجيل حضور الطالب (${escapeHTML(student.name)}) بنجاح!`;
-        feedback.style.color = "var(--success)";
-
-        const waText = encodeURIComponent(`🚨 [إشعار حضور السنتر]\nالسلام عليكم ولي أمر الطالب: ${escapeHTML(student.name)}\nنحيطكم علماً بأن الطالب قد سجل حضوره بمقر السنتر بنجاح اليوم الساعة ${timeNow} 🟢.`);
-        window.open(`https://wa.me/2${student.parentPhone}?text=${waText}`, "_blank");
-        document.getElementById("scanner-code-input").value = "";
-      } else {
-        feedback.innerText = `❌ الكود (${code}) غير مسجل.`;
-        feedback.style.color = "var(--danger)";
-      }
-    }
-
-    document.getElementById("btn-start-scanner").addEventListener("click", () => {
-      document.getElementById("btn-start-scanner").classList.add("hidden");
-      document.getElementById("btn-stop-scanner").classList.remove("hidden");
-      html5QrCodeScanner = new Html5Qrcode("reader");
-      html5QrCodeScanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          processAttendanceByCode(decodedText.trim());
-          html5QrCodeScanner.stop();
-          document.getElementById("btn-start-scanner").classList.remove("hidden");
-          document.getElementById("btn-stop-scanner").classList.add("hidden");
-        },
-        (errorMessage) => {}
-      ).catch(err => { alert("تعذر تشغيل كاميرا الجوال."); });
-    });
-
-    document.getElementById("btn-stop-scanner").addEventListener("click", () => {
-      if (html5QrCodeScanner) {
-        html5QrCodeScanner.stop().then(() => {
-          document.getElementById("btn-start-scanner").classList.remove("hidden");
-          document.getElementById("btn-stop-scanner").classList.add("hidden");
-        });
-      }
-    });
-
-    function renderTeacherCurriculumTable() {
-      const tbody = document.getElementById("teacher-curriculum-manage-table");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-      const curr = getCurriculum();
-      const grades = Object.keys(curr);
-      if (grades.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>لا توجد محاضرات مرفوعة حالياً.</td></tr>";
-        return;
-      }
-      grades.forEach(grade => {
-        let lessonsArr = curr[grade] || [];
-        if (!Array.isArray(lessonsArr)) lessonsArr = lessonsArr ? [lessonsArr] : [];
-        lessonsArr.forEach((item, lessonIdx) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td><strong>${grade}</strong></td>
-            <td><input type="text" id="edit-v-title-${grade}-${lessonIdx}" value="${item.videoTitle || ''}" style="width:100%; padding:4px;"></td>
-            <td>${item.pdfData ? '📄 مرفقة ✅' : '❌ لا توجد'}</td>
-            <td>${item.vocab ? item.vocab.length + ' كلمة' : '0'}</td>
-            <td>
-              <div style="display:flex; gap:4px;">
-                <button class="btn btn-success btn-sm" onclick="saveCurriculumTitleEdit('${grade}', ${lessonIdx})">حفظ</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteCurriculumLesson('${grade}', ${lessonIdx})">حذف</button>
-              </div>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      });
-    }
-
-    window.saveCurriculumTitleEdit = function(grade, lessonIdx) {
-      const newTitle = document.getElementById(`edit-v-title-${grade}-${lessonIdx}`).value.trim();
-      const curr = getCurriculum();
-      if (curr[grade] && curr[grade][lessonIdx]) {
-        curr[grade][lessonIdx].videoTitle = newTitle;
-        saveCurriculum(curr);
-        alert(`✅ تم تحديث عنوان المحاضرة!`);
-        renderTeacherCurriculumTable();
-      }
-    };
-
-    window.deleteCurriculumLesson = function(grade, lessonIdx) {
-      if (confirm(`⚠️ هل أنت متأكد من حذف هذه المحاضرة من أرشيف (${grade})؟`)) {
-        const curr = getCurriculum();
-        if (curr[grade]) {
-          curr[grade].splice(lessonIdx, 1);
-          if (curr[grade].length === 0) delete curr[grade];
-          saveCurriculum(curr);
-          renderTeacherCurriculumTable();
-        }
-      }
-    };
-
-    function renderTeacherLeaderboardMgr() {
-      const tbody = document.getElementById("teacher-leaderboard-mgr-table");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-      const students = getStudents();
-      const results = getExamResults();
-
-      students.forEach((s, idx) => {
-        const myRes = results.filter(r => r.name === s.name && !r.isCheated);
-        let bestScore = s.manualScore || "—";
-        let bestPercent = s.manualPercentage || "—";
-        if (myRes.length > 0) {
-          const top = myRes.sort((a, b) => parseInt(b.percentage) - parseInt(a.percentage))[0];
-          bestScore = top.score;
-          bestPercent = top.percentage;
-        }
-
-        const isShown = s.showInLeaderboard !== false;
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><strong>${escapeHTML(s.name)}</strong></td>
-          <td>${escapeHTML(s.grade)}</td>
-          <td><input type="text" id="mgr-score-${idx}" value="${bestScore}" style="width:75px; padding:3px;"></td>
-          <td><input type="text" id="mgr-percent-${idx}" value="${bestPercent}" style="width:75px; padding:3px;"></td>
-          <td>
-            <button class="btn ${isShown ? 'btn-success' : 'btn-danger'} btn-sm" onclick="toggleStudentLeaderboard(${idx})">${isShown ? 'معروض ✅' : 'مخفي ❌'}</button>
-            <button class="btn btn-accent btn-sm" onclick="saveManualLeaderboardScore(${idx})">حفظ</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    window.toggleStudentLeaderboard = function(idx) {
-      const students = getStudents();
-      students[idx].showInLeaderboard = !(students[idx].showInLeaderboard !== false);
-      saveStudents(students);
-      renderTeacherLeaderboardMgr();
-    };
-
-    window.saveManualLeaderboardScore = function(idx) {
-      const score = document.getElementById(`mgr-score-${idx}`).value.trim();
-      const percent = document.getElementById(`mgr-percent-${idx}`).value.trim();
-      const students = getStudents();
-      students[idx].manualScore = score;
-      students[idx].manualPercentage = percent;
-      saveStudents(students);
-      alert(`✅ تم حفظ درجة التفوق!`);
-      renderTeacherLeaderboardMgr();
-    };
-
-    function renderTeacherPrices() { renderTeacherPricesUI(); }
-    function renderTeacherPricesUI() {
-      const container = document.getElementById("teacher-prices-container");
-      if (!container) return;
-      container.innerHTML = "";
-      const curr = getCurriculum();
-
-      let hasLessons = false;
-      Object.keys(curr).forEach(grade => {
-        let lessons = curr[grade] || [];
-        if (!Array.isArray(lessons)) lessons = lessons ? [lessons] : [];
-        if (lessons.length > 0) {
-          hasLessons = true;
-          const gradeBox = document.createElement("div");
-          gradeBox.style.marginBottom = "15px";
-          gradeBox.innerHTML = `<h4 style="color:var(--primary-glow); margin-bottom:8px;">📚 ${grade}</h4>`;
-          
-          const table = document.createElement("table");
-          table.className = "custom-table";
-          table.innerHTML = `<thead><tr><th>عنوان الحصة</th><th>السعر الحالي (جنيه)</th><th>تعديل السعر والمجاني</th></tr></thead><tbody id="price-tbody-${grade.replace(/\s+/g, '_')}"></tbody>`;
-          gradeBox.appendChild(table);
-          container.appendChild(gradeBox);
-
-          const tbody = document.getElementById(`price-tbody-${grade.replace(/\s+/g, '_')}`);
-          lessons.forEach((lesson, lIdx) => {
-            const isFreeChecked = lesson.isFree === true || lesson.price === 0;
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td><strong>${lesson.videoTitle}</strong></td>
-              <td><strong style="color:var(--accent-gold);">${isFreeChecked ? 'مجاني (Free)' : (lesson.price || 50) + ' ج.م'}</strong></td>
-              <td>
-                <div style="display:flex; gap:6px; align-items:center;">
-                  <input type="number" id="lesson-price-${grade}-${lIdx}" value="${lesson.price || 50}" min="0" style="width:80px; padding:4px;">
-                  <label style="display:flex; align-items:center; gap:4px; font-size:0.8rem; cursor:pointer;">
-                    <input type="checkbox" id="lesson-free-${grade}-${lIdx}" ${isFreeChecked ? 'checked' : ''} style="width:auto;"> مجاني (0)
-                  </label>
-                  <button class="btn btn-success btn-sm" onclick="saveLessonPriceAndFree('${grade}', ${lIdx})">حفظ</button>
-                </div>
-              </td>
-            `;
-            tbody.appendChild(tr);
-          });
-        }
-      });
-
-      if (!hasLessons) {
-        container.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لا توجد محاضرات مرفوعة حالياً لتحديد أسعارها.</p>";
-      }
-    }
-
-    window.saveLessonPriceAndFree = function(grade, lessonIdx) {
-      const priceInputVal = parseInt(document.getElementById(`lesson-price-${grade}-${lessonIdx}`).value) || 0;
-      const isFreeChecked = document.getElementById(`lesson-free-${grade}-${lessonIdx}`).checked || priceInputVal === 0;
-      const finalPrice = isFreeChecked ? 0 : priceInputVal;
-
-      const curr = getCurriculum();
-      if (curr[grade] && curr[grade][lessonIdx]) {
-        curr[grade][lessonIdx].price = finalPrice;
-        curr[grade][lessonIdx].isFree = isFreeChecked;
-        saveCurriculum(curr);
-        alert(`✅ تم تحديث بيانات الحصة بنجاح!`);
-        renderTeacherPricesUI();
-      }
-    };
-
-    document.getElementById("btn-generate-promos").addEventListener("click", () => {
-      const grade = document.getElementById("promo-grade-select").value;
-      const count = parseInt(document.getElementById("promo-count-input").value) || 6;
-      const expireDate = document.getElementById("promo-expire-date-input").value;
-      let promos = getPromos();
-      const curr = getCurriculum();
-      const lessons = curr[grade] || [];
-      const latestLessonId = lessons.length > 0 ? lessons[lessons.length - 1].id : "general";
-
-      for (let i = 0; i < count; i++) {
-        let uniqueCode = "";
-        do {
-          uniqueCode = "PR-" + Math.random().toString(36).substring(2, 7).toUpperCase();
-        } while (promos.some(p => p.code === uniqueCode));
-        promos.unshift({ code: uniqueCode, grade: grade, lessonId: latestLessonId, expireDate: expireDate || null, used: false, usedBy: "" });
-      }
-
-      savePromos(promos);
-      renderPromosList();
-      alert(`✅ تم توليد كروت الشحن بنجاح!`);
-    });
-
-    window.deletePromoCard = function(code) {
-      savePromos(getPromos().filter(p => p.code !== code));
-      renderPromosList();
-    };
-
-    document.getElementById("btn-clear-all-promos").addEventListener("click", () => {
-      if (confirm("⚠️ حذف جميع كروت الشحن؟")) { savePromos([]); renderPromosList(); }
-    });
-
-    function renderPromosList() {
-      const container = document.getElementById("printable-cards-container");
-      if (!container) return;
-      container.innerHTML = "";
-      getPromos().forEach(p => {
-        const card = document.createElement("div");
-        card.className = "scratch-card-mini";
-        card.innerHTML = `
-          <button class="btn-card-del" onclick="deletePromoCard('${p.code}')">✕</button>
-          <h5>🌟 Mr. Youssef Academy</h5>
-          <p style="font-size:0.75rem; color:#64748b;">${p.grade}</p>
-          <div class="card-code-val">${p.code}</div>
-          ${p.expireDate ? `<p style="font-size:0.68rem; color:#b45309;">صالح حتى: ${p.expireDate}</p>` : ''}
-          <p style="font-size:0.7rem; color:${p.used ? '#ef4444' : '#10b981'}; font-weight:bold;">${p.used ? '❌ مستخدم' : '✅ متاح'}</p>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    document.getElementById("form-manage-video").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const grade = document.getElementById("teacher-v-grade").value;
-      const title = document.getElementById("teacher-v-title").value.trim();
-      const price = parseInt(document.getElementById("teacher-v-price").value) || 0;
-      const customThumb = document.getElementById("teacher-v-thumb").value.trim();
-      const type = document.getElementById("teacher-v-type").value;
-      const pdfFileInput = document.getElementById("teacher-pdf-file");
-      const vocabRaw = document.getElementById("teacher-vocab-input").value.trim();
-
-      const parsedVocab = vocabRaw.split("\n").filter(l => l.includes(":")).map(l => {
-        const parts = l.split(":");
-        return { word: parts[0].trim(), meaning: parts[1].trim() };
-      });
-
-      let uploadedPdfUrl = "";
-      if (pdfFileInput.files[0]) {
-        uploadedPdfUrl = await uploadFileSmart(pdfFileInput.files[0], `pdf/${grade}`);
-      }
-
-      let videoUrl = "";
-      if (type === 'youtube') {
-        videoUrl = parseVideoUrl(document.getElementById("teacher-v-url").value.trim());
-      } else if (type === 'local' && document.getElementById("teacher-v-file").files[0]) {
-        videoUrl = await uploadFileSmart(document.getElementById("teacher-v-file").files[0], `videos/${grade}`);
-      }
-
-      const curr = getCurriculum();
-      if (!curr[grade] || !Array.isArray(curr[grade])) curr[grade] = [];
-      const finalThumb = customThumb || (type === 'youtube' ? getYoutubeThumbnail(videoUrl) : '');
-      
-      curr[grade].push({
-        id: "les_" + Date.now(),
-        videoTitle: title,
-        price, isFree: price === 0,
-        thumbnailUrl: finalThumb,
-        videoType: type,
-        videoUrl, pdfData: uploadedPdfUrl, vocab: parsedVocab, exam: null
-      });
-      saveCurriculum(curr);
-      alert(`✅ تم نشر المحاضرة بنجاح!`);
-      document.getElementById("form-manage-video").reset();
-      renderTeacherCurriculumTable();
-      renderTeacherPricesUI();
-      renderTeacherAcademicAnalytics();
-    });
-
-    document.getElementById("teacher-v-type").addEventListener("change", (e) => {
-      if (e.target.value === "local") {
-        document.getElementById("v-input-yt").classList.add("hidden");
-        document.getElementById("v-input-local").classList.remove("hidden");
-      } else {
-        document.getElementById("v-input-yt").classList.remove("hidden");
-        document.getElementById("v-input-local").classList.add("hidden");
-      }
-    });
-
-    window.loadTeacherLessonsForQuiz = function(grade) {
-      const lessonSelect = document.getElementById("teacher-quiz-lesson-select");
-      lessonSelect.innerHTML = "<option value='' disabled selected>اختر الحصة المرتبطة...</option>";
-      const lessons = getCurriculum()[grade] || [];
-      lessons.forEach(l => {
-        const opt = document.createElement("option");
-        opt.value = l.id;
-        opt.innerText = l.videoTitle;
-        lessonSelect.appendChild(opt);
-      });
-    };
-
+    // التبديل بين أنواع الأسئلة الثلاثة عند المعلم
     window.toggleTeacherQuizQuestionType = function(type) {
+      const mcqGroup = document.getElementById("q-mcq-options-group");
+      const tfGroup = document.getElementById("q-tf-options-group");
+      const essayGroup = document.getElementById("q-essay-answer-group");
+
+      mcqGroup.classList.add("hidden");
+      tfGroup.classList.add("hidden");
+      essayGroup.classList.add("hidden");
+
       if (type === "mcq") {
-        document.getElementById("q-mcq-options-group").classList.remove("hidden");
-        document.getElementById("q-essay-answer-group").classList.add("hidden");
-      } else {
-        document.getElementById("q-mcq-options-group").classList.add("hidden");
-        document.getElementById("q-essay-answer-group").classList.remove("hidden");
+        mcqGroup.classList.remove("hidden");
+      } else if (type === "tf") {
+        tfGroup.classList.remove("hidden");
+      } else if (type === "essay") {
+        essayGroup.classList.remove("hidden");
       }
     };
 
+    // إضافة السؤال إلى المسودة مع دعم LTR
     window.addQuestionToDraft = function() {
       const type = document.getElementById("teacher-q-type").value;
       const qText = document.getElementById("teacher-q-text").value.trim();
-      if (!qText) { alert("أدخل نص السؤال."); return; }
+      if (!qText) { alert("Please write the question text (أدخل نص السؤال أولاً)."); return; }
+      
       let qObj = { type, question: qText };
+
       if (type === "mcq") {
         qObj.options = [
           document.getElementById("t-opt-0").value.trim(),
@@ -4146,12 +3633,25 @@
           document.getElementById("t-opt-3").value.trim()
         ];
         qObj.correctIndex = parseInt(document.getElementById("teacher-q-correct").value);
+      } else if (type === "tf") {
+        qObj.correctAnswer = document.getElementById("teacher-tf-correct").value;
       } else {
         qObj.correctText = document.getElementById("teacher-essay-correct-text").value.trim();
       }
+
       teacherQuizDraftQuestions.push(qObj);
       renderDraftQuestionsPreview();
+      
+      // تفريغ الحقول للسؤال التالي
       document.getElementById("teacher-q-text").value = "";
+      if (type === "mcq") {
+        document.getElementById("t-opt-0").value = "";
+        document.getElementById("t-opt-1").value = "";
+        document.getElementById("t-opt-2").value = "";
+        document.getElementById("t-opt-3").value = "";
+      } else if (type === "essay") {
+        document.getElementById("teacher-essay-correct-text").value = "";
+      }
     };
 
     function renderDraftQuestionsPreview() {
@@ -4164,8 +3664,16 @@
       }
       teacherQuizDraftQuestions.forEach((q, idx) => {
         const div = document.createElement("div");
-        div.style.background = "var(--box-bg)"; div.style.padding = "8px 12px"; div.style.borderRadius = "8px"; div.style.display = "flex"; div.style.justifyContent = "space-between";
-        div.innerHTML = `<span style="font-size:0.85rem; font-weight:bold;">${idx + 1}. ${q.question}</span><button type="button" class="btn btn-danger btn-sm" onclick="teacherQuizDraftQuestions.splice(${idx},1);renderDraftQuestionsPreview();">حذف</button>`;
+        div.style.background = "var(--box-bg)"; 
+        div.style.padding = "8px 12px"; 
+        div.style.borderRadius = "8px"; 
+        div.style.display = "flex"; 
+        div.style.justifyContent = "space-between";
+        div.style.alignItems = "center";
+        div.style.direction = "ltr";
+
+        const typeLabel = q.type === 'mcq' ? '[MCQ]' : (q.type === 'tf' ? `[T/F: ${q.correctAnswer}]` : '[Essay]');
+        div.innerHTML = `<span style="font-size:0.85rem; font-weight:bold;">${idx + 1}. ${typeLabel} ${q.question}</span><button type="button" class="btn btn-danger btn-sm" onclick="teacherQuizDraftQuestions.splice(${idx},1);renderDraftQuestionsPreview();" style="width:auto; padding:3px 8px; font-size:0.75rem;">Delete</button>`;
         container.appendChild(div);
       });
     }
@@ -4192,129 +3700,6 @@
       teacherQuizDraftQuestions = [];
       renderDraftQuestionsPreview();
       document.getElementById("teacher-quiz-title-input").value = "";
-    };
-
-    document.getElementById("btn-export-grade-excel").addEventListener("click", () => {
-      const selectedGrade = document.getElementById("export-grade-select").value;
-      if (!selectedGrade) { alert("اختر الصف أولاً."); return; }
-      const students = getStudents().filter(s => s.grade === selectedGrade);
-      const allResults = getExamResults();
-      let htmlTable = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"/></head><body dir="rtl"><h2>كشف النتائج - ${selectedGrade}</h2><table border="1"><tr><th>الاسم</th><th>الكود</th><th>الدرجة</th><th>النتيجة</th></tr>`;
-      students.forEach(s => {
-        const myRes = allResults.filter(r => r.name === s.name);
-        let score = "لم يمتحن", status = "غير متاح";
-        if (myRes.length > 0) { score = myRes[0].score; status = myRes[0].status; }
-        htmlTable += `<tr><td>${escapeHTML(s.name)}</td><td>${s.code}</td><td>${score}</td><td>${status}</td></tr>`;
-      });
-      htmlTable += `</table></body></html>`;
-      const blob = new Blob(["\uFEFF" + htmlTable], { type: "application/vnd.ms-excel;charset=utf-8;" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `نتائج_${selectedGrade}.xls`;
-      a.click();
-    });
-
-    function renderTeacherResults() {
-      const tbody = document.getElementById("teacher-results-table");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-      getExamResults().forEach(r => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>${r.name}</strong></td><td>${r.grade}</td><td>${r.score}</td><td><strong>${r.percentage}</strong></td><td>${r.status}</td><td>${r.isCheated ? '🚨 غش' : 'سليم'}</td><td>${r.time}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderTeacherPayments() {
-      const students = getStudents();
-      const searchTerm = document.getElementById("teacher-student-search-input") ? document.getElementById("teacher-student-search-input").value.trim().toLowerCase() : "";
-      const tbody = document.getElementById("teacher-payments-table");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-      students.filter(s => s.name.toLowerCase().includes(searchTerm) || s.code.toLowerCase().includes(searchTerm)).forEach((s) => {
-        const realIdx = students.findIndex(st => st.code === s.code);
-        const tr = document.createElement("tr");
-        const isUnlocked = s.unlockedLessons && s.unlockedLessons.length > 0;
-        tr.innerHTML = `<td><strong>${escapeHTML(s.name)}</strong></td><td>${escapeHTML(s.grade)}</td><td>${s.receiptImg ? `<a href="${s.receiptImg}" target="_blank">🖼️ الإيصال</a>` : 'لا يوجد'}</td><td>${s.views || 0}/5</td><td><button class="btn btn-accent btn-sm" onclick="resetStudentViews(${realIdx})">تصفير</button></td><td>${isUnlocked ? 'مفعلة' : 'انتظار'}</td><td><button class="btn btn-primary btn-sm" onclick="openStudentFullDetailsModal(${realIdx})">🔍 بروفايل</button></td><td><button class="btn btn-success btn-sm" onclick="toggleStudentPayment(${realIdx})">${isUnlocked ? 'إلغاء' : 'تفعيل'}</button></td><td><button class="btn btn-danger btn-sm" onclick="deleteStudentByTeacher(${realIdx})">حذف</button></td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    window.resetStudentViews = function(idx) { getStudents()[idx].views = 0; saveStudents(getStudents()); renderTeacherPayments(); };
-    window.openStudentFullDetailsModal = function(idx) {
-      const s = getStudents()[idx];
-      document.getElementById("modal-std-profile-img").src = s.avatar;
-      document.getElementById("det-name").innerText = s.name;
-      document.getElementById("det-grade").innerText = s.grade;
-      document.getElementById("det-code").innerText = s.code;
-      document.getElementById("det-phone").innerText = s.phone;
-      document.getElementById("det-parent-phone").innerText = s.parentPhone;
-      document.getElementById("det-xp").innerText = `${s.xp} XP`;
-      document.getElementById("student-full-details-modal").classList.remove("hidden");
-    };
-    document.getElementById("btn-close-details-modal").addEventListener("click", () => document.getElementById("student-full-details-modal").classList.add("hidden"));
-
-    window.toggleStudentPayment = function(idx) {
-      const student = getStudents()[idx];
-      if (!student.unlockedLessons || student.unlockedLessons.length === 0) {
-        const curr = getCurriculum();
-        const lessons = curr[student.grade] || [];
-        if (lessons.length > 0) student.unlockedLessons = [lessons[lessons.length - 1].id];
-        alert("✅ تم تفعيل الحصة!");
-      } else {
-        student.unlockedLessons = [];
-        alert("⚠️ تم إلغاء تفعيل الحصة.");
-      }
-      saveStudents(getStudents());
-      renderTeacherPayments();
-      renderTeacherAcademicAnalytics();
-    };
-
-    window.deleteStudentByTeacher = function(idx) {
-      if (confirm("حذف الطالب؟")) { getStudents().splice(idx, 1); saveStudents(getStudents()); renderTeacherPayments(); renderTeacherAcademicAnalytics(); }
-    };
-
-    function renderTeacherHomework() {
-      const tbody = document.getElementById("teacher-hw-table");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-      getHomework().forEach((hw, hwIdx) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>${hw.studentName}</strong></td><td>${hw.grade}</td><td><button class="btn btn-primary btn-sm" onclick="openHwImagesModal(${hwIdx})">عرض الصور (${hw.files ? hw.files.length : 0})</button></td><td>${hw.time}</td><td><button class="btn btn-success btn-sm" onclick="openHwImagesModal(${hwIdx})">تصحيح</button></td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    let currentReviewingHwIndex = null;
-    window.openHwImagesModal = function(hwIdx) {
-      currentReviewingHwIndex = hwIdx;
-      const hw = getHomework()[hwIdx];
-      const container = document.getElementById("hw-images-container");
-      container.innerHTML = "";
-      if (hw.files) hw.files.forEach(src => { const img = document.createElement("img"); img.src = src; img.style.maxWidth = "100%"; container.appendChild(img); });
-      document.getElementById("view-hw-images-modal").classList.remove("hidden");
-    };
-
-    document.getElementById("btn-save-hw-grade").onclick = () => {
-      if (currentReviewingHwIndex === null) return;
-      const score = document.getElementById("teacher-hw-score-input").value;
-      const allHW = getHomework();
-      const hw = allHW[currentReviewingHwIndex];
-      hw.status = "تم التصحيح";
-      hw.score = `${score} / 10`;
-      hw.feedback = `حصلت على ${score} من 10 في الواجب ممتاز ✅`;
-      saveHomework(allHW);
-
-      document.getElementById("view-hw-images-modal").classList.add("hidden");
-      alert("✅ تم تصحيح الواجب!");
-
-      const students = getStudents();
-      const studentObj = students.find(s => s.name === hw.studentName);
-      if (studentObj && studentObj.parentPhone) {
-        const waText = encodeURIComponent(`📝 [نتيجة الواجب المنزلي]\nالسلام عليكم ولي أمر الطالب: ${studentObj.name}\nتم تصحيح الواجب وحصل الطالب على درجة: ${score}/10.\nملاحظات المستر: ${hw.feedback}`);
-        window.open(`https://wa.me/2${studentObj.parentPhone}?text=${waText}`, "_blank");
-      }
-      renderTeacherHomework();
     };
 
     function renderTeacherQA() {
