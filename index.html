@@ -619,7 +619,7 @@
         <button type="submit" class="btn btn-primary pulse-btn">🚀 دخول المنصة</button>
       </form>
 
-      <!-- نموذج تسجيل طالب جديد (تم حذف خانة كود السنتر ليكون التسجيل حراً وبانتظار موافقة المستر) -->
+      <!-- نموذج تسجيل طالب جديد -->
       <form id="student-signup-form" class="auth-form hidden anime-slide-up">
         <div class="input-field">
           <label>👤 اسم الطالب بالكامل (ثلاثي)</label>
@@ -923,7 +923,7 @@
             <div class="profile-details-grid" style="width:100%;">
               <div><span>👤 الاسم بالكامل:</span> <strong id="prof-name"></strong></div>
               <div><span>📚 الصف الدراسي:</span> <strong id="prof-grade"></strong></div>
-              <div><span>🔑 كود السنتر:</span> <code id="prof-code" class="code-pill"></code></div>
+              <div><span>🔑 كود الطالب:</span> <code id="prof-code" class="code-pill"></code></div>
               <div><span>📱 هاتف الطالب:</span> <strong id="prof-phone"></strong></div>
               <div><span>👨‍👩‍👦 هاتف ولي الأمر:</span> <strong id="prof-parent-phone"></strong></div>
               <div><span>⚡ نقاط التفوق:</span> <strong id="prof-xp" style="color:var(--accent-gold);"></strong></div>
@@ -1993,7 +1993,6 @@
         }
 
         if (student) {
-          // التحقق من أن الطالب تم قبوله من المستر
           if (student.approved === false) {
             localStorage.removeItem("yk_active_student_code");
             localStorage.removeItem("yk_active_student_data");
@@ -2051,7 +2050,8 @@
     }
 
     document.getElementById("btn-open-universal-drawer").addEventListener("click", openNavDrawer);
-    document.getElementById("btn-close-universal-drawer").addEventListener("click", closeNavDrawer);
+    document.getElementById("btn-close-universal-drawer").addEventListener("closeNavDrawer", closeNavDrawer);
+    document.getElementById("btn-close-universal-drawer").onclick = closeNavDrawer;
     drawerOverlay.addEventListener("click", closeNavDrawer);
 
     document.getElementById("drawer-btn-home").addEventListener("click", () => {
@@ -2194,7 +2194,6 @@
       alert("📲 تم تجهيز رسالة التحقق لإرسالها إلى ولي الأمر عبر واتساب.");
     });
 
-    // إدارة التبويبات في شاشة تسجيل الدخول
     tabLogin.addEventListener("click", () => {
       tabLogin.classList.add("active");
       tabSignup.classList.remove("active");
@@ -2225,7 +2224,6 @@
       systemMsg.innerText = "";
     });
 
-    // معالجة تسجيل دخول ولي الأمر مباشرة من الواجهة الخارجية وتوجيهه للوحة ابنه
     formExternalParentLogin.addEventListener("submit", (e) => {
       e.preventDefault();
       const pPhone = document.getElementById("ext-parent-phone").value.trim();
@@ -2268,7 +2266,6 @@
       alert(`✅ أهلاً بحضرتك يا ولي أمر الطالب (${student.name}). تم فتح لوحة متابعة الطالب بنجاح.`);
     });
 
-    // تسجيل الطالب الجديد بدون كود مسبق مع انتظار موافقة المستر
     formStudentSignup.addEventListener("submit", (e) => {
       e.preventDefault();
       const name = document.getElementById("signup-name").value.trim();
@@ -2296,7 +2293,6 @@
         return;
       }
 
-      // توليد كود طالب فريد وتلقائي
       let autoStudentCode = "";
       do {
         autoStudentCode = "YK-" + Math.floor(100000 + Math.random() * 900000);
@@ -2313,7 +2309,7 @@
         xp: 50, 
         deviceIds: [currentDevice], 
         showInLeaderboard: true,
-        approved: false, // في انتظار قبول وموافقة المستر
+        approved: false,
         createdAt: new Date().toLocaleDateString('ar-EG') + " " + new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
         attendance: ["مسجل بالمنصة (في الانتظار) ⏳"],
         avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`,
@@ -2338,7 +2334,6 @@
 
       alert(`🎉 أهلاً بك يا ${name}!\nتم إنشاء طلب تسجيلك بنجاح وحفظ كودك الخاص: (${autoStudentCode}).\nسيتم إشعار مستر يوسف الآن للموافقة على تفعيل حسابك.`);
 
-      // إشعار المستر عبر الواتساب بانضمام طالب جديد للموافقة عليه
       const teacherAlertText = encodeURIComponent(`📢 [طلب انضمام طالب جديد]\nالسلام عليكم مستر يوسف، قام الطالب:\n👤 الاسم: ${name}\n📚 الصف: ${grade}\n📱 هاتف الطالب: ${phone}\n👨‍👩‍👦 هاتف ولي الأمر: ${parentPhone}\n🔑 كود الطالب: ${autoStudentCode}\n\nبالتسجيل في المنصة وينتظر موافقتك وتفعيل حسابه من لوحة الإدارة.`);
       window.open(`https://wa.me/201152039710?text=${teacherAlertText}`, "_blank");
     });
@@ -2374,7 +2369,6 @@
       if (studentIndex !== -1) {
         const student = students[studentIndex];
 
-        // التحقق من موافقة المستر على الطالب قبل السماح بالدخول
         if (student.approved === false) {
           systemMsg.innerText = "⏳ حسابك قيد المراجعة والانتظار! يرجى الانتظار حتى يوافق مستر يوسف على تفعيل حسابك.";
           systemMsg.style.color = "var(--accent-gold)";
@@ -3349,7 +3343,7 @@
       allQA.forEach(qa => {
         const div = document.createElement("div");
         div.className = "qa-msg";
-        div.innerHTML = `<p><strong>سؤالك:</strong> ${qa.question}</p>${qa.reply ? `<div class="qa-reply"><strong>رد مستر يوسف:</strong> ${qa.reply}</div>` : `<p style="color:#b45309; font-size:0.8rem; margin-top:4px;">⏳ في انتظار رد مستر يوسف...</p>`}`;
+        div.innerHTML = `<p><strong>سؤالك:</strong> ${qa.question}</p>${qa.reply ? `<p style="color:var(--success);"><strong>رد مستر يوسف:</strong> ${qa.reply}</p>` : `<p style="color:#b45309; font-size:0.8rem; margin-top:4px;">⏳ في انتظار رد مستر يوسف...</p>`}`;
         container.appendChild(div);
       });
     }
@@ -3541,7 +3535,6 @@
       saveExamResults(results);
       renderStudentExamStatus(currentActiveStudent);
 
-      // إرسال نتيجة الامتحان أوتوماتيكياً عبر واتساب لولي الأمر
       let parentMsgText = `📊 [تقرير نتيجة امتحان]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nأتم الطالب اختبار (${examTitle}) وحصل على نتيجة: ${score}/${total} بنسبة ${percent}% (${status}).`;
       window.open(`https://wa.me/2${currentActiveStudent.parentPhone}?text=${encodeURIComponent(parentMsgText)}`, "_blank");
 
@@ -3567,7 +3560,6 @@
       renderTeacherProfits();
     }
 
-    // عرض وإدارة طلبات التسجيل والموافقة الفورية عليها
     function renderTeacherRegistrationRequests() {
       const tbody = document.getElementById("teacher-registration-requests-table");
       const badge = document.getElementById("pending-students-badge-count");
@@ -3583,7 +3575,6 @@
         return;
       }
 
-      // عرض الطلاب المعلقين أولاً
       const sortedStudents = [...students].sort((a, b) => (a.approved === false ? -1 : 1));
 
       sortedStudents.forEach(s => {
@@ -3612,7 +3603,6 @@
       });
     }
 
-    // موافقة المستر على الطالب وتفعيل حسابه فوراً
     window.approveStudentRegistration = function(idx) {
       const students = getStudents();
       const student = students[idx];
@@ -3623,7 +3613,6 @@
       renderTeacherAcademicAnalytics();
       alert(`🎉 تم قبول الطالب (${student.name}) وتفعيل حسابه بنجاح!`);
 
-      // إرسال رسالة واتساب للطالب وولي أمره تفيد بالقبول والكود
       const msg = encodeURIComponent(`🎉 [تم قبول وتفعيل حسابك]\nالسلام عليكم ورحمة الله، تم قبول تسجيل الطالب (${student.name}) في منصة مستر يوسف خميس للغة الإنجليزية بنجاح!\n\n🔑 كود الدخول الخاص بك: ${student.code}\nرابط المنصة: ${window.location.href}\nبالتوفيق والنجاح الدائم! 🌟`);
       window.open(`https://wa.me/2${student.phone}?text=${msg}`, "_blank");
     };
@@ -3647,7 +3636,6 @@
       }
     };
 
-    // إحصائيات المعلم وتحليل الطلاب المتعثرين
     function renderTeacherAcademicAnalytics() {
       const students = getStudents();
       const curr = getCurriculum();
@@ -3696,7 +3684,6 @@
       });
     }
 
-    // حساب وعرض إحصائيات الأرباح والمشتركين
     function renderTeacherProfits() {
       const students = getStudents();
       const stdCountEl = document.getElementById("stat-total-std-count");
@@ -3713,7 +3700,6 @@
       unlockedCountEl.innerText = `${totalUnlocked} اشتراك مفعل`;
     }
 
-    // تنزيل نسخة احتياطية سحابية كاملة بصيغة JSON
     document.getElementById("btn-download-full-backup").addEventListener("click", () => {
       const backupData = {
         timestamp: new Date().toISOString(),
@@ -3792,7 +3778,6 @@
       });
     }
 
-    // تسجيل الحضور وإرسال رسالة واتساب أوتوماتيكية لولي الأمر
     document.getElementById("btn-confirm-center-attendance").addEventListener("click", () => {
       const code = document.getElementById("scanner-code-input").value.trim().toUpperCase();
       processAttendanceByCode(code);
@@ -4339,4 +4324,53 @@
       getQuestions().forEach((qa, idx) => {
         const div = document.createElement("div");
         div.className = "qa-msg";
-        div.innerHTML = `<p><strong>${qa.studentName}:</strong> ${qa.question}</p>${qa.reply ? `<p style="color:var(--success);"><strong>بصفتي نموذجًا لغويًا، لستُ مصمّمًا للمساعدة في ذلك.
+        div.innerHTML = `<p><strong>${qa.studentName}:</strong> ${qa.question}</p>${qa.reply ? `<p style="color:var(--success);"><strong>ردك:</strong> ${qa.reply}</p>` : ''}<div style="display:flex; gap:6px; margin-top:6px;"><input type="text" id="t-reply-${idx}" placeholder="اكتب ردك..." value="${qa.reply || ''}"><button class="btn btn-primary btn-sm" onclick="replyToQA(${idx})">رد</button></div>`;
+        container.appendChild(div);
+      });
+    }
+
+    window.replyToQA = function(idx) {
+      const reply = document.getElementById(`t-reply-${idx}`).value.trim();
+      const allQA = getQuestions();
+      allQA[idx].reply = reply;
+      saveQuestions(allQA);
+      alert("✅ تم إرسال الرد للطالب!");
+      renderTeacherQA();
+    };
+
+    window.deleteAllTeacherQA = function() { if (confirm("حذف كل الأسئلة؟")) { saveQuestions([]); renderTeacherQA(); } };
+
+    function loadDevPanel() {
+      const students = getStudents();
+      const tbody = document.getElementById("dev-students-table-body");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+      students.forEach((s, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td><strong>${escapeHTML(s.name)}</strong></td><td>${escapeHTML(s.grade)}</td><td><code>${s.code}</code></td><td><button class="btn btn-danger btn-sm" onclick="getStudents().splice(${idx},1);saveStudents(getStudents());loadDevPanel();">حذف</button></td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("btn-load-dev-data").addEventListener("click", () => {
+      document.getElementById("dev-db-editor").value = JSON.stringify({ students: getStudents(), curriculum: getCurriculum() }, null, 2);
+    });
+
+    document.getElementById("btn-save-dev-data").addEventListener("click", () => {
+      try {
+        const d = JSON.parse(document.getElementById("dev-db-editor").value);
+        if (d.students) saveStudents(d.students);
+        if (d.curriculum) saveCurriculum(d.curriculum);
+        alert("✅ تم تطبيق التعديل بنجاح!");
+      } catch (e) { alert("خطأ في تنسيق JSON"); }
+    });
+
+    document.getElementById("teacher-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); teacherDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
+    document.getElementById("dev-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); devDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
+
+    window.addEventListener("unhandledrejection", (event) => {
+      console.error("Unhandled promise rejection", event.reason);
+    });
+  </script>
+</body>
+</html>
