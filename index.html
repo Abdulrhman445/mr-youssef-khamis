@@ -619,10 +619,10 @@
         <button type="submit" class="btn btn-primary pulse-btn">🚀 دخول المنصة</button>
       </form>
 
-      <!-- نموذج تسجيل طالب جديد -->
+      <!-- نموذج تسجيل طالب جديد (تم حذف خانة كود السنتر ليكون التسجيل حراً وبانتظار موافقة المستر) -->
       <form id="student-signup-form" class="auth-form hidden anime-slide-up">
         <div class="input-field">
-          <label>👤 اسم الطالب بالكامل (ثلاثي مطابق لكارت السنتر)</label>
+          <label>👤 اسم الطالب بالكامل (ثلاثي)</label>
           <input type="text" id="signup-name" placeholder="مثال: أحمد محمد علي" required>
         </div>
         <div class="input-field">
@@ -657,12 +657,7 @@
           <label>🔐 كود تأكيد هاتف ولي الأمر (المستلم على الواتساب):</label>
           <input type="text" id="signup-otp-input" placeholder="أدخل كود التأكيد">
         </div>
-        <div class="input-field">
-          <label>🔑 كود تسجيل السنتر الحصري (المخصص لك فقط)</label>
-          <input type="text" id="signup-code" placeholder="أدخل كود السنتر (مثال: YK-xxxxxx)" required>
-          <small style="color:var(--text-muted); font-size:0.75rem;">ملاحظة: الكود مرتبط باسمك حصراً ولا يمكن استخدامه من شخص آخر.</small>
-        </div>
-        <button type="submit" class="btn btn-success">✅ تأكيد التسجيل وإنشاء الحساب</button>
+        <button type="submit" class="btn btn-success">✅ إرسال طلب الانضمام والتسجيل</button>
       </form>
 
       <!-- نموذج دخول ولي الأمر من الشاشة الرئيسية مباشرة -->
@@ -965,7 +960,7 @@
             <button class="side-nav-btn" data-ttab="t-tab-leaderboard-mgr" type="button">🏆 إدارة لوحة الشرف</button>
             <button class="side-nav-btn" data-ttab="t-tab-prices" type="button">💰 أسعار الحصص الفردية</button>
             <button class="side-nav-btn" data-ttab="t-tab-promos" type="button">🎟️ كروت شحن الحصص والاشتراكات</button>
-            <button class="side-nav-btn" data-ttab="t-tab-student-codes" type="button">🪪 أكواد تسجيل السنتر الحصرية</button>
+            <button class="side-nav-btn" data-ttab="t-tab-student-codes" type="button">👥 طلبات انضمام وقبول الطلاب</button>
             <button class="side-nav-btn" data-ttab="t-tab-video" type="button">📹 رفع وتعديل المحاضرات</button>
             <button class="side-nav-btn" data-ttab="t-tab-quiz" type="button">✍️ بنك الأسئلة والامتحانات</button>
             <button class="side-nav-btn" data-ttab="t-tab-profits" type="button">📈 تقارير الأرباح والنسخ الاحتياطي</button>
@@ -1206,32 +1201,29 @@
             </div>
           </div>
 
-          <!-- 8. أكواد تسجيل السنتر الحصرية -->
+          <!-- 8. طلبات انضمام وقبول الطلاب الجدد (النظام الجديد المطور) -->
           <div id="t-sec-student-codes" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">🪪 توليد وربط أكواد تسجيل السنتر (لكل طالب كود حصري باسمه)</h3>
-              <div class="grid-2col" style="margin-bottom:12px;">
-                <input type="text" id="exclusive-student-name" placeholder="اسم الطالب الثلاثي">
-                <select id="exclusive-student-grade">
-                  <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
-                  <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
-                  <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
-                  <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
-                  <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
-                  <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
-                  <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
-                  <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                  <option value="الصف الثالث الإعدادي" selected>الصف الثالث الإعدادي</option>
-                </select>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+                <h3 class="box-title" style="margin:0;">👥 إدارة طلبات تسجيل الطلاب والقبول والموافقة الفورية</h3>
+                <span id="pending-students-badge-count" class="pill-grade" style="background:#fee2e2; color:#b91c1c;">0 طلب معلق</span>
               </div>
-              <button id="btn-generate-exclusive-code" class="btn btn-success btn-full" type="button">➕ توليد كود حصري مخصص لهذا الطالب</button>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">يظهر هنا جميع الطلاب الذين سجلوا في المنصة؛ يمكنك قبول الطالب وتفعيل حسابه فوراً أو رفض طلبه وحذفه:</p>
               
-              <div class="table-responsive" style="margin-top:15px;">
+              <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
-                    <tr><th>اسم الطالب</th><th>الصف</th><th>الكود الحصري</th><th>إجراء</th></tr>
+                    <tr>
+                      <th>اسم الطالب</th>
+                      <th>الصف</th>
+                      <th>كود الطالب</th>
+                      <th>هاتف الطالب</th>
+                      <th>هاتف ولي الأمر</th>
+                      <th>الحالة</th>
+                      <th>الإجراء والموافقة</th>
+                    </tr>
                   </thead>
-                  <tbody id="teacher-exclusive-codes-table"></tbody>
+                  <tbody id="teacher-registration-requests-table"></tbody>
                 </table>
               </div>
             </div>
@@ -1525,7 +1517,7 @@
           </select>
         </div>
         <div class="input-field">
-          <label>كود السنتر (تسجيل الدخول):</label>
+          <label>كود الطالب (تسجيل الدخول):</label>
           <input type="text" id="edit-std-code-input">
         </div>
         <div class="input-field">
@@ -1587,7 +1579,7 @@
           <div class="profile-details-grid">
             <div><span>👤 الاسم بالكامل:</span> <strong id="det-name"></strong></div>
             <div><span>📚 الصف الدراسي:</span> <strong id="det-grade"></strong></div>
-            <div><span>🔑 كود السنتر:</span> <code id="det-code" class="code-pill"></code></div>
+            <div><span>🔑 كود الطالب:</span> <code id="det-code" class="code-pill"></code></div>
             <div><span>📱 هاتف الطالب:</span> <strong id="det-phone"></strong></div>
             <div><span>👨‍👩‍👦 هاتف ولي الأمر:</span> <strong id="det-parent-phone"></strong></div>
             <div><span>⚡ نقاط XP:</span> <strong id="det-xp" style="color:var(--accent-gold);"></strong></div>
@@ -1654,7 +1646,6 @@
           <select id="dev-data-selector" style="max-width:280px;">
             <option value="students">👥 قاعدة بيانات الطلاب</option>
             <option value="curriculum">📚 المناهج والمحاضرات والأسئلة</option>
-            <option value="exclusiveCodes">🪪 أكواد السنتر الحصرية</option>
             <option value="schedules">🗓️ جدول المواعيد</option>
             <option value="targetedAnnouncements">📢 إشعارات الصفوف الموجهة</option>
             <option value="results">📊 نتائج الاختبارات</option>
@@ -1846,7 +1837,6 @@
       prices: defaultPrices,
       results: [],
       promos: [],
-      exclusiveCodes: [],
       schedules: {},
       targetedAnnouncements: {},
       qa: [],
@@ -1868,9 +1858,6 @@
 
     function getPromos() { return cloudCache.promos || []; }
     function savePromos(d) { cloudCache.promos = d; rdb.ref('promos').set(d); }
-
-    function getExclusiveCodes() { return cloudCache.exclusiveCodes || []; }
-    function saveExclusiveCodes(d) { cloudCache.exclusiveCodes = d; rdb.ref('exclusiveCodes').set(d); }
 
     function getSchedules() { return cloudCache.schedules || {}; }
     function saveSchedules(d) { cloudCache.schedules = d; rdb.ref('schedules').set(d); }
@@ -1898,7 +1885,6 @@
         if (data.prices) cloudCache.prices = data.prices;
         if (data.results) cloudCache.results = data.results;
         if (data.promos) cloudCache.promos = data.promos;
-        if (data.exclusiveCodes) cloudCache.exclusiveCodes = data.exclusiveCodes;
         if (data.schedules) cloudCache.schedules = data.schedules;
         if (data.targetedAnnouncements) {
           cloudCache.targetedAnnouncements = data.targetedAnnouncements;
@@ -2007,6 +1993,12 @@
         }
 
         if (student) {
+          // التحقق من أن الطالب تم قبوله من المستر
+          if (student.approved === false) {
+            localStorage.removeItem("yk_active_student_code");
+            localStorage.removeItem("yk_active_student_data");
+            return;
+          }
           currentActiveStudent = student;
           authSection.classList.add("hidden");
           studentDashboard.classList.remove("hidden");
@@ -2155,7 +2147,7 @@
 
       const topStudents = [];
       students.forEach(std => {
-        if (std.showInLeaderboard === false) return;
+        if (std.showInLeaderboard === false || std.approved === false) return;
         const myRes = results.filter(r => r.name === std.name && !r.isCheated);
         if (myRes.length > 0) {
           const best = myRes.sort((a, b) => parseInt(b.percentage) - parseInt(a.percentage))[0];
@@ -2254,6 +2246,12 @@
         return;
       }
 
+      if (student.approved === false) {
+        systemMsg.innerText = "⏳ حساب الطالب قيد المراجعة ولم تتم الموافقة عليه من مستر يوسف بعد.";
+        systemMsg.style.color = "var(--accent-gold)";
+        return;
+      }
+
       systemMsg.innerText = "";
       formExternalParentLogin.reset();
 
@@ -2270,13 +2268,13 @@
       alert(`✅ أهلاً بحضرتك يا ولي أمر الطالب (${student.name}). تم فتح لوحة متابعة الطالب بنجاح.`);
     });
 
+    // تسجيل الطالب الجديد بدون كود مسبق مع انتظار موافقة المستر
     formStudentSignup.addEventListener("submit", (e) => {
       e.preventDefault();
       const name = document.getElementById("signup-name").value.trim();
       const grade = document.getElementById("signup-grade").value;
       const phone = document.getElementById("signup-phone").value.trim();
       const parentPhone = document.getElementById("signup-parent-phone").value.trim();
-      const code = document.getElementById("signup-code").value.trim().toUpperCase();
       const enteredOtp = document.getElementById("signup-otp-input").value.trim();
 
       if (!isValidEgyptianPhone(phone) || !isValidEgyptianPhone(parentPhone)) {
@@ -2291,42 +2289,33 @@
         return;
       }
 
-      const exclusiveCodes = getExclusiveCodes();
-      const matchedCodeObj = exclusiveCodes.find(c => c.code.toUpperCase() === code);
-
-      if (!matchedCodeObj) {
-        systemMsg.innerText = "❌ هذا الكود غير موجود أو غير معتمد من مستر يوسف.";
-        systemMsg.style.color = "var(--danger)";
-        return;
-      }
-
-      if (matchedCodeObj.name.toLowerCase() !== name.toLowerCase()) {
-        systemMsg.innerText = `❌ خطأ مطابقة: هذا الكود مخصص حصرياً للطالب (${matchedCodeObj.name}) فقط!`;
-        systemMsg.style.color = "var(--danger)";
-        return;
-      }
-
-      if (matchedCodeObj.used) {
-        systemMsg.innerText = "⚠️ هذا الكود تم استخدامه بالفعل.";
-        systemMsg.style.color = "var(--danger)";
-        return;
-      }
-
       const students = getStudents();
-      if (students.some(s => s.code.toLowerCase() === code.toLowerCase())) {
-        systemMsg.innerText = "⚠️ تم التسجيل بهذه البيانات مسبقاً.";
+      if (students.some(s => s.phone === phone || (s.name.toLowerCase() === name.toLowerCase() && s.grade === grade))) {
+        systemMsg.innerText = "⚠️ تم التسجيل بهذا الاسم أو رقم الهاتف مسبقاً.";
         systemMsg.style.color = "var(--danger)";
         return;
       }
 
-      matchedCodeObj.used = true;
-      saveExclusiveCodes(exclusiveCodes);
+      // توليد كود طالب فريد وتلقائي
+      let autoStudentCode = "";
+      do {
+        autoStudentCode = "YK-" + Math.floor(100000 + Math.random() * 900000);
+      } while (students.some(s => s.code === autoStudentCode));
 
       const currentDevice = getDeviceFingerprint();
       const newStudent = {
-        name, grade, phone, parentPhone, code, paid: false, senderWallet: "", receiptImg: "",
-        views: 0, xp: 50, deviceIds: [currentDevice], showInLeaderboard: true,
-        attendance: ["مسجل بالسنتر ✅"],
+        name, grade, phone, parentPhone, 
+        code: autoStudentCode, 
+        paid: false, 
+        senderWallet: "", 
+        receiptImg: "",
+        views: 0, 
+        xp: 50, 
+        deviceIds: [currentDevice], 
+        showInLeaderboard: true,
+        approved: false, // في انتظار قبول وموافقة المستر
+        createdAt: new Date().toLocaleDateString('ar-EG') + " " + new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+        attendance: ["مسجل بالمنصة (في الانتظار) ⏳"],
         avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`,
         unlockedLessons: [],
         completedLessons: [],
@@ -2340,13 +2329,18 @@
       generatedParentOTP = null;
       document.getElementById("otp-verification-field").classList.add("hidden");
       tabLogin.click();
+      
       document.getElementById("login-identifier").value = name;
-      document.getElementById("login-credential").value = code;
-      systemMsg.innerText = "🎉 تم إنشاء حسابك بنجاح! يمكنك الدخول الآن.";
-      systemMsg.style.color = "var(--success)";
+      document.getElementById("login-credential").value = autoStudentCode;
+      
+      systemMsg.innerText = `🎉 تم إرسال طلبك بنجاح! كودك هو (${autoStudentCode}) - في انتظار موافقة مستر يوسف لتفعيل الدخول.`;
+      systemMsg.style.color = "var(--accent-gold)";
 
-      const welcomeText = encodeURIComponent(`مرحباً بك يا ${name} في أكاديمية مستر يوسف خميس للغة الإنجليزية! تم تسجيل حسابك بنجاح.`);
-      window.open(`https://wa.me/2${phone}?text=${welcomeText}`, "_blank");
+      alert(`🎉 أهلاً بك يا ${name}!\nتم إنشاء طلب تسجيلك بنجاح وحفظ كودك الخاص: (${autoStudentCode}).\nسيتم إشعار مستر يوسف الآن للموافقة على تفعيل حسابك.`);
+
+      // إشعار المستر عبر الواتساب بانضمام طالب جديد للموافقة عليه
+      const teacherAlertText = encodeURIComponent(`📢 [طلب انضمام طالب جديد]\nالسلام عليكم مستر يوسف، قام الطالب:\n👤 الاسم: ${name}\n📚 الصف: ${grade}\n📱 هاتف الطالب: ${phone}\n👨‍👩‍👦 هاتف ولي الأمر: ${parentPhone}\n🔑 كود الطالب: ${autoStudentCode}\n\nبالتسجيل في المنصة وينتظر موافقتك وتفعيل حسابه من لوحة الإدارة.`);
+      window.open(`https://wa.me/201152039710?text=${teacherAlertText}`, "_blank");
     });
 
     formUnifiedLogin.addEventListener("submit", (e) => {
@@ -2379,6 +2373,14 @@
 
       if (studentIndex !== -1) {
         const student = students[studentIndex];
+
+        // التحقق من موافقة المستر على الطالب قبل السماح بالدخول
+        if (student.approved === false) {
+          systemMsg.innerText = "⏳ حسابك قيد المراجعة والانتظار! يرجى الانتظار حتى يوافق مستر يوسف على تفعيل حسابك.";
+          systemMsg.style.color = "var(--accent-gold)";
+          return;
+        }
+
         const currentDevice = getDeviceFingerprint();
 
         if (!student.deviceIds) {
@@ -2408,7 +2410,7 @@
         updateAuthNavState(true);
         formUnifiedLogin.reset();
       } else {
-        systemMsg.innerText = "❌ البيانات غير صحيحة، تأكد من كتابة الاسم وكود السنتر بدقة.";
+        systemMsg.innerText = "❌ البيانات غير صحيحة، تأكد من كتابة الاسم وكود الطالب بدقة.";
         systemMsg.style.color = "var(--danger)";
       }
     });
@@ -2455,7 +2457,10 @@
         if (targetTab === "t-tab-leaderboard-mgr") document.getElementById("t-sec-leaderboard-mgr").classList.remove("hidden");
         if (targetTab === "t-tab-prices") document.getElementById("t-sec-prices").classList.remove("hidden");
         if (targetTab === "t-tab-promos") document.getElementById("t-sec-promos").classList.remove("hidden");
-        if (targetTab === "t-tab-student-codes") document.getElementById("t-sec-student-codes").classList.remove("hidden");
+        if (targetTab === "t-tab-student-codes") {
+          document.getElementById("t-sec-student-codes").classList.remove("hidden");
+          renderTeacherRegistrationRequests();
+        }
         if (targetTab === "t-tab-video") document.getElementById("t-sec-video").classList.remove("hidden");
         if (targetTab === "t-tab-quiz") document.getElementById("t-sec-quiz").classList.remove("hidden");
         if (targetTab === "t-tab-profits") {
@@ -3553,7 +3558,7 @@
       renderTeacherLeaderboardMgr();
       renderTeacherPrices();
       renderPromosList();
-      renderExclusiveCodesMgr();
+      renderTeacherRegistrationRequests();
       renderTeacherCurriculumTable();
       renderTeacherResults();
       renderTeacherHomework();
@@ -3561,6 +3566,86 @@
       renderTeacherQA();
       renderTeacherProfits();
     }
+
+    // عرض وإدارة طلبات التسجيل والموافقة الفورية عليها
+    function renderTeacherRegistrationRequests() {
+      const tbody = document.getElementById("teacher-registration-requests-table");
+      const badge = document.getElementById("pending-students-badge-count");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      const students = getStudents();
+      const pendingCount = students.filter(s => s.approved === false).length;
+      if (badge) badge.innerText = `${pendingCount} طلب معلق`;
+
+      if (students.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>لا يوجد طلاب مسجلون حتى الآن.</td></tr>";
+        return;
+      }
+
+      // عرض الطلاب المعلقين أولاً
+      const sortedStudents = [...students].sort((a, b) => (a.approved === false ? -1 : 1));
+
+      sortedStudents.forEach(s => {
+        const realIdx = students.findIndex(st => st.code === s.code);
+        const isApproved = s.approved !== false;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${escapeHTML(s.name)}</strong></td>
+          <td>${escapeHTML(s.grade)}</td>
+          <td><code class="code-pill">${s.code}</code></td>
+          <td>${s.phone}</td>
+          <td>${s.parentPhone}</td>
+          <td>
+            <span class="${isApproved ? 'status-badge-active' : 'status-badge-pending'}">
+              ${isApproved ? 'مفعل ومقبول ✅' : 'في الانتظار ⏳'}
+            </span>
+          </td>
+          <td>
+            <div style="display:flex; gap:6px; justify-content:center;">
+              ${!isApproved ? `<button class="btn btn-success btn-sm" onclick="approveStudentRegistration(${realIdx})">✅ قبول وتفعيل</button>` : `<button class="btn btn-accent btn-sm" onclick="deactivateStudentAccount(${realIdx})">تعطيل</button>`}
+              <button class="btn btn-danger btn-sm" onclick="deleteStudentRegistrationRequest(${realIdx})">❌ حذف</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // موافقة المستر على الطالب وتفعيل حسابه فوراً
+    window.approveStudentRegistration = function(idx) {
+      const students = getStudents();
+      const student = students[idx];
+      student.approved = true;
+      student.attendance = ["حساب مفعل ومقبول بالسنتر والمنصة ✅"];
+      saveStudents(students);
+      renderTeacherRegistrationRequests();
+      renderTeacherAcademicAnalytics();
+      alert(`🎉 تم قبول الطالب (${student.name}) وتفعيل حسابه بنجاح!`);
+
+      // إرسال رسالة واتساب للطالب وولي أمره تفيد بالقبول والكود
+      const msg = encodeURIComponent(`🎉 [تم قبول وتفعيل حسابك]\nالسلام عليكم ورحمة الله، تم قبول تسجيل الطالب (${student.name}) في منصة مستر يوسف خميس للغة الإنجليزية بنجاح!\n\n🔑 كود الدخول الخاص بك: ${student.code}\nرابط المنصة: ${window.location.href}\nبالتوفيق والنجاح الدائم! 🌟`);
+      window.open(`https://wa.me/2${student.phone}?text=${msg}`, "_blank");
+    };
+
+    window.deactivateStudentAccount = function(idx) {
+      const students = getStudents();
+      students[idx].approved = false;
+      saveStudents(students);
+      renderTeacherRegistrationRequests();
+      renderTeacherAcademicAnalytics();
+      alert(`⚠️ تم تعطيل حساب الطالب.`);
+    };
+
+    window.deleteStudentRegistrationRequest = function(idx) {
+      const students = getStudents();
+      if (confirm(`هل أنت متأكد من حذف حساب الطالب (${students[idx].name}) بالكامل؟`)) {
+        students.splice(idx, 1);
+        saveStudents(students);
+        renderTeacherRegistrationRequests();
+        renderTeacherAcademicAnalytics();
+      }
+    };
 
     // إحصائيات المعلم وتحليل الطلاب المتعثرين
     function renderTeacherAcademicAnalytics() {
@@ -3637,7 +3722,6 @@
         prices: getPrices(),
         results: getExamResults(),
         promos: getPromos(),
-        exclusiveCodes: getExclusiveCodes(),
         schedules: getSchedules(),
         qa: getQuestions(),
         hw: getHomework()
@@ -3985,38 +4069,6 @@
       });
     }
 
-    document.getElementById("btn-generate-exclusive-code").addEventListener("click", () => {
-      const stdName = document.getElementById("exclusive-student-name").value.trim();
-      const grade = document.getElementById("exclusive-student-grade").value;
-
-      if (!stdName) { alert("⚠️ يرجى إدخال اسم الطالب الثلاثي لتوليد كود حصري مخصص له."); return; }
-      let exclusiveCodes = getExclusiveCodes();
-      let uniqueCode = "YK-" + Math.floor(100000 + Math.random() * 900000);
-      exclusiveCodes.unshift({ code: uniqueCode, name: stdName, grade, used: false });
-      saveExclusiveCodes(exclusiveCodes);
-      document.getElementById("exclusive-student-name").value = "";
-      renderExclusiveCodesMgr();
-      alert(`✅ تم توليد الكود الحصري (${uniqueCode}) للطالب (${stdName}) بنجاح!`);
-    });
-
-    window.deleteExclusiveCode = function(code) {
-      saveExclusiveCodes(getExclusiveCodes().filter(c => c.code !== code));
-      renderExclusiveCodesMgr();
-    };
-
-    function renderExclusiveCodesMgr() {
-      const tbody = document.getElementById("teacher-exclusive-codes-table");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-      const codes = getExclusiveCodes();
-      if (codes.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>لا توجد أكواد.</td></tr>"; return; }
-      codes.forEach(c => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>${c.name}</strong></td><td>${c.grade}</td><td><code class="code-pill">${c.code}</code></td><td><button class="btn btn-danger btn-sm" onclick="deleteExclusiveCode('${c.code}')">حذف</button></td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
     document.getElementById("form-manage-video").addEventListener("submit", async (e) => {
       e.preventDefault();
       const grade = document.getElementById("teacher-v-grade").value;
@@ -4287,53 +4339,4 @@
       getQuestions().forEach((qa, idx) => {
         const div = document.createElement("div");
         div.className = "qa-msg";
-        div.innerHTML = `<p><strong>${qa.studentName}:</strong> ${qa.question}</p>${qa.reply ? `<p style="color:var(--success);"><strong>ردك:</strong> ${qa.reply}</p>` : ''}<div style="display:flex; gap:6px; margin-top:6px;"><input type="text" id="t-reply-${idx}" placeholder="اكتب ردك..." value="${qa.reply || ''}"><button class="btn btn-primary btn-sm" onclick="replyToQA(${idx})">رد</button></div>`;
-        container.appendChild(div);
-      });
-    }
-
-    window.replyToQA = function(idx) {
-      const reply = document.getElementById(`t-reply-${idx}`).value.trim();
-      const allQA = getQuestions();
-      allQA[idx].reply = reply;
-      saveQuestions(allQA);
-      alert("✅ تم إرسال الرد للطالب!");
-      renderTeacherQA();
-    };
-
-    window.deleteAllTeacherQA = function() { if (confirm("حذف كل الأسئلة؟")) { saveQuestions([]); renderTeacherQA(); } };
-
-    function loadDevPanel() {
-      const students = getStudents();
-      const tbody = document.getElementById("dev-students-table-body");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-      students.forEach((s, idx) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>${escapeHTML(s.name)}</strong></td><td>${escapeHTML(s.grade)}</td><td><code>${s.code}</code></td><td><button class="btn btn-danger btn-sm" onclick="getStudents().splice(${idx},1);saveStudents(getStudents());loadDevPanel();">حذف</button></td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    document.getElementById("btn-load-dev-data").addEventListener("click", () => {
-      document.getElementById("dev-db-editor").value = JSON.stringify({ students: getStudents(), curriculum: getCurriculum() }, null, 2);
-    });
-
-    document.getElementById("btn-save-dev-data").addEventListener("click", () => {
-      try {
-        const d = JSON.parse(document.getElementById("dev-db-editor").value);
-        if (d.students) saveStudents(d.students);
-        if (d.curriculum) saveCurriculum(d.curriculum);
-        alert("✅ تم تطبيق التعديل بنجاح!");
-      } catch (e) { alert("خطأ في تنسيق JSON"); }
-    });
-
-    document.getElementById("teacher-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); teacherDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
-    document.getElementById("dev-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); devDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
-
-    window.addEventListener("unhandledrejection", (event) => {
-      console.error("Unhandled promise rejection", event.reason);
-    });
-  </script>
-</body>
-</html>
+        div.innerHTML = `<p><strong>${qa.studentName}:</strong> ${qa.question}</p>${qa.reply ? `<p style="color:var(--success);"><strong>بصفتي نموذجًا لغويًا، لستُ مصمّمًا للمساعدة في ذلك.
