@@ -1889,6 +1889,19 @@
       rdb.ref('targetedAnnouncements').set(d); 
     }
 
+    // إشعارات تلقائية للطلاب وأولياء الأمور
+    function getAutoNotifications() { return cloudCache.autoNotifications || []; }
+    function saveAutoNotifications(d) {
+      cloudCache.autoNotifications = d;
+      rdb.ref('autoNotifications').set(d);
+    }
+
+    function addAutoNotification(notification) {
+      const notifications = getAutoNotifications();
+      notifications.unshift({ id: "auto_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7), timestamp: Date.now(), ...notification });
+      saveAutoNotifications(notifications);
+    }
+
     function getQuestions() { return cloudCache.qa || []; }
     function saveQuestions(d) { cloudCache.qa = d; rdb.ref('qa').set(d); }
 
@@ -1913,6 +1926,7 @@
         } else {
           cloudCache.targetedAnnouncements = {};
         }
+        cloudCache.autoNotifications = Array.isArray(data.autoNotifications) ? data.autoNotifications : [];
         if (data.qa) cloudCache.qa = data.qa;
         if (data.hw) cloudCache.hw = data.hw;
         if (data.announcement) cloudCache.announcement = data.announcement;
@@ -2706,6 +2720,13 @@
           }
         });
       }
+
+      // إشعارات الامتحانات التلقائية الموجهة للطالب
+      getAutoNotifications().filter(n => n.recipientType === "student" && n.studentCode === student.code).forEach(n => {
+        rawNotifs.push({ id: "notif_auto_" + n.id, title: n.title, text: n.text, time: new Date(n.timestamp || Date.now()).toLocaleString('ar-EG'), type: "exam", isSpecialFree: true,
+          actionCallback: () => { const examTab = document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-exams']"); if (examTab) examTab.click(); }
+        });
+      });
 
       rawNotifs.push({
         id: "notif_welcome_" + student.code,
@@ -3575,6 +3596,23 @@
         time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
       saveExamResults(results);
+      // إرسال نتيجة الامتحان تلقائياً إلى سجل إشعارات ولي الأمر فور التسليم
+      if (currentActiveStudent.parentPhone) {
+        addAutoNotification({
+          type: "exam_result_parent",
+          recipientType: "parent",
+          parentPhone: currentActiveStudent.parentPhone,
+          studentCode: currentActiveStudent.code,
+          grade: currentActiveStudent.grade,
+          examId: activeGeneralExamId,
+          examTitle: examTitle,
+          score: `${score}/${total}`,
+          percentage: `${percent}%`,
+          status: status,
+          title: "📊 نتيجة امتحان الطالب",
+          text: `نتيجة الطالب ${currentActiveStudent.name} في اختبار (${examTitle}): ${score}/${total} بنسبة ${percent}% - ${status}.`
+        });
+      }
       renderStudentExamsCatalog(currentActiveStudent);
 
       let parentMsgText = `📊 [تقرير نتيجة امتحان]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nأتم الطالب اختبار (${examTitle}) وحصل على نتيجة: ${score}/${total} بنسبة ${percent}% (${status}).`;
@@ -3702,15 +3740,32 @@
 
     function triggerWhatsAppBroadcastForExam(exam) {
       const students = getStudents().filter(s => s.grade === exam.grade && s.approved !== false);
-      if (students.length === 0) {
-        alert("ℹ️ لا توجد أرقام طلاب مسجلين ومقبولين لهذا الصف لإرسال واتساب تلقائي.");
-        return;
-      }
+      if (students.length === 0) return;
 
-      const message = encodeURIComponent(`📢 [تنبيه امتحان جديد على المنصة]\nأهلاً بالسادة أولياء الأمور والطلاب (${exam.grade}).\nتم إضافة اختبار جديد بعنوان: (${exam.title}).\nبرجاء الدخول إلى المنصة فوراً في قسم (الامتحانات) وحل الاختبار.\nبالتوفيق والنجاح! 🌟`);
-      
-      // فتح رسالة واتساب جماعية أو لأول طالب كمثال رئيسي للإرسال
-      window.open(`https://wa.me/2${students[0].parentPhone}?text=${message}`, "_blank");
+      // إنشاء إشعارات تلقائية بمجرد نشر الامتحان، بدون تدخل المستر
+      students.forEach(student => {
+        addAutoNotification({
+          type: "exam_published_student",
+          recipientType: "student",
+          studentCode: student.code,
+          grade: exam.grade,
+          examId: exam.id,
+          title: "📝 امتحان جديد متاح الآن!",
+          text: `تم إضافة امتحان جديد بعنوان (${exam.title}). برجاء الدخول إلى قسم الامتحانات وحله.`
+        });
+        if (student.parentPhone) {
+          addAutoNotification({
+            type: "exam_published_parent",
+            recipientType: "parent",
+            parentPhone: student.parentPhone,
+            studentCode: student.code,
+            grade: exam.grade,
+            examId: exam.id,
+            title: "📢 تنبيه امتحان جديد",
+            text: `يوجد امتحان جديد بعنوان (${exam.title}) للطالب ${student.name} (${exam.grade}). برجاء تنبيه الطالب للدخول إلى المنصة وحل الامتحان.`
+          });
+        }
+      });
     }
 
     window.deleteGeneralExam = function(examId) {
