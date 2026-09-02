@@ -848,7 +848,7 @@
           </div>
         </section>
 
-        <!-- 3. الامتحانات (المستقلة بالكامل) -->
+        <!-- 3. الامتحانات -->
         <section id="section-exams" class="std-content-tab hidden anime-fade-in">
           <h2 class="box-title">📝 الامتحانات والاختبارات الدورية المتاحة لصفك</h2>
           <div class="grid-2col">
@@ -1402,7 +1402,7 @@
               </div>
 
               <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap:wrap;">
-                <button type="button" class="btn btn-success" style="flex:2;" onclick="saveAndPublishGeneralExam()">💾 حفظ ونشر الامتحان وإرسال تنبيه واتساب تلقائي</button>
+                <button type="button" class="btn btn-success" style="flex:2;" onclick="saveAndPublishGeneralExam()">💾 حفظ ونشر الامتحان لجميع طلاب الصف وإرسال واتساب تلقائي</button>
                 <button type="button" class="btn btn-danger btn-sm" style="flex:1;" onclick="clearQuizDraft()">🗑️ مسح الكل</button>
               </div>
             </div>
@@ -1452,7 +1452,7 @@
             </div>
           </div>
 
-          <!-- 12. تصدير النتائج (مع زر معاينة أخطاء الطالب للمستر) -->
+          <!-- 12. تصدير النتائج -->
           <div id="t-sec-results" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -1957,30 +1957,6 @@
       }
     });
 
-    function extractYouTubeID(url) {
-      if (!url) return "";
-      const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
-      return match ? match[1] : "";
-    }
-
-    function parseVideoUrl(url) {
-      if (!url) return "";
-      const videoId = extractYouTubeID(url);
-      if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&iv_load_policy=3`;
-      }
-      return url;
-    }
-
-    function getYoutubeThumbnail(url) {
-      if (!url) return "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
-      const videoId = extractYouTubeID(url);
-      if (videoId) {
-        return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-      }
-      return "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=500&q=80";
-    }
-
     const authSection = document.getElementById("auth-section");
     const studentDashboard = document.getElementById("student-dashboard");
     const teacherDashboard = document.getElementById("teacher-dashboard");
@@ -2001,7 +1977,7 @@
     let currentVocabList = [];
     let currentVocabIndex = 0;
     let studentAnswersObj = {};
-    let lastStudentWrongAnswers = []; // لتخزين أخطاء الطالب الحالية ومراجعتها
+    let lastStudentWrongAnswers = [];
     let watermarkInterval = null;
     let quizTimerInterval = null;
     let isExamActive = false;
@@ -2700,144 +2676,6 @@
       `;
     }
 
-    function renderStudentNotifications(student) {
-      const listContainer = document.getElementById("notifications-list-container");
-      const badgeCount = document.getElementById("notification-badge-count");
-      if (!listContainer) return;
-      listContainer.innerHTML = "";
-
-      let dismissed = JSON.parse(localStorage.getItem(`yk_dismissed_notifs_${student.code}`) || "[]");
-      const isAllDismissed = dismissed.some(d => d.startsWith("all_"));
-
-      let rawNotifs = [];
-      const now = Date.now();
-
-      const targeted = getTargetedAnnouncements();
-      if (targeted && targeted[student.grade] && Array.isArray(targeted[student.grade])) {
-        targeted[student.grade].forEach((tAnnounce) => {
-          const durationHours = tAnnounce.durationHours || 24;
-          const expiresAt = tAnnounce.timestamp + (durationHours * 60 * 60 * 1000);
-          
-          if (durationHours === 99999 || now < expiresAt) {
-            rawNotifs.push({
-              id: "notif_target_" + tAnnounce.id,
-              title: "📢 تنبيه خاص لصفك الدراسي",
-              text: tAnnounce.text,
-              time: tAnnounce.time || "تنبيه",
-              type: "targeted",
-              isSpecialFree: false
-            });
-          }
-        });
-      }
-
-      rawNotifs.push({
-        id: "notif_welcome_" + student.code,
-        title: "🎉 مرحباً بك في المنصة!",
-        text: `أهلاً بك يا ${escapeHTML(student.name)} في منصة مستر يوسف خميس للغة الإنجليزية!`,
-        time: "تنبيه دائم",
-        type: "welcome",
-        isSpecialFree: false,
-        actionCallback: () => {
-          document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-profile']").click();
-        }
-      });
-
-      const myQA = getQuestions().filter(q => q.studentName === student.name && q.reply && q.reply.trim() !== "");
-      myQA.forEach(qa => {
-        rawNotifs.push({
-          id: "notif_qa_" + qa.id,
-          title: "💬 رد جديد من مستر يوسف",
-          text: `سؤالك: "${qa.question}"\n👈 رد المستر: "${qa.reply}"`,
-          time: "حديث",
-          type: "reply",
-          isSpecialFree: false,
-          actionCallback: () => {
-            document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
-          }
-        });
-      });
-
-      const generalExams = getGeneralExams().filter(e => e.grade === student.grade);
-      generalExams.forEach(ge => {
-        rawNotifs.push({
-          id: "notif_gexam_" + ge.id,
-          title: "📝 امتحان جديد متاح الآن!",
-          text: `تم إضافة امتحان جديد (${ge.title}) لصفك الدراسي. برجاء الدخول وحله فوراً!`,
-          time: ge.time || "جديد",
-          type: "exam",
-          isSpecialFree: true,
-          actionCallback: () => {
-            document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-exams']").click();
-          }
-        });
-      });
-
-      const curriculum = getCurriculum();
-      const lessons = curriculum[student.grade] || [];
-      if (lessons.length > 0) {
-        lessons.forEach((lesson, lIdx) => {
-          const isFree = lesson.isFree === true || lesson.price === 0;
-
-          if (isFree) {
-            rawNotifs.push({
-              id: "notif_free_lesson_" + (lesson.id || lIdx),
-              title: "🎁 هدية مجانية من مستر يوسف! (FREE VIP)",
-              text: `🔥 تم فتح محاضرة "${lesson.videoTitle || 'حصة مميزة'}" مجاناً بالكامل بلا قيود!`,
-              time: "حصري ومجاني 🌟",
-              type: "free_course",
-              isSpecialFree: true,
-              actionCallback: () => {
-                document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-courses']").click();
-                openLessonPlayer(student, lesson);
-              }
-            });
-          }
-        });
-      }
-
-      const notifs = isAllDismissed ? [] : rawNotifs.filter(n => !dismissed.includes(n.id));
-
-      if (notifs.length === 0) {
-        listContainer.innerHTML = "<p style='color:var(--text-muted); text-align:center; font-size:0.85rem; padding:15px;'>لا توجد إشعارات جديدة.</p>";
-        badgeCount.classList.add("hidden");
-        return;
-      }
-
-      badgeCount.innerText = notifs.length;
-      badgeCount.classList.remove("hidden");
-
-      notifs.forEach(n => {
-        const card = document.createElement("div");
-        card.className = n.isSpecialFree ? "notif-item-card notif-free-special" : "notif-item-card";
-        
-        card.innerHTML = `
-          <button class="btn-notif-delete" type="button" title="حذف">✕</button>
-          <div class="notif-item-header">
-            <span style="color:${n.isSpecialFree ? '#047857' : 'var(--primary-glow)'}; font-size:0.86rem; font-weight:800;">${n.title}</span>
-            <span style="color:var(--text-muted); font-size:0.72rem;">${n.time}</span>
-          </div>
-          <div class="notif-item-body">${n.text.replace(/\n/g, '<br>')}</div>
-        `;
-
-        const delBtn = card.querySelector(".btn-notif-delete");
-        delBtn.onclick = (e) => {
-          e.stopPropagation();
-          let currentDismissed = JSON.parse(localStorage.getItem(`yk_dismissed_notifs_${student.code}`) || "[]");
-          currentDismissed.push(n.id);
-          localStorage.setItem(`yk_dismissed_notifs_${student.code}`, JSON.stringify(currentDismissed));
-          renderStudentNotifications(student);
-        };
-
-        card.onclick = () => {
-          notificationsDropdown.classList.remove("show");
-          if (n.actionCallback) n.actionCallback();
-        };
-
-        listContainer.appendChild(card);
-      });
-    }
-
     function renderStudentCoursesList(student) {
       const container = document.getElementById("lessons-grid-container");
       container.innerHTML = "";
@@ -3525,7 +3363,6 @@
       });
     }
 
-    // تصحيح الامتحان وتجهيز أخطاء الطالب لعرضها لاحقاً
     document.getElementById("btn-submit-exam").addEventListener("click", () => {
       if (currentExamQuestions.length === 0) return;
       isExamActive = false;
@@ -3615,14 +3452,14 @@
         percentage: `${percent}%`,
         status: status,
         isCheated: false,
-        wrongAnswers: lastStudentWrongAnswers, // حفظ الأخطاء لقاعدة بيانات المستر
+        wrongAnswers: lastStudentWrongAnswers,
         time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
       saveExamResults(results);
       renderStudentExamsCatalog(currentActiveStudent);
 
-      // إرسال النتيجة تلقائياً فوراً لولي الأمر عبر واتساب بدون أي تدخل
-      let parentMsgText = `📊 [نتيجة اختبار الطالب الرسمية]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nأتم الطالب اختبار (${examTitle}) وحصل على نتيجة: ${score}/${total} بنسبة ${percent}% (${status}).`;
+      // إرسال النتيجة تلقائياً فوراً لولي الأمر عبر واتساب دون أي تدخل
+      let parentMsgText = `📊 [نتيجة اختبار الطالب الرسمية]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nأتم الطالب بنجاح اختبار (${examTitle}) وحصل على نتيجة: ${score}/${total} بنسبة ${percent}% (${status}).`;
       window.open(`https://wa.me/2${currentActiveStudent.parentPhone}?text=${encodeURIComponent(parentMsgText)}`, "_blank");
 
       if (lastStudentWrongAnswers.length > 0) {
@@ -3633,7 +3470,6 @@
       btnWa.onclick = () => { window.open(`https://wa.me/2${currentActiveStudent.parentPhone}?text=${encodeURIComponent(parentMsgText)}`, "_blank"); };
     });
 
-    // فتح نافذة مراجعة الأخطاء للطالب
     window.openStudentReviewErrorsModal = function() {
       const container = document.getElementById("student-review-errors-content");
       container.innerHTML = "";
@@ -3645,7 +3481,7 @@
           div.className = "dash-box ltr-field";
           div.style.borderColor = "var(--danger)";
           div.innerHTML = `
-            <p style="font-weight:bold; color:var(--text-main);">${i + 1}. ${err.question}</p>
+            <p style="font-weight:bold; color:var(--text-main);">${i + 1}. ${escapeHTML(err.question)}</p>
             <p style="color:var(--danger); font-size:0.85rem; margin-top:4px;">❌ إجابتك: ${escapeHTML(err.studentAnswer)}</p>
             <p style="color:var(--success); font-size:0.85rem; margin-top:2px;">✅ الإجابة الصحيحة: ${escapeHTML(err.correctAnswer)}</p>
           `;
@@ -3723,7 +3559,7 @@
         div.style.borderRadius = "8px"; 
         div.style.display = "flex"; 
         div.style.justifyContent = "space-between";
-        div.style.alignItems: "center";
+        div.style.alignItems = "center";
         div.style.direction = "ltr";
 
         const typeLabel = q.type === 'mcq' ? '[MCQ]' : (q.type === 'tf' ? `[T/F: ${q.correctAnswer}]` : '[Essay]');
@@ -3734,7 +3570,6 @@
 
     window.clearQuizDraft = function() { teacherQuizDraftQuestions = []; renderDraftQuestionsPreview(); };
 
-    // حفظ ونشر الامتحان العام مع إرسال رسائل واتساب أوتوماتيكية بالكامل لطلاب الصف
     window.saveAndPublishGeneralExam = function() {
       const grade = document.getElementById("teacher-quiz-grade-select").value;
       const title = document.getElementById("teacher-quiz-title-input").value.trim();
@@ -3760,13 +3595,12 @@
       generalExams.unshift(newExam);
       saveGeneralExams(generalExams);
 
-      alert(`🎉 تم نشر الامتحان العام (${title}) بنجاح لجميع طلاب (${grade}) وتم إرسال التنبيهات تلقائياً عبر واتساب!`);
+      alert(`🎉 تم نشر الامتحان العام (${title}) بنجاح لجميع طلاب (${grade}) وتم إرسال الإشعارات تلقائياً عبر واتساب!`);
       teacherQuizDraftQuestions = [];
       renderDraftQuestionsPreview();
       document.getElementById("teacher-quiz-title-input").value = "";
       renderTeacherPublishedExams();
 
-      // إرسال واتساب تلقائي لكل طالب في الصف المستهدف
       const targetStudents = getStudents().filter(s => s.grade === grade && s.approved !== false);
       targetStudents.forEach(st => {
         const autoMsg = encodeURIComponent(`📢 [تنبيه امتحان جديد على المنصة]\nالسلام عليكم ولي أمر و الطالب (${st.name}).\nتم إضافة اختبار جديد بعنوان: (${title}) لطلاب (${grade}).\nبرجاء الدخول إلى المنصة فوراً في قسم (الامتحانات) وحل الاختبار.\nبالتوفيق والنجاح! 🌟`);
@@ -4340,7 +4174,6 @@
       a.click();
     });
 
-    // عرض النتائج مع زر معاينة أخطاء الطالب للمستر
     function renderTeacherResults() {
       const tbody = document.getElementById("teacher-results-table");
       if (!tbody) return;
@@ -4364,7 +4197,6 @@
       });
     }
 
-    // فتح نافذة معاينة أخطاء الطالب للمعلم
     window.openTeacherViewStudentErrors = function(resIdx) {
       const results = getExamResults();
       const res = results[resIdx];
@@ -4517,4 +4349,24 @@
     }
 
     document.getElementById("btn-load-dev-data").addEventListener("click", () => {
-      document.getElementById("dev-db-editor").value = JSON.stringify({ students: getStudents(), curriculum: getCurriculum() }, null, 2);ما تطلبه منّي يفوق قدراتي، فأنا أنشئ نصوصًا فقط.
+      document.getElementById("dev-db-editor").value = JSON.stringify({ students: getStudents(), curriculum: getCurriculum() }, null, 2);
+    });
+
+    document.getElementById("btn-save-dev-data").addEventListener("click", () => {
+      try {
+        const d = JSON.parse(document.getElementById("dev-db-editor").value);
+        if (d.students) saveStudents(d.students);
+        if (d.curriculum) saveCurriculum(d.curriculum);
+        alert("✅ تم تطبيق التعديل بنجاح!");
+      } catch (e) { alert("خطأ في تنسيق JSON"); }
+    });
+
+    document.getElementById("teacher-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); teacherDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
+    document.getElementById("dev-logout").addEventListener("click", () => { localStorage.removeItem("yk_active_role"); devDashboard.classList.add("hidden"); authSection.classList.remove("hidden"); updateAuthNavState(false); });
+
+    window.addEventListener("unhandledrejection", (event) => {
+      console.error("Unhandled promise rejection", event.reason);
+    });
+  </script>
+</body>
+</html>
