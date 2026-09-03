@@ -427,6 +427,42 @@
       max-height: 90vh; overflow-y: auto; box-shadow: 0 15px 40px rgba(0,0,0,0.4); position: relative;
     }
 
+    /* مراجعة الامتحان بعد التسليم */
+    .exam-review-summary {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.10), rgba(16, 185, 129, 0.10));
+      border: 1.5px solid var(--primary-glow); border-radius: 12px; padding: 12px;
+      text-align: center; margin-bottom: 12px;
+    }
+    .exam-review-question {
+      background: var(--box-bg); border: 1.5px solid var(--border-color);
+      border-radius: 12px; padding: 12px; margin-bottom: 10px;
+      direction: ltr; text-align: left;
+    }
+    .exam-review-question.correct-review { border-color: var(--success); }
+    .exam-review-question.wrong-review { border-color: var(--danger); }
+    .exam-review-label {
+      font-size: 0.78rem; font-weight: 800; color: var(--text-muted); margin-top: 7px;
+    }
+    .exam-review-answer {
+      padding: 7px 9px; border-radius: 8px; margin-top: 4px; font-size: 0.88rem;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .exam-review-answer.student {
+      background: rgba(239, 68, 68, 0.08); color: #991b1b;
+      border: 1px solid rgba(239, 68, 68, 0.22);
+    }
+    .exam-review-answer.student.correct {
+      background: rgba(16, 185, 129, 0.10); color: #065f46;
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+    .exam-review-answer.correct-answer {
+      background: rgba(16, 185, 129, 0.10); color: #065f46;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .exam-review-empty {
+      text-align: center; color: var(--text-muted); padding: 20px 10px;
+    }
+
     .exam-no-copy {
       -webkit-user-select: none !important;
       -moz-user-select: none !important;
@@ -1630,6 +1666,19 @@
           <button id="btn-next-fc" class="btn btn-primary btn-sm" type="button">التالي</button>
         </div>
         <button id="btn-close-vocab-modal" class="btn btn-danger btn-sm btn-full" type="button" style="margin-top:15px;">إغلاق</button>
+      </div>
+    </div>
+
+    <!-- نافذة مراجعة الامتحان للطالب -->
+    <div id="exam-review-modal" class="quiz-popup-modal hidden">
+      <div class="quiz-modal-content anime-slide-up" style="max-width:700px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px;">
+          <h3 id="exam-review-title" class="box-title" style="margin:0;">📖 مراجعة الامتحان</h3>
+          <button id="btn-close-exam-review-top" class="btn btn-danger btn-sm" type="button" style="width:auto;">✕</button>
+        </div>
+        <div id="exam-review-summary" class="exam-review-summary"></div>
+        <div id="exam-review-list"></div>
+        <button id="btn-close-exam-review" class="btn btn-primary btn-full" type="button">إغلاق المراجعة</button>
       </div>
     </div>
 
@@ -2963,12 +3012,24 @@
       if (myResults.length === 0) {
         completedBox.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لم تؤدِ أي امتحان بعد.</p>";
       } else {
-        myResults.forEach(r => {
+        myResults.forEach((r, resultIdx) => {
           const item = document.createElement("div");
           item.className = "exam-status-item";
+
+          const reviewButton = r.reviewData && Array.isArray(r.reviewData)
+            ? `<button class="btn btn-primary btn-sm" type="button" onclick="openExamReview(${resultIdx})" style="width:auto; margin-right:6px;">📖 مراجعة الامتحان</button>`
+            : "";
+
           item.innerHTML = `
-            <div><strong>${r.examTitle || r.grade}</strong> <small>(${r.time})</small> ${r.isCheated ? '<span style="color:var(--danger); font-weight:bold;">[محاولة غش]</span>' : ''}</div>
-            <div><span style="color:${r.isCheated ? 'var(--danger)' : 'var(--success)'}; font-weight:800;">${r.score} (${r.percentage})</span></div>
+            <div>
+              <strong>${escapeHTML(r.examTitle || r.grade)}</strong>
+              <small>(${escapeHTML(r.time || "بدون وقت")})</small>
+              ${r.isCheated ? '<span style="color:var(--danger); font-weight:bold;">[محاولة غش]</span>' : ''}
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+              <span style="color:${r.isCheated ? 'var(--danger)' : 'var(--success)'}; font-weight:800;">${escapeHTML(r.score)} (${escapeHTML(r.percentage)})</span>
+              ${reviewButton}
+            </div>
           `;
           completedBox.appendChild(item);
         });
@@ -2986,7 +3047,7 @@
           item.style.borderColor = "var(--primary-glow)";
           item.innerHTML = `
             <div>
-              <strong>📝 ${exam.title}</strong>
+              <strong>📝 ${escapeHTML(exam.title)}</strong>
               <p style="font-size:0.75rem; color:var(--text-muted);">اختبار دوري متاح للمشاركة</p>
             </div>
             <div>
@@ -3003,6 +3064,75 @@
         pendingBox.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>لا توجد امتحانات جديدة متاحة حالياً.</p>";
       }
     }
+
+    // فتح مراجعة امتحان محفوظ سابقاً للطالب
+    window.openExamReview = function(resultIdx) {
+      const myResults = getExamResults().filter(r => r.name === currentActiveStudent.name);
+      const result = myResults[resultIdx];
+      if (!result || !Array.isArray(result.reviewData)) {
+        alert("⚠️ لا توجد بيانات مراجعة محفوظة لهذا الامتحان.");
+        return;
+      }
+
+      const modal = document.getElementById("exam-review-modal");
+      const title = document.getElementById("exam-review-title");
+      const summary = document.getElementById("exam-review-summary");
+      const list = document.getElementById("exam-review-list");
+
+      title.innerText = `📖 مراجعة: ${result.examTitle || "الامتحان"}`;
+      summary.innerHTML = `
+        <div style="font-size:1.05rem; font-weight:900; color:var(--primary-glow);">${escapeHTML(result.score)} (${escapeHTML(result.percentage)})</div>
+        <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">راجع إجاباتك لمعرفة نقاط القوة والأخطاء التي تحتاج للمذاكرة.</div>
+      `;
+
+      list.innerHTML = "";
+
+      if (result.reviewData.length === 0) {
+        list.innerHTML = `<div class="exam-review-empty">لا توجد أسئلة محفوظة للمراجعة.</div>`;
+      } else {
+        result.reviewData.forEach((item, idx) => {
+          const card = document.createElement("div");
+          card.className = `exam-review-question ${item.isCorrect ? "correct-review" : "wrong-review"}`;
+
+          const typeLabel = item.type === "mcq" ? "اختيار من متعدد" : (item.type === "tf" ? "صح أو خطأ" : "سؤال مقالي");
+          const statusLabel = item.isCorrect ? "✅ إجابة صحيحة" : "❌ إجابة تحتاج مراجعة";
+          const studentAnswer = item.studentAnswer !== "" && item.studentAnswer !== null && item.studentAnswer !== undefined
+            ? item.studentAnswer
+            : "لم يتم اختيار إجابة";
+          const correctAnswer = item.correctAnswer !== "" && item.correctAnswer !== null && item.correctAnswer !== undefined
+            ? item.correctAnswer
+            : "غير محددة";
+
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:5px;">
+              <strong style="font-size:0.92rem;">${idx + 1}. ${escapeHTML(item.question || "")}</strong>
+              <span style="font-size:0.75rem; font-weight:900; color:${item.isCorrect ? "var(--success)" : "var(--danger)"}; white-space:nowrap;">${statusLabel}</span>
+            </div>
+            <div class="exam-review-label">نوع السؤال: ${typeLabel}</div>
+            <div class="exam-review-label">إجابتك:</div>
+            <div class="exam-review-answer student ${item.isCorrect ? "correct" : ""}">${escapeHTML(String(studentAnswer))}</div>
+            ${item.isCorrect ? "" : `
+              <div class="exam-review-label">الإجابة الصحيحة:</div>
+              <div class="exam-review-answer correct-answer">${escapeHTML(String(correctAnswer))}</div>
+            `}
+          `;
+
+          list.appendChild(card);
+        });
+      }
+
+      modal.classList.remove("hidden");
+    };
+
+    function closeExamReviewModal() {
+      document.getElementById("exam-review-modal").classList.add("hidden");
+    }
+
+    document.getElementById("btn-close-exam-review").addEventListener("click", closeExamReviewModal);
+    document.getElementById("btn-close-exam-review-top").addEventListener("click", closeExamReviewModal);
+    document.getElementById("exam-review-modal").addEventListener("click", (e) => {
+      if (e.target.id === "exam-review-modal") closeExamReviewModal();
+    });
 
     function shuffleArray(array) {
       let shuffled = [...array];
@@ -3419,6 +3549,7 @@
         percentage: `0%`,
         status: "راسب (محاولة غش)",
         isCheated: true,
+        reviewData: [],
         time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
       saveExamResults(results);
@@ -3541,6 +3672,7 @@
       const examTitle = exam ? exam.title : "امتحان المنصة";
       const total = currentExamQuestions.length;
       let score = 0;
+      const reviewData = [];
 
       currentExamQuestions.forEach((q, idx) => {
         const card = document.getElementById(`std-q-box-${idx}`);
@@ -3553,7 +3685,15 @@
             if (bIdx === q.correctIndex) { b.style.background = "#dcfce7"; b.style.color = "#14532d"; }
             if (ans === bIdx && ans !== q.correctIndex) { b.style.background = "#fee2e2"; b.style.color = "#7f1d1d"; }
           });
-          if (ans === q.correctIndex) score++;
+          const isCorrect = ans === q.correctIndex;
+          if (isCorrect) score++;
+          reviewData.push({
+            type: "mcq",
+            question: q.question,
+            studentAnswer: Number.isInteger(ans) && q.options[ans] !== undefined ? q.options[ans] : "",
+            correctAnswer: q.options[q.correctIndex] ?? "",
+            isCorrect: isCorrect
+          });
         } else if (q.type === "tf") {
           const btns = card.querySelectorAll(".side-nav-btn");
           btns.forEach(b => {
@@ -3561,9 +3701,25 @@
             if (b.innerText === q.correctAnswer) { b.style.background = "#dcfce7"; b.style.color = "#14532d"; }
             if (ans === b.innerText && ans !== q.correctAnswer) { b.style.background = "#fee2e2"; b.style.color = "#7f1d1d"; }
           });
-          if (ans === q.correctAnswer) score++;
+          const isCorrect = ans === q.correctAnswer;
+          if (isCorrect) score++;
+          reviewData.push({
+            type: "tf",
+            question: q.question,
+            studentAnswer: ans !== undefined ? ans : "",
+            correctAnswer: q.correctAnswer ?? "",
+            isCorrect: isCorrect
+          });
         } else {
-          if (ans && q.correctText && ans === q.correctText.toLowerCase()) score++;
+          const isCorrect = !!(ans && q.correctText && ans === q.correctText.toLowerCase());
+          if (isCorrect) score++;
+          reviewData.push({
+            type: "essay",
+            question: q.question,
+            studentAnswer: ans || "",
+            correctAnswer: q.correctText || "",
+            isCorrect: isCorrect
+          });
         }
       });
 
@@ -3593,6 +3749,7 @@
         percentage: `${percent}%`,
         status: status,
         isCheated: false,
+        reviewData: reviewData,
         time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
       saveExamResults(results);
