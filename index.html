@@ -393,12 +393,22 @@
       position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; pointer-events: auto;
     }
     .video-anti-piracy-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 50px); z-index: 5; pointer-events: none;
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none;
+      user-select: none; -webkit-user-select: none;
+      background: repeating-linear-gradient(135deg, rgba(255,255,255,0.018) 0, rgba(255,255,255,0.018) 2px, transparent 2px, transparent 42px);
+    }
+
+    .video-security-badge {
+      position: absolute; top: 10px; right: 10px; z-index: 25; pointer-events: none;
+      color: rgba(255,255,255,0.92); background: rgba(0,0,0,0.58); border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px; padding: 4px 9px; font-size: 0.68rem; font-weight: 900;
+      backdrop-filter: blur(5px);
     }
 
     .floating-watermark {
-      position: absolute; z-index: 10; color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; font-weight: 800;
-      pointer-events: none; background: rgba(0, 0, 0, 0.4); padding: 3px 8px; border-radius: 4px; transition: all 1.2s ease-in-out;
+      position: absolute; z-index: 30; color: rgba(255, 255, 255, 0.62); font-size: 0.8rem; font-weight: 900;
+      pointer-events: none; background: rgba(0, 0, 0, 0.42); padding: 4px 9px; border-radius: 5px; transition: all 1.2s ease-in-out;
+      user-select: none; -webkit-user-select: none; text-shadow: 0 1px 3px rgba(0,0,0,0.7);
     }
 
     .video-control-bar {
@@ -809,8 +819,9 @@
               <button class="btn btn-sm btn-accent" onclick="seekVideoTime(1800)">30:00 حل التدريبات</button>
             </div>
 
-            <div class="secure-video-wrapper">
+            <div class="secure-video-wrapper" id="secure-video-wrapper">
               <div class="video-anti-piracy-overlay"></div>
+              <div id="video-security-badge" class="video-security-badge">🔐 محتوى محمي</div>
               <div id="video-watermark" class="floating-watermark"></div>
               <div id="video-player-container"></div>
             </div>
@@ -2574,6 +2585,7 @@
     const btnBackCatalog = document.getElementById("std-back-to-catalog-btn");
     if (btnBackCatalog) {
       btnBackCatalog.addEventListener("click", () => {
+      revokeActiveProtectedVideoUrl();
         document.getElementById("student-courses-catalog").classList.remove("hidden");
         document.getElementById("payment-gate-box").classList.add("hidden");
         document.getElementById("student-lesson-viewer").classList.add("hidden");
@@ -3306,8 +3318,74 @@
     });
 
     let activeVideoElForTimestamp = null;
+    let activeProtectedBlobUrl = null;
+    let activeProtectedVideoUrl = null;
+
+    function revokeActiveProtectedVideoUrl() {
+      if (activeProtectedBlobUrl) {
+        try { URL.revokeObjectURL(activeProtectedBlobUrl); } catch (e) {}
+        activeProtectedBlobUrl = null;
+      }
+      activeProtectedVideoUrl = null;
+    }
+
+    async function loadProtectedLocalVideo(videoEl, rawUrl) {
+      activeProtectedVideoUrl = rawUrl;
+      try {
+        const response = await fetch(rawUrl, { method: 'GET', cache: 'no-store', credentials: 'omit' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const blob = await response.blob();
+        revokeActiveProtectedVideoUrl();
+        activeProtectedBlobUrl = URL.createObjectURL(blob);
+        videoEl.src = activeProtectedBlobUrl;
+        videoEl.dataset.protected = 'true';
+        videoEl.dataset.sourceLoaded = 'blob';
+        await videoEl.play().catch(() => {});
+      } catch (err) {
+        console.warn('Protected video blob mode unavailable; using secured direct playback fallback.', err);
+        videoEl.src = rawUrl;
+        videoEl.dataset.protected = 'true';
+        videoEl.dataset.sourceLoaded = 'direct-fallback';
+        await videoEl.play().catch(() => {});
+      }
+    }
+
+    function hardenVideoElement(videoEl) {
+      videoEl.controlsList = 'nodownload noplaybackrate';
+      videoEl.disablePictureInPicture = true;
+      videoEl.setAttribute('disablepictureinpicture', '');
+      videoEl.setAttribute('controlsList', 'nodownload noplaybackrate');
+      videoEl.setAttribute('playsinline', '');
+      videoEl.setAttribute('webkit-playsinline', '');
+      videoEl.setAttribute('draggable', 'false');
+      videoEl.addEventListener('contextmenu', e => e.preventDefault());
+      videoEl.addEventListener('dragstart', e => e.preventDefault());
+      videoEl.addEventListener('dblclick', e => e.preventDefault());
+    }
+
+    function hardenYouTubeFrame(iframe) {
+      iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+      iframe.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; gyroscope; web-share');
+      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+      iframe.removeAttribute('allowfullscreen');
+      iframe.setAttribute('draggable', 'false');
+      iframe.addEventListener('contextmenu', e => e.preventDefault());
+      iframe.addEventListener('dragstart', e => e.preventDefault());
+    }
+
+    function installVideoSecurityGuards() {
+      const wrapper = document.getElementById('secure-video-wrapper');
+      if (!wrapper || wrapper.dataset.securityInstalled === 'true') return;
+      wrapper.dataset.securityInstalled = 'true';
+      wrapper.addEventListener('contextmenu', e => e.preventDefault());
+      wrapper.addEventListener('dragstart', e => e.preventDefault());
+      wrapper.addEventListener('selectstart', e => e.preventDefault());
+      wrapper.addEventListener('copy', e => e.preventDefault());
+    }
 
     function openLessonPlayer(student, lesson) {
+      revokeActiveProtectedVideoUrl();
+      installVideoSecurityGuards();
       const students = getStudents();
       const sIdx = students.findIndex(s => s.code === student.code);
       const currentViews = (sIdx !== -1 && students[sIdx].views) ? students[sIdx].views : (student.views || 0);
@@ -3350,12 +3428,12 @@
       if (lesson.videoType === "local" && lesson.videoUrl) {
         const videoEl = document.createElement("video");
         videoEl.id = "main-local-video";
-        videoEl.src = lesson.videoUrl;
         videoEl.controls = true;
         videoEl.autoplay = true;
-        videoEl.controlsList = "nodownload";
+        hardenVideoElement(videoEl);
         vContainer.appendChild(videoEl);
         activeVideoElForTimestamp = videoEl;
+        loadProtectedLocalVideo(videoEl, lesson.videoUrl);
 
         videoEl.onloadedmetadata = () => {
           if (savedPosition > 2 && savedPosition < (videoEl.duration - 5)) {
@@ -3380,8 +3458,7 @@
         const iframe = document.createElement("iframe");
         iframe.id = "main-yt-iframe";
         iframe.src = parseVideoUrl(lesson.videoUrl) + (savedPosition > 5 ? `&start=${Math.floor(savedPosition)}` : "");
-        iframe.setAttribute("allowfullscreen", "true");
-        iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+        hardenYouTubeFrame(iframe);
         vContainer.appendChild(iframe);
 
         if (videoWatchTrackTimer) clearTimeout(videoWatchTrackTimer);
@@ -4650,6 +4727,17 @@
     window.addEventListener("unhandledrejection", (event) => {
       console.error("Unhandled promise rejection", event.reason);
     });
-  </script>
+  
+    // حماية إضافية أثناء تشغيل الفيديو: تعطيل اختصارات الحفظ/المصدر وأدوات المطور الشائعة.
+    document.addEventListener('keydown', (e) => {
+      const viewer = document.getElementById('student-lesson-viewer');
+      if (!viewer || viewer.classList.contains('hidden')) return;
+      const key = (e.key || '').toLowerCase();
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(key)) || (e.ctrlKey && ['s','u'].includes(key))) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+</script>
 </body>
 </html>
