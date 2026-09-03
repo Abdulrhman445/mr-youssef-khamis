@@ -28,7 +28,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
   
   <!-- ربط مكتبات Firebase السحابية للـ Real-time Sync والتخزين السحابي Firebase Storage -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
+
+
+
+</script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
   <!-- مكتبة قراءة الـ QR Code عبر الكاميرا -->
@@ -1282,6 +1286,7 @@
             <div class="dash-box">
               <h3 class="box-title">📹 رفع ونشر محاضرة ومذكرة PDF جديدة للأرشيف</h3>
               <form id="form-manage-video">
+                <div class="dash-box" style="margin-bottom:10px;border-color:var(--danger);background:rgba(239,68,68,.05);"><strong style="color:var(--danger);">🔐 حماية المحتوى:</strong><span style="font-size:.82rem;color:var(--text-muted);"> يتم تشغيل الفيديو المحلي عبر جلسة محمية وBlob داخل المتصفح مع Watermark وتسجيل وصول الطالب. الحماية الكاملة من الروابط المباشرة/التحميل تتطلب Signed URLs وصلاحيات Storage على السيرفر.</span></div>
                 <div class="input-field">
                   <label>الصف المستهدف:</label>
                   <select id="teacher-v-grade" required>
@@ -4204,7 +4209,8 @@
         promos: getPromos(),
         schedules: getSchedules(),
         qa: getQuestions(),
-        hw: getHomework()
+        hw: getHomework(),
+        videoProgress: cloudCache.videoProgress || {}
       };
       const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json;charset=utf-8;" });
       const a = document.createElement("a");
@@ -4738,6 +4744,408 @@
         e.stopPropagation();
       }
     }, true);
+    /* =========================================================
+       حزمة التطوير الإضافية: اختبارات ذكية + أخطائي + واجبات متقدمة
+       + إشعارات ذكية + حماية/تتبع المحتوى + تحليلات المعلم + بحث شامل
+       ========================================================= */
+    (function installAdvancedPlatformFeatures() {
+      const ADV = {
+        getVideoProgress() { return cloudCache.videoProgress || {}; },
+        saveVideoProgress(d) { cloudCache.videoProgress = d; rdb.ref('videoProgress').set(d); },
+        questionId(q) {
+          if (q && q.id) return String(q.id);
+          const text = `${q?.type || ''}|${q?.question || ''}`;
+          let h = 2166136261;
+          for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h += (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24); }
+          return 'q_' + (h >>> 0).toString(16);
+        },
+        esc(v) { return escapeHTML(v); }
+      };
+
+      if (!cloudCache.videoProgress) cloudCache.videoProgress = {};
+
+      /* ---------- UI إضافية ---------- */
+      function makeElement(html) {
+        const wrap = document.createElement('div');
+        wrap.innerHTML = html.trim();
+        return wrap.firstElementChild;
+      }
+
+      function installExtraUI() {
+        // زر أخطائي + البحث داخل قسم الامتحانات/المحاضرات
+        const examsSection = document.getElementById('section-exams');
+        if (examsSection && !document.getElementById('btn-review-my-mistakes')) {
+          const tools = makeElement(`
+            <div id="advanced-student-tools" class="dash-box" style="margin-bottom:15px; border-color:var(--accent-gold);">
+              <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <button id="btn-review-my-mistakes" class="btn btn-accent btn-sm" type="button" style="width:auto;">🔴 مراجعة أخطائي</button>
+                <span id="my-mistakes-count" style="font-size:.82rem;color:var(--text-muted);font-weight:800;">0 خطأ محفوظ</span>
+              </div>
+            </div>`);
+          examsSection.insertBefore(tools, examsSection.firstChild.nextSibling);
+          document.getElementById('btn-review-my-mistakes').onclick = () => openMyMistakesModal();
+        }
+
+        const coursesSection = document.getElementById('section-courses');
+        if (coursesSection && !document.getElementById('student-global-search')) {
+          const searchBox = makeElement(`
+            <div id="student-global-search" class="dash-box" style="margin-bottom:15px; border-color:var(--accent-cyan);">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input id="student-search-input" type="search" placeholder="🔎 ابحث في المحاضرات والامتحانات والواجبات..." style="flex:1;min-width:220px;">
+                <button id="student-search-btn" class="btn btn-primary btn-sm" type="button" style="width:auto;">بحث</button>
+              </div>
+              <div id="student-search-results" style="margin-top:10px;"></div>
+            </div>`);
+          coursesSection.insertBefore(searchBox, coursesSection.firstChild.nextSibling);
+          document.getElementById('student-search-btn').onclick = runStudentGlobalSearch;
+          document.getElementById('student-search-input').addEventListener('keydown', e => { if (e.key === 'Enter') runStudentGlobalSearch(); });
+        }
+
+        // معلومات واجب متقدم في نافذة رفع المحاضرة
+        const videoForm = document.getElementById('form-manage-video');
+        if (videoForm && !document.getElementById('teacher-hw-due-date')) {
+          const extra = makeElement(`
+            <div class="dash-box" style="margin:10px 0;border-color:var(--success);">
+              <h4 style="color:var(--success);margin-bottom:8px;">📝 إعدادات الواجب المرتبط بالمحاضرة (اختياري)</h4>
+              <div class="grid-2col">
+                <div class="input-field"><label>📅 موعد التسليم:</label><input type="datetime-local" id="teacher-hw-due-date"></div>
+                <div class="input-field"><label>🎯 الدرجة النهائية:</label><input type="number" id="teacher-hw-max-score" min="1" max="100" value="10"></div>
+              </div>
+              <div class="input-field"><label>📌 تعليمات الواجب:</label><textarea id="teacher-hw-instructions" rows="2" placeholder="اكتب تعليمات الحل والتسليم..."></textarea></div>
+              <div class="input-field"><label>📍 حالة الواجب:</label><select id="teacher-hw-status"><option value="مفتوح">مفتوح ✅</option><option value="مغلق">مغلق 🔒</option><option value="مؤجل">مؤجل ⏳</option></select></div>
+            </div>`);
+          videoForm.insertBefore(extra, videoForm.querySelector('button[type="submit"]'));
+        }
+
+        // عدد الأسئلة العشوائية في الامتحان
+        const quizTitle = document.getElementById('teacher-quiz-title-input');
+        if (quizTitle && !document.getElementById('teacher-quiz-question-limit')) {
+          const holder = makeElement(`<div class="input-field"><label>🎲 عدد الأسئلة لكل محاولة (0 = كل الأسئلة):</label><input type="number" id="teacher-quiz-question-limit" min="0" max="200" value="0"><small style="color:var(--text-muted);">عند تحديد عدد أقل، تُفضّل المنصة الأسئلة التي لم يحلها الطالب سابقًا.</small></div>`);
+          quizTitle.closest('.grid-2col').after(holder);
+        }
+
+        // تحليلات إضافية للمعلم
+        const analytics = document.getElementById('t-sec-analytics');
+        if (analytics && !document.getElementById('advanced-teacher-analytics')) {
+          analytics.appendChild(makeElement(`
+            <div id="advanced-teacher-analytics" class="dash-box" style="margin-top:15px;border-color:var(--accent-cyan);">
+              <h3 class="box-title" style="color:var(--accent-cyan);">📊 التحليلات التعليمية المتقدمة</h3>
+              <div class="student-analytics-grid" style="grid-template-columns:repeat(4,1fr);">
+                <div class="stat-analytics-box"><div class="sa-icon">🎯</div><div class="sa-info"><h4>متوسط الامتحانات</h4><span id="adv-avg-exam" class="sa-val">0%</span></div></div>
+                <div class="stat-analytics-box"><div class="sa-icon">❌</div><div class="sa-info"><h4>أسئلة أخطأ فيها الطلاب</h4><span id="adv-wrong-count" class="sa-val">0</span></div></div>
+                <div class="stat-analytics-box"><div class="sa-icon">🎥</div><div class="sa-info"><h4>متوسط إكمال الفيديو</h4><span id="adv-video-avg" class="sa-val">0%</span></div></div>
+                <div class="stat-analytics-box"><div class="sa-icon">⏰</div><div class="sa-info"><h4>واجبات متأخرة</h4><span id="adv-overdue-hw" class="sa-val">0</span></div></div>
+                <div class="stat-analytics-box"><div class="sa-icon">🥇</div><div class="sa-info"><h4>أعلى طالب</h4><span id="adv-top-student" class="sa-val">-</span></div></div>
+                <div class="stat-analytics-box"><div class="sa-icon">⚠️</div><div class="sa-info"><h4>يحتاج متابعة</h4><span id="adv-low-student" class="sa-val">-</span></div></div>
+              </div>
+              <div class="table-responsive" style="margin-top:12px;max-height:260px;overflow:auto;">
+                <table class="custom-table"><thead><tr><th>أكثر سؤال تم الخطأ فيه</th><th>عدد الأخطاء</th></tr></thead><tbody id="adv-most-wrong-table"></tbody></table>
+              </div>
+            </div>`));
+        }
+      }
+
+      function ensureMyMistakesModal() {
+        if (document.getElementById('my-mistakes-modal')) return;
+        document.body.insertAdjacentHTML('beforeend', `
+          <div id="my-mistakes-modal" class="quiz-popup-modal hidden">
+            <div class="quiz-modal-content anime-slide-up" style="max-width:750px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                <h3 class="box-title">🔴 مراجعة أخطائي المتكررة</h3>
+                <button id="btn-close-my-mistakes" class="btn btn-danger btn-sm" type="button" style="width:auto;">إغلاق</button>
+              </div>
+              <p id="my-mistakes-summary" style="color:var(--text-muted);font-size:.85rem;margin-bottom:10px;"></p>
+              <div id="my-mistakes-list" style="display:flex;flex-direction:column;gap:10px;max-height:68vh;overflow:auto;"></div>
+            </div>
+          </div>`);
+        document.getElementById('btn-close-my-mistakes').onclick = () => document.getElementById('my-mistakes-modal').classList.add('hidden');
+      }
+
+      function openMyMistakesModal() {
+        if (!currentActiveStudent) return;
+        ensureMyMistakesModal();
+        const all = getExamResults().filter(r => r.name === currentActiveStudent.name && Array.isArray(r.reviewData));
+        const map = new Map();
+        all.forEach(r => (r.reviewData || []).forEach(item => {
+          if (!item.isCorrect) {
+            const id = item.questionId || ADV.questionId({type:item.type,question:item.question,options:item.options || []});
+            const prev = map.get(id) || { ...item, count:0 };
+            prev.count += 1;
+            map.set(id, prev);
+          }
+        }));
+        const mistakes = [...map.values()].sort((a,b) => b.count - a.count);
+        document.getElementById('my-mistakes-count').innerText = `${mistakes.length} خطأ محفوظ`;
+        document.getElementById('my-mistakes-summary').innerText = mistakes.length ? `تم تجميع ${mistakes.length} سؤالاً أخطأت فيه عبر الامتحانات السابقة، مرتبة حسب تكرار الخطأ.` : 'ممتاز! لا توجد أخطاء محفوظة حتى الآن.';
+        const list = document.getElementById('my-mistakes-list'); list.innerHTML = '';
+        mistakes.forEach((m, i) => {
+          const div = document.createElement('div'); div.className='dash-box'; div.style.borderColor='var(--danger)';
+          div.innerHTML = `<div style="display:flex;justify-content:space-between;gap:8px"><strong>${i+1}. ${ADV.esc(m.question||'')}</strong><span class="pill-grade" style="background:#fee2e2;color:#b91c1c">أخطأت ${m.count} مرة</span></div><div style="margin-top:7px;font-size:.85rem"><strong>إجابتك:</strong> <span style="color:var(--danger)">${ADV.esc(m.studentAnswer || 'لم تتم الإجابة')}</span></div><div style="margin-top:4px;font-size:.85rem"><strong>الصحيح:</strong> <span style="color:var(--success)">${ADV.esc(m.correctAnswer || 'غير محدد')}</span></div>`;
+          list.appendChild(div);
+        });
+        document.getElementById('my-mistakes-modal').classList.remove('hidden');
+      }
+
+      function runStudentGlobalSearch() {
+        if (!currentActiveStudent) return;
+        const q = (document.getElementById('student-search-input')?.value || '').trim().toLowerCase();
+        const box = document.getElementById('student-search-results'); if (!box) return;
+        box.innerHTML = '';
+        if (!q) { box.innerHTML = `<p style="color:var(--text-muted);text-align:center;">اكتب كلمة للبحث.</p>`; return; }
+        const results = [];
+        const curr = getCurriculum()[currentActiveStudent.grade] || [];
+        curr.forEach((lesson, idx) => {
+          if (`${lesson.videoTitle||''} ${lesson.vocab?.map(v=>v.word+' '+v.meaning).join(' ')||''}`.toLowerCase().includes(q)) results.push({kind:'lesson', title:lesson.videoTitle||'محاضرة', idx, lesson});
+        });
+        getGeneralExams().filter(e=>e.grade===currentActiveStudent.grade).forEach(exam=>{
+          if (`${exam.title||''} ${(exam.questions||[]).map(x=>x.question).join(' ')}`.toLowerCase().includes(q)) results.push({kind:'exam', title:exam.title, exam});
+        });
+        const hwSeen = new Set();
+        curr.forEach(lesson => (lesson.questions||[]).forEach(task => {
+          if(task.category==='homework' && `${task.titleName||''} ${lesson.videoTitle||''} ${lesson.homeworkMeta?.instructions||''}`.toLowerCase().includes(q)) {
+            if (!hwSeen.has(task.titleName+'|'+lesson.id)) { hwSeen.add(task.titleName+'|'+lesson.id); results.push({kind:'hw', title:task.titleName||'واجب', lesson}); }
+          }
+        }));
+        if (!results.length) { box.innerHTML = `<p style="color:var(--text-muted);text-align:center;">لا توجد نتائج للبحث.</p>`; return; }
+        results.slice(0,30).forEach(r => {
+          const item = document.createElement('div'); item.className='exam-status-item';
+          const type = r.kind==='lesson'?'🎥 محاضرة':r.kind==='exam'?'📝 امتحان':'📋 واجب';
+          item.innerHTML = `<div><strong>${type} — ${ADV.esc(r.title)}</strong></div><button class="btn btn-primary btn-sm" style="width:auto" type="button">فتح</button>`;
+          item.querySelector('button').onclick = () => {
+            if (r.kind==='lesson') {
+              const lessons = getCurriculum()[currentActiveStudent.grade] || []; const lesson = lessons.find(l=>l.id===r.lesson.id);
+              if (lesson) openLessonPlayer(currentActiveStudent, lesson);
+            } else if (r.kind==='exam') {
+              openGeneralExamModal(r.exam.id);
+            } else {
+              document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-homework']")?.click();
+            }
+          };
+          box.appendChild(item);
+        });
+      }
+
+      function enrichQuestionIdsInResults() {
+        if (!currentActiveStudent) return;
+        const results = getExamResults();
+        if (!results.length) return;
+        let changed = false;
+        results.forEach(r => {
+          if (r.name !== currentActiveStudent.name || !Array.isArray(r.reviewData)) return;
+          r.reviewData.forEach((item, idx) => {
+            if (!item.questionId) { item.questionId = ADV.questionId({type:item.type,question:item.question,options:item.options || []}); changed = true; }
+          });
+        });
+        if (changed) saveExamResults(results);
+      }
+
+      /* ---------- امتحانات عشوائية ذكية ---------- */
+      const originalAddQuestionToDraft = window.addQuestionToDraft;
+      if (originalAddQuestionToDraft) {
+        window.addQuestionToDraft = function() {
+          const before = teacherQuizDraftQuestions.length;
+          originalAddQuestionToDraft();
+          if (teacherQuizDraftQuestions.length > before) {
+            const last = teacherQuizDraftQuestions[teacherQuizDraftQuestions.length-1];
+            if (!last.id) last.id = ADV.questionId(last);
+          }
+        };
+      }
+
+      const originalOpenExam = window.openGeneralExamModal;
+      window.openGeneralExamModal = function(examId) {
+        const exam = getGeneralExams().find(e=>e.id===examId); if (!exam) return;
+        const myResults = getExamResults().filter(r=>r.name===currentActiveStudent.name && r.examTitle===exam.title);
+        const maxAttempts = exam.maxAttempts || 1;
+        if (myResults.length >= maxAttempts) { alert('⚠️ لقد استنفدت عدد مرات الدخول المسموحة لهذا الامتحان.'); return; }
+        activeGeneralExamId = examId;
+        const seen = new Set();
+        myResults.forEach(r => (r.reviewData||[]).forEach(item => seen.add(item.questionId || ADV.questionId(item))));
+        let pool = (exam.questions||[]).map(q => ({...q, id:q.id || ADV.questionId(q)}));
+        const fresh = pool.filter(q=>!seen.has(q.id));
+        const limit = parseInt(exam.questionLimit)||0;
+        if (limit>0) {
+          pool = fresh.length >= limit ? shuffleArray(fresh) : shuffleArray([...fresh, ...pool.filter(q=>seen.has(q.id))]);
+          pool = pool.slice(0, Math.min(limit,pool.length));
+        }
+        const shuffledQuestions = shuffleArray(pool).map(q => {
+          if (q.type==='mcq') {
+            const originalCorrectAnswer=q.options[q.correctIndex];
+            const shuffledOptions=shuffleArray(q.options||[]);
+            return {...q, options:shuffledOptions, correctIndex:shuffledOptions.indexOf(originalCorrectAnswer)};
+          }
+          return {...q};
+        });
+        currentExamQuestions = shuffledQuestions;
+        const duration=exam.duration||10;
+        document.getElementById('quiz-popup-title').innerText=`📝 ${exam.title}`;
+        isExamActive=true; cheatWarningsCount=0;
+        document.getElementById('anti-cheat-alert').classList.remove('hidden');
+        document.getElementById('quiz-popup-modal').classList.remove('hidden');
+        renderQuizQuestions(currentExamQuestions); startQuizTimer(duration);
+      };
+
+      // بعد التصحيح الحالي مباشرة: ثبت IDs في النتيجة وأحدث الإحصائيات
+      const submitBtn = document.getElementById('btn-submit-exam');
+      if (submitBtn) submitBtn.addEventListener('click', () => {
+        setTimeout(() => { enrichQuestionIdsInResults(); renderAdvancedTeacherAnalytics(); updateMistakeCount(); }, 50);
+      });
+
+      // أضف questionId عند نشر الامتحان + questionLimit
+      const originalSaveExam = window.saveAndPublishGeneralExam;
+      if (originalSaveExam) {
+        window.saveAndPublishGeneralExam = function() {
+          const limit = parseInt(document.getElementById('teacher-quiz-question-limit')?.value)||0;
+          originalSaveExam();
+          setTimeout(() => {
+            const exams=getGeneralExams();
+            const found=exams.find(e => e.title===document.getElementById('teacher-quiz-title-input')?.value?.trim());
+            const latest=found || exams[0];
+            if (latest) {
+              latest.questions=(latest.questions||[]).map(q=>({...q,id:q.id||ADV.questionId(q)}));
+              latest.questionLimit=limit;
+              saveGeneralExams(exams);
+            }
+          }, 100);
+        };
+      }
+
+      /* ---------- واجبات متقدمة ---------- */
+      let activeHomeworkAssignment = null;
+      window.__setAdvancedHomeworkAssignment = function(meta){ activeHomeworkAssignment=meta; };
+
+      const originalRenderStudentHomework = window.renderStudentHomeworkCatalog || (typeof renderStudentHomeworkCatalog==='function' ? renderStudentHomeworkCatalog : null);
+      if (originalRenderStudentHomework) {
+        renderStudentHomeworkCatalog = function(student) {
+          const container=document.getElementById('student-homework-catalog-list'); if(!container) return originalRenderStudentHomework(student);
+          container.innerHTML='';
+          const curr=getCurriculum()[student.grade]||[]; let count=0;
+          curr.forEach(lesson=>{
+            (lesson.questions||[]).forEach(q=>{
+              if(q.category!=='homework') return; count++;
+              const meta=lesson.homeworkMeta||{};
+              const dueText=meta.dueDate ? new Date(meta.dueDate).toLocaleString('ar-EG') : 'غير محدد';
+              const overdue=meta.dueDate && Date.now()>new Date(meta.dueDate).getTime();
+              const box=document.createElement('div'); box.className='dash-box';
+              box.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><h4 style="color:var(--primary-glow);margin:0">📋 ${ADV.esc(q.titleName||'واجب منزلي')} - (${ADV.esc(lesson.videoTitle||'الحصة')})</h4><span class="${overdue?'status-badge-pending':'status-badge-active'}">${overdue?'منتهي ⛔':(meta.status||'مفتوح')}</span></div><p style="font-size:.84rem;color:var(--text-muted);margin:7px 0">${ADV.esc(meta.instructions||'قم بحل الواجب وتسليمه للمستر.')}</p><div style="display:flex;gap:12px;flex-wrap:wrap;font-size:.8rem;margin-bottom:8px"><span>🎯 الدرجة: ${meta.maxScore||10}</span><span>📅 التسليم: ${ADV.esc(dueText)}</span></div>${lesson.pdfData?`<a href="${lesson.pdfData}" download="واجب_${lesson.videoTitle||'lesson'}.pdf" class="btn btn-primary btn-sm" style="width:auto">📥 تنزيل PDF</a>`:''}<button class="btn btn-success btn-sm" type="button" style="width:auto;margin-right:6px" ${overdue||meta.status==='مغلق'?'disabled':''}>📤 تسليم الواجب</button>`;
+              const submit=box.querySelector('button.btn-success'); submit.onclick=()=>{activeHomeworkAssignment={assignmentId:lesson.id+'_'+(q.id||q.titleName||count),lessonId:lesson.id,grade:student.grade,title:q.titleName||'واجب',maxScore:meta.maxScore||10,dueDate:meta.dueDate||null,instructions:meta.instructions||'',status:meta.status||'مفتوح'}; document.getElementById('homework-modal').classList.remove('hidden');};
+              container.appendChild(box);
+            });
+          });
+          if(!count) container.innerHTML="<p style='color:var(--text-muted);text-align:center;'>لا توجد واجبات منزلية منشورة حالياً في الأرشيف.</p>";
+        };
+      }
+
+      // إضافة metadata إلى آخر تسليم واجب
+      const hwSubmit=document.getElementById('btn-submit-multiple-hw');
+      if(hwSubmit) hwSubmit.addEventListener('click',()=>{
+        setTimeout(()=>{
+          const all=getHomework(); const hw=all[0];
+          if(hw && activeHomeworkAssignment){ Object.assign(hw,activeHomeworkAssignment); hw.isOverdue=!!(hw.dueDate&&Date.now()>new Date(hw.dueDate).getTime()); saveHomework(all); renderStudentHomeworkHistory(currentActiveStudent); renderTeacherHomework(); }
+        },200);
+      });
+
+      // التصحيح يراسل الطالب بإشعار تلقائي
+      const originalSaveHWGrade = document.getElementById('btn-save-hw-grade')?.onclick;
+      if (document.getElementById('btn-save-hw-grade')) {
+        document.getElementById('btn-save-hw-grade').addEventListener('click',()=>{
+          setTimeout(()=>{
+            const hw = currentReviewingHwIndex!==null ? getHomework()[currentReviewingHwIndex] : null;
+            if(!hw) return;
+            const maxScore=Number(hw.maxScore||10);
+            const numericScore=parseFloat(String(hw.score||'').match(/[0-9.]+/)?.[0]);
+            if(Number.isFinite(numericScore)) { hw.score=`${numericScore} / ${maxScore}`; saveHomework(getHomework()); }
+            if(hw.__gradedNotified) return;
+            hw.__gradedNotified=true; saveHomework(getHomework());
+            const st=getStudents().find(s=>s.name===hw.studentName);
+            if(st) {
+              addAutoNotification({type:'homework_graded_student',recipientType:'student',studentCode:st.code,title:'✅ تم تصحيح واجبك',text:`تم تصحيح (${hw.title||'الواجب'}) وحصلت على ${hw.score||''}.`});
+              if(st.parentPhone) addAutoNotification({type:'homework_graded_parent',recipientType:'parent',parentPhone:st.parentPhone,studentCode:st.code,title:'📘 تم تصحيح واجب الطالب',text:`تم تصحيح واجب الطالب ${st.name} وحصل على ${hw.score||''}.`});
+            }
+          },80);
+        });
+      }
+
+      /* ---------- إشعارات ذكية ---------- */
+      const originalRenderNotifications = renderStudentNotifications;
+      renderStudentNotifications = function(student) {
+        originalRenderNotifications(student);
+        const box=document.getElementById('notifications-list-container'); if(!box) return;
+        const dynamic=[]; const now=Date.now();
+        getHomework().filter(h=>h.studentName===student.name).forEach(h=>{
+          if(h.status==='تم التصحيح') dynamic.push({id:'hw_grade_'+h.id,title:'✅ تم تصحيح واجبك',text:`تم تصحيح ${h.title||'الواجب'} — الدرجة: ${h.score||'غير محددة'}`});
+          if(h.dueDate){ const diff=new Date(h.dueDate).getTime()-now; if(diff>0 && diff<=24*60*60*1000) dynamic.push({id:'hw_due_'+h.id,title:'⏰ باقي يوم على انتهاء الواجب',text:`موعد تسليم ${h.title||'الواجب'}: ${new Date(h.dueDate).toLocaleString('ar-EG')}`}); }
+        });
+        getGeneralExams().filter(e=>e.grade===student.grade).forEach(e=>{
+          const did=getExamResults().some(r=>r.name===student.name&&r.examTitle===e.title);
+          if(!did) dynamic.push({id:'exam_missing_'+e.id,title:'📝 عندك امتحان لم تدخله',text:`الامتحان (${e.title}) متاح الآن في قسم الامتحانات.`});
+        });
+        dynamic.forEach(n=>{
+          const item=document.createElement('div'); item.className='notif-item-card notif-free-special';
+          item.innerHTML=`<div class="notif-item-header"><span>${ADV.esc(n.title)}</span><span style="font-size:.7rem;color:var(--text-muted)">ذكي</span></div><div class="notif-item-body">${ADV.esc(n.text)}</div>`;
+          box.prepend(item);
+        });
+      };
+
+      function updateMistakeCount(){
+        if(!currentActiveStudent) return;
+        const set=new Set(); getExamResults().filter(r=>r.name===currentActiveStudent.name&&Array.isArray(r.reviewData)).forEach(r=>(r.reviewData||[]).forEach(i=>{if(!i.isCorrect)set.add(i.questionId||ADV.questionId(i));}));
+        const el=document.getElementById('my-mistakes-count'); if(el) el.innerText=`${set.size} خطأ محفوظ`;
+      }
+
+      /* ---------- تتبع المشاهدة والحماية ---------- */
+      function logVideoAccess(student,lesson,kind='play'){
+        const d=ADV.getVideoProgress(); const key=`${student.code}_${lesson.id}`;
+        if(!d[key]) d[key]={studentCode:student.code,studentName:student.name,grade:student.grade,lessonId:lesson.id,lessonTitle:lesson.videoTitle||'',type:lesson.videoType||'',firstAccessAt:Date.now(),lastAccessAt:Date.now(),accessCount:0,watchedSeconds:0,lastPosition:0,percent:0,completed:false};
+        d[key].lastAccessAt=Date.now(); d[key].accessCount=(d[key].accessCount||0)+1; d[key].lastEvent=kind;
+        ADV.saveVideoProgress(d);
+      }
+      function persistVideoProgress(student,lesson,el){
+        if(!el || !isFinite(el.duration) || el.duration<=0) return;
+        const d=ADV.getVideoProgress(); const key=`${student.code}_${lesson.id}`;
+        if(!d[key]) d[key]={studentCode:student.code,studentName:student.name,grade:student.grade,lessonId:lesson.id,lessonTitle:lesson.videoTitle||'',type:lesson.videoType||'',firstAccessAt:Date.now(),accessCount:1};
+        d[key].lastAccessAt=Date.now(); d[key].lastPosition=Number(el.currentTime)||0; d[key].duration=Number(el.duration)||0;
+        d[key].watchedSeconds=Math.max(Number(d[key].watchedSeconds)||0,Number(el.currentTime)||0); d[key].percent=Math.min(100,Math.round((d[key].watchedSeconds/d[key].duration)*100));
+        d[key].completed=d[key].percent>=90; d[key].lastEvent='progress'; ADV.saveVideoProgress(d);
+      }
+      const originalOpenLessonPlayer = openLessonPlayer;
+      openLessonPlayer = function(student,lesson){
+        logVideoAccess(student,lesson,'open');
+        originalOpenLessonPlayer(student,lesson);
+        setTimeout(()=>{
+          const el=document.getElementById('main-local-video'); if(el){ el.addEventListener('timeupdate',()=>persistVideoProgress(student,lesson,el)); el.addEventListener('pause',()=>persistVideoProgress(student,lesson,el)); el.addEventListener('ended',()=>{persistVideoProgress(student,lesson,el);}); }
+          if(lesson.videoType==='youtube') { const d=ADV.getVideoProgress(); const key=`${student.code}_${lesson.id}`; if(!d[key]) d[key]={studentCode:student.code,studentName:student.name,grade:student.grade,lessonId:lesson.id,lessonTitle:lesson.videoTitle||'',type:'youtube',firstAccessAt:Date.now(),accessCount:1}; d[key].lastAccessAt=Date.now(); d[key].watchedSeconds=Math.max(d[key].watchedSeconds||0,120); d[key].percent=Math.max(d[key].percent||0,10); d[key].lastEvent='youtube-session'; ADV.saveVideoProgress(d); }
+        },300);
+      };
+
+      /* ---------- تحليلات المعلم ---------- */
+      function renderAdvancedTeacherAnalytics(){
+        const results=getExamResults(); const valid=results.filter(r=>!r.isCheated&&parseFloat(r.percentage));
+        const avg=valid.length?Math.round(valid.reduce((a,r)=>a+parseFloat(r.percentage),0)/valid.length):0;
+        const wrongMap=new Map(); results.forEach(r=>(r.reviewData||[]).forEach(i=>{if(!i.isCorrect){const key=i.questionId||ADV.questionId(i); const o=wrongMap.get(key)||{question:i.question||'',count:0};o.count++;wrongMap.set(key,o);}}));
+        const vp=Object.values(ADV.getVideoProgress()); const vavg=vp.length?Math.round(vp.reduce((a,x)=>a+(x.percent||0),0)/vp.length):0;
+        const now=Date.now(); const overdue=getHomework().filter(h=>h.dueDate&&new Date(h.dueDate).getTime()<now&&h.status!=='تم التصحيح').length;
+        const byStudent=new Map(); results.filter(r=>!r.isCheated&&parseFloat(r.percentage)).forEach(r=>{const v=byStudent.get(r.name)||[];v.push(parseFloat(r.percentage));byStudent.set(r.name,v);});
+        const ranked=[...byStudent.entries()].map(([name,vals])=>({name,avg:vals.reduce((a,v)=>a+v,0)/vals.length})).sort((a,b)=>b.avg-a.avg);
+        const topStudent=ranked[0]; const lowStudent=ranked[ranked.length-1];
+        const set=(id,val)=>{const e=document.getElementById(id);if(e)e.innerText=val;}; set('adv-avg-exam',`${avg}%`);set('adv-wrong-count',String([...wrongMap.values()].reduce((a,x)=>a+x.count,0)));set('adv-video-avg',`${vavg}%`);set('adv-overdue-hw',String(overdue)); set('adv-top-student',topStudent?`${topStudent.name} (${Math.round(topStudent.avg)}%)`:'-'); set('adv-low-student',lowStudent?`${lowStudent.name} (${Math.round(lowStudent.avg)}%)`:'-');
+        const t=document.getElementById('adv-most-wrong-table'); if(t){ t.innerHTML=''; [...wrongMap.values()].sort((a,b)=>b.count-a.count).slice(0,15).forEach(x=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${ADV.esc(x.question)}</td><td><strong>${x.count}</strong></td>`;t.appendChild(tr);}); if(!t.innerHTML)t.innerHTML=`<tr><td colspan="2" style="text-align:center;color:var(--text-muted)">لا توجد بيانات كافية بعد.</td></tr>`; }
+      }
+
+      const originalTeacherAnalytics=renderTeacherAcademicAnalytics;
+      renderTeacherAcademicAnalytics=function(){ originalTeacherAnalytics(); renderAdvancedTeacherAnalytics(); };
+
+      /* تحديث البيانات من Firebase للميزة الجديدة */
+      if (typeof rdb !== 'undefined') {
+        rdb.ref('videoProgress').on('value', snap=>{ cloudCache.videoProgress=snap.val()||{}; renderAdvancedTeacherAnalytics(); });
+      }
+
+      document.addEventListener('keydown',e=>{ if(e.ctrlKey && e.key.toLowerCase()==='p') { const v=document.getElementById('student-lesson-viewer'); if(v&&!v.classList.contains('hidden')) {e.preventDefault();e.stopPropagation();} } },true);
+
+      // تركيب UI بعد تحميل DOM
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',()=>{installExtraUI();ensureMyMistakesModal();updateMistakeCount();});
+      else { installExtraUI(); ensureMyMistakesModal(); updateMistakeCount(); }
+    })();
 </script>
 </body>
 </html>
