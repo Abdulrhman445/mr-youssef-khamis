@@ -26,17 +26,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
+  <!-- الخطوط الملكية والتصميمية لشهادة التفوق -->
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@700;800;900&family=Montserrat:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
   
   <!-- ربط مكتبات Firebase السحابية للـ Real-time Sync والتخزين السحابي Firebase Storage -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
-
-
-
-</script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
   <!-- مكتبة قراءة الـ QR Code عبر الكاميرا -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <!-- مكتبة تصدير الـ PDF بجودة المطابع للشهادات -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
     :root {
@@ -548,6 +548,107 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Cairo';
     }
 
+    /* =========================================================
+       تنسيقات نافذة وكادر شهادة التقدير الملكية (Masterpiece Certificate)
+       ========================================================= */
+    .royal-cert-modal-wrapper {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(3, 7, 18, 0.92); backdrop-filter: blur(8px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 100000; padding: 15px; overflow-y: auto;
+    }
+    .royal-cert-modal {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      width: 100%; max-width: 1140px;
+    }
+    .cert-toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      width: 100%; margin-bottom: 15px; gap: 12px; flex-wrap: wrap;
+    }
+    .cert-title-badge {
+      color: #d4af37; font-weight: 800; font-size: 1.1rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-download-pdf {
+      background: linear-gradient(135deg, #10b981, #059669); color: #ffffff;
+      padding: 11px 26px; font-weight: 800; font-family: inherit; font-size: 0.95rem;
+      border-radius: 10px; border: none; cursor: pointer;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    .btn-download-pdf:hover {
+      transform: translateY(-2px); filter: brightness(1.1);
+    }
+    .cert-preview-scroll-container {
+      width: 100%; overflow-x: auto; display: flex; justify-content: center; padding-bottom: 10px;
+    }
+    #masterpiece-certificate {
+      width: 1123px; height: 794px; min-width: 1123px; min-height: 794px;
+      position: relative; background: #050b18; box-sizing: border-box; padding: 24px;
+      box-shadow: 0 35px 100px rgba(0, 0, 0, 0.95); overflow: hidden;
+      direction: ltr; text-align: center;
+    }
+    .cert-bg-layer {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 50% 50%, #0d1e3d 0%, #081024 60%, #030612 100%);
+      pointer-events: none;
+    }
+    .cert-pattern-grid {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background-image: 
+        radial-gradient(rgba(212, 175, 55, 0.04) 1px, transparent 1px),
+        radial-gradient(rgba(212, 175, 55, 0.04) 1px, transparent 1px);
+      background-size: 24px 24px; background-position: 0 0, 12px 12px; pointer-events: none;
+    }
+    .cert-outer-frame {
+      position: relative; width: 100%; height: 100%; border: 3px solid #caa038;
+      box-sizing: border-box; padding: 10px;
+    }
+    .cert-inner-container {
+      width: 100%; height: 100%; border: 1.5px solid rgba(212, 175, 55, 0.45);
+      box-sizing: border-box; padding: 28px 45px; display: flex; flex-direction: column;
+      justify-content: space-between; align-items: center; position: relative;
+    }
+    .c-accent { position: absolute; width: 36px; height: 36px; border-color: #caa038; border-style: solid; }
+    .c-tl { top: 3px; left: 3px; border-width: 4px 0 0 4px; }
+    .c-tr { top: 3px; right: 3px; border-width: 4px 4px 0 0; }
+    .c-bl { bottom: 3px; left: 3px; border-width: 0 0 4px 4px; }
+    .c-br { bottom: 3px; right: 3px; border-width: 0 4px 4px 0; }
+    .gold-foil-text {
+      background: linear-gradient(135deg, #d4af37 0%, #fff2a3 30%, #aa771c 65%, #fdf0cd 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
+    }
+    .student-name-ribbon {
+      display: inline-block; min-width: 650px; padding: 4px 40px 8px;
+      border-bottom: 2px solid #caa038; margin-bottom: 6px;
+    }
+    .honors-capsule {
+      background: linear-gradient(135deg, rgba(14, 26, 56, 0.95), rgba(24, 42, 85, 0.95));
+      border: 1.5px solid #caa038; border-radius: 50px; padding: 8px 36px;
+      box-shadow: inset 0 0 16px rgba(212, 175, 55, 0.25), 0 8px 25px rgba(0,0,0,0.6);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .royal-seal-container {
+      position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .royal-seal-disc {
+      width: 108px; height: 108px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff2a3, #caa038 45%, #7a540e 90%);
+      border: 3px solid #ffffff; box-shadow: 0 0 0 3px #aa771c, 0 12px 35px rgba(0, 0, 0, 0.85);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; position: relative;
+    }
+    .seal-ribbon-left {
+      width: 22px; height: 36px; background: #b38728;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+    }
+    .seal-ribbon-right {
+      width: 22px; height: 36px; background: #8a6514;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+    }
+
     @media print {
       body * { visibility: hidden; }
       #printable-cards-container, #printable-cards-container *,
@@ -985,7 +1086,6 @@
         </section>
       </main>
     </div>
-
     <!-- لوحة تحكم المعلم -->
     <div id="teacher-dashboard" class="glass-card hidden">
       <header class="dash-header-flex">
@@ -1711,6 +1811,7 @@
         <div id="std-quiz-list" class="quiz-scroll-area"></div>
         <button id="btn-submit-exam" class="btn btn-success btn-full" type="button">تصحيح وتسليم الإجابات</button>
         <div id="std-exam-result" class="system-msg"></div>
+        <button id="btn-view-my-cert" class="btn btn-accent btn-full hidden" type="button" style="margin-top:8px;">🏅 استعراض وتحميل شهادة التقدير الرسمية</button>
         <button id="btn-whatsapp-parent" class="btn btn-whatsapp btn-full hidden" type="button">📲 إرسال النتيجة لولي الأمر عبر الواتساب</button>
         <button id="btn-close-quiz-modal" class="btn btn-danger btn-sm btn-full" type="button" style="margin-top: 10px;">إغلاق نافذة الاختبار</button>
       </div>
@@ -1760,6 +1861,170 @@
         <a href="https://wa.me/201554452399" target="_blank" class="dev-contact-btn">📲 <strong>01554452399</strong></a>
       </div>
     </footer>
+  </div>
+
+  <!-- نافذة مودال شهادة التقدير الأكاديمية الملكية المدمجة -->
+  <div id="masterpiece-certificate-modal" class="royal-cert-modal-wrapper hidden">
+    <div class="royal-cert-modal">
+      <div class="cert-toolbar">
+        <div class="cert-title-badge">
+          <span style="font-size:1.4rem;">🏅</span>
+          <span>شهادة التقدير الأكاديمية المعتمدة | Official Executive Credential</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-download-pdf" onclick="downloadMasterpiecePDF()" type="button">
+            📥 تنزيل كملف PDF عالي الدقة (جاهز للطباعة فوراً)
+          </button>
+          <button onclick="document.getElementById('masterpiece-certificate-modal').classList.add('hidden')" class="btn btn-danger btn-sm" type="button" style="width:auto; padding:8px 18px;">
+            ✕ إغلاق
+          </button>
+        </div>
+      </div>
+
+      <div class="cert-preview-scroll-container">
+        <!-- كادر الشهادة (A4 Landscape 1123 x 794) -->
+        <div id="masterpiece-certificate">
+          <div class="cert-bg-layer"></div>
+          <div class="cert-pattern-grid"></div>
+
+          <div class="cert-outer-frame">
+            <div class="cert-inner-container">
+
+              <!-- الأركان الهندسية -->
+              <div class="c-accent c-tl"></div>
+              <div class="c-accent c-tr"></div>
+              <div class="c-accent c-bl"></div>
+              <div class="c-accent c-br"></div>
+
+              <!-- 1. الترويسة والعنوان الملكي -->
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                <div style="display:flex; align-items:center; gap:16px; margin-bottom:4px;">
+                  <div style="height:1px; width:130px; background:linear-gradient(90deg, transparent, #caa038);"></div>
+                  <span style="font-family:'Cinzel', serif; font-size:0.92rem; letter-spacing:6px; color:#cbd5e1; font-weight:700;">MR. YOUSSEF KHAMIS ENGLISH ACADEMY</span>
+                  <div style="height:1px; width:130px; background:linear-gradient(90deg, #caa038, transparent);"></div>
+                </div>
+
+                <h1 class="gold-foil-text" style="
+                  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+                  font-size: 2.75rem;
+                  font-weight: 900;
+                  letter-spacing: 3px;
+                  margin: 2px 0 0;
+                ">CERTIFICATE OF EXCELLENCE</h1>
+
+                <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
+                  <span style="color:#d4af37; font-size:0.8rem;">★ ★ ★</span>
+                  <span style="font-family:'Cinzel', serif; font-size:0.75rem; letter-spacing:4px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Official Academic Credential</span>
+                  <span style="color:#d4af37; font-size:0.8rem;">★ ★ ★</span>
+                </div>
+              </div>
+
+              <!-- 2. نص المنح واسم الطالب والاختبار -->
+              <div style="width:100%; margin-top:6px;">
+                <p style="font-family:'Montserrat', sans-serif; font-size:0.95rem; color:#94a3b8; letter-spacing:1px; margin-bottom:8px; font-weight:500;">
+                  This certificate is proudly and officially conferred upon
+                </p>
+
+                <div class="student-name-ribbon">
+                  <h2 id="cert-render-student-name" style="
+                    font-family: 'Playfair Display', serif;
+                    font-size: 2.65rem;
+                    font-weight: 900;
+                    letter-spacing: 1.5px;
+                    color: #ffffff;
+                    margin: 0;
+                    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+                  ">AHMED MOHAMED ALI</h2>
+                </div>
+
+                <p style="font-family:'Montserrat', sans-serif; font-size:0.92rem; color:#cbd5e1; margin-top:6px; font-weight:500;">
+                  for outstanding academic performance, exemplary mastery, and high distinction in
+                </p>
+
+                <h3 id="cert-render-exam-title" style="
+                  font-family: 'Cinzel', serif;
+                  font-size: 1.35rem;
+                  font-weight: 800;
+                  color: #fef0cd;
+                  letter-spacing: 1px;
+                  margin: 6px 0;
+                ">Comprehensive English Language Examination</h3>
+              </div>
+
+              <!-- 3. كبسولة التقدير والدرجة والصف -->
+              <div style="display:flex; align-items:center; gap:25px;">
+                <div class="honors-capsule">
+                  <span style="color:#38bdf8; font-size:0.92rem; font-weight:800; letter-spacing:1px;">★ HONORS STATUS</span>
+                  <span style="color:rgba(212,175,55,0.4);">|</span>
+                  <span id="cert-render-score-text" style="color:#fef3c7; font-size:1.15rem; font-weight:900; letter-spacing:1px;">FINAL SCORE: 99% (OUTSTANDING)</span>
+                </div>
+                
+                <div style="text-align:right; font-size:0.85rem; color:#94a3b8; font-weight:600;">
+                  <span style="font-family:'Montserrat', sans-serif;">Academic Level:</span>
+                  <strong id="cert-render-grade-text" style="color:#f8fafc; font-size:0.95rem; display:block;">Third Preparatory Grade</strong>
+                </div>
+              </div>
+
+              <!-- 4. فوتر الاعتماد (الـ QR + ختم الشمع 3D + التوقيع المعتمد) -->
+              <div style="
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                padding-top: 15px;
+                border-top: 1px solid rgba(212, 175, 55, 0.25);
+                position: relative;
+              ">
+                <!-- الجانب الأيسر: كود التحقق المشفر ورابط الفحص المباشر -->
+                <div style="display:flex; align-items:center; gap:14px; text-align:left;">
+                  <div style="background:#ffffff; padding:4px; border-radius:8px; border:1.5px solid #caa038; width:70px; height:70px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+                    <img id="cert-render-qr-img" src="" alt="Verification QR" style="width:100%; height:100%;">
+                  </div>
+                  <div>
+                    <div style="font-size:0.72rem; color:#94a3b8; letter-spacing:1px; text-transform:uppercase; font-weight:700;">Certificate ID</div>
+                    <strong id="cert-render-code-val" style="color:#caa038; font-size:1.05rem; font-family:'Courier New', monospace; letter-spacing:2px;">YK-948210</strong>
+                    <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">Issue Date: <span id="cert-render-issue-date" style="color:#e2e8f0; font-weight:600;">2026/09/04</span></div>
+                    <span style="font-size:0.65rem; color:#10b981; font-weight:800; letter-spacing:0.5px;">SECURE DIGITAL VALIDATION</span>
+                  </div>
+                </div>
+
+                <!-- المنتصف: الختم الذهبي الملكي البارز 3D -->
+                <div class="royal-seal-container">
+                  <div class="royal-seal-disc">
+                    <div style="position:absolute; width:94px; height:94px; border-radius:50%; border:1px dashed rgba(255,255,255,0.7);"></div>
+                    <span style="font-size:1.2rem; line-height:1;">👑</span>
+                    <span style="font-family:'Cinzel', serif; font-size:0.62rem; font-weight:900; color:#1e1b4b; letter-spacing:2px; margin-top:2px;">ACADEMY</span>
+                    <strong style="font-size:0.75rem; font-weight:900; color:#0f172a;">SEAL</strong>
+                    <span style="font-size:0.55rem; color:#1e1b4b; font-weight:800; letter-spacing:1px;">OFFICIAL</span>
+                  </div>
+                  
+                  <div style="display:flex; gap:6px; margin-top:-10px; z-index:-1;">
+                    <div class="seal-ribbon-left"></div>
+                    <div class="seal-ribbon-right"></div>
+                  </div>
+                </div>
+
+                <!-- الجانب الأيمن: التوقيع الحي للمستر -->
+                <div style="text-align:right;">
+                  <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-weight:700;">Senior Course Director</div>
+                  <strong style="color:#ffffff; font-size:1.1rem; font-family:'Cinzel', serif; display:block; margin:2px 0;">Mr. Youssef Khamis</strong>
+                  <div style="
+                    font-family: 'Alex Brush', cursive;
+                    font-size: 2.3rem;
+                    color: #ffd700;
+                    line-height: 1;
+                    transform: rotate(-4deg);
+                    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+                  ">Youssef Khamis</div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1906,7 +2171,6 @@
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>'"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'\"':"&quot;"}[ch]));
     }
-
     const defaultPrices = {
       "الصف الأول الابتدائي": 50, "الصف الثاني الابتدائي": 50, "الصف الثالث الابتدائي": 50,
       "الصف الرابع الابتدائي": 60, "الصف الخامس الابتدائي": 60, "الصف السادس الابتدائي": 60,
@@ -2250,9 +2514,9 @@
         const myRes = results.filter(r => r.name === std.name && !r.isCheated);
         if (myRes.length > 0) {
           const best = myRes.sort((a, b) => parseInt(b.percentage) - parseInt(a.percentage))[0];
-          topStudents.push({ name: std.name, grade: std.grade, score: best.score, percentage: best.percentage });
+          topStudents.push({ name: std.name, grade: std.grade, score: best.score, percentage: best.percentage, code: std.code, examTitle: best.examTitle });
         } else if (std.manualScore) {
-          topStudents.push({ name: std.name, grade: std.grade, score: std.manualScore, percentage: std.manualPercentage || "100%" });
+          topStudents.push({ name: std.name, grade: std.grade, score: std.manualScore, percentage: std.manualPercentage || "100%", code: std.code, examTitle: "اختبار التفوق الأكاديمي" });
         }
       });
 
@@ -2271,6 +2535,9 @@
           <h4>${escapeHTML(std.name)}</h4>
           <p style="font-size:0.85rem; color:#64748b; margin-bottom:6px;">${escapeHTML(std.grade)}</p>
           <span class="badge-score-pill">🎯 الدرجة: ${std.score} (${std.percentage})</span>
+          <button class="btn btn-accent btn-sm" type="button" style="margin-top:10px; width:auto; align-self:center;" onclick="showStudentMasterpieceCert('${escapeHTML(std.name)}', '${escapeHTML(std.grade)}', '${escapeHTML(std.examTitle || 'Comprehensive Examination')}', '${escapeHTML(std.percentage)}', '${escapeHTML(std.code)}')">
+            🏅 استعراض الشهادة
+          </button>
         `;
         container.appendChild(card);
       });
@@ -2590,7 +2857,7 @@
     const btnBackCatalog = document.getElementById("std-back-to-catalog-btn");
     if (btnBackCatalog) {
       btnBackCatalog.addEventListener("click", () => {
-      revokeActiveProtectedVideoUrl();
+        revokeActiveProtectedVideoUrl();
         document.getElementById("student-courses-catalog").classList.remove("hidden");
         document.getElementById("payment-gate-box").classList.add("hidden");
         document.getElementById("student-lesson-viewer").classList.add("hidden");
@@ -3037,6 +3304,11 @@
             ? `<button class="btn btn-primary btn-sm" type="button" onclick="openExamReview(${resultIdx})" style="width:auto; margin-right:6px;">📖 مراجعة الامتحان</button>`
             : "";
 
+          const isPass = parseInt(r.percentage) >= 60 && !r.isCheated;
+          const certButton = isPass 
+            ? `<button class="btn btn-accent btn-sm" type="button" onclick="showStudentMasterpieceCert('${escapeHTML(student.name)}', '${escapeHTML(student.grade)}', '${escapeHTML(r.examTitle || 'Comprehensive Examination')}', '${escapeHTML(r.percentage)}', '${escapeHTML(student.code)}')" style="width:auto; margin-right:6px;">🏅 الشهادة</button>` 
+            : "";
+
           item.innerHTML = `
             <div>
               <strong>${escapeHTML(r.examTitle || r.grade)}</strong>
@@ -3045,6 +3317,7 @@
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
               <span style="color:${r.isCheated ? 'var(--danger)' : 'var(--success)'}; font-weight:800;">${escapeHTML(r.score)} (${escapeHTML(r.percentage)})</span>
+              ${certButton}
               ${reviewButton}
             </div>
           `;
@@ -3677,6 +3950,8 @@
       studentAnswersObj = {};
       document.getElementById("std-exam-result").innerText = "";
       document.getElementById("btn-whatsapp-parent").classList.add("hidden");
+      const btnCert = document.getElementById("btn-view-my-cert");
+      if (btnCert) btnCert.classList.add("hidden");
 
       questions.forEach((q, qIdx) => {
         const card = document.createElement("div");
@@ -3835,6 +4110,18 @@
         time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
       saveExamResults(results);
+
+      // زر استعراض وتحميل شهادة التقدير الرسمية للمتفوقين
+      const btnCert = document.getElementById("btn-view-my-cert");
+      if (percent >= 60) {
+        btnCert.classList.remove("hidden");
+        btnCert.onclick = () => {
+          showStudentMasterpieceCert(currentActiveStudent.name, currentActiveStudent.grade, examTitle, `${percent}%`, currentActiveStudent.code);
+        };
+      } else {
+        btnCert.classList.add("hidden");
+      }
+
       // إرسال نتيجة الامتحان تلقائياً إلى سجل إشعارات ولي الأمر فور التسليم
       if (currentActiveStudent.parentPhone) {
         addAutoNotification({
@@ -4744,6 +5031,56 @@
         e.stopPropagation();
       }
     }, true);
+
+    /* =========================================================
+       دوال تشغيل وتصدير شهادة التقدير الملكية (Masterpiece Certificate)
+       ========================================================= */
+    let currentStudentNameForExport = "Student";
+
+    function renderMasterpieceCertificate(studentName, grade, examTitle, percentage, studentCode) {
+      currentStudentNameForExport = studentName || "Student";
+
+      document.getElementById("cert-render-student-name").innerText = (studentName || "STUDENT NAME").toUpperCase();
+      document.getElementById("cert-render-grade-text").innerText = grade || "Academic Grade";
+      document.getElementById("cert-render-exam-title").innerText = examTitle || "Comprehensive English Examination";
+      document.getElementById("cert-render-score-text").innerText = `FINAL SCORE: ${percentage} (OUTSTANDING)`;
+      document.getElementById("cert-render-code-val").innerText = studentCode || "YK-000000";
+
+      const today = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+      document.getElementById("cert-render-issue-date").innerText = today;
+
+      // توليد كود التحقق الرقمي الحي
+      const verifyUrl = `https://mryoussefkhamis.com/verify?code=${encodeURIComponent(studentCode || '')}&name=${encodeURIComponent(studentName || '')}`;
+      document.getElementById("cert-render-qr-img").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}`;
+    }
+
+    function showStudentMasterpieceCert(studentName, grade, examTitle, percentage, studentCode) {
+      renderMasterpieceCertificate(studentName, grade, examTitle, percentage, studentCode);
+      const modal = document.getElementById("masterpiece-certificate-modal");
+      if (modal) modal.classList.remove("hidden");
+    }
+
+    function downloadMasterpiecePDF() {
+      const certElement = document.getElementById("masterpiece-certificate");
+      const fileName = `Certificate_${currentStudentNameForExport.replace(/\s+/g, '_')}_Official.pdf`;
+
+      const opt = {
+        margin: 0,
+        filename: fileName,
+        image: { type: 'jpeg', quality: 1.0 },
+        html2canvas: {
+          scale: 3, // دقة 300DPI الطباعية الفائقة
+          useCORS: true,
+          logging: false,
+          scrollX: 0,
+          scrollY: 0
+        },
+        jsPDF: { unit: 'px', format: [1123, 794], orientation: 'landscape' }
+      };
+
+      html2pdf().from(certElement).set(opt).save();
+    }
+
     /* =========================================================
        حزمة التطوير الإضافية: اختبارات ذكية + أخطائي + واجبات متقدمة
        + إشعارات ذكية + حماية/تتبع المحتوى + تحليلات المعلم + بحث شامل
@@ -5146,6 +5483,6 @@
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',()=>{installExtraUI();ensureMyMistakesModal();updateMistakeCount();});
       else { installExtraUI(); ensureMyMistakesModal(); updateMistakeCount(); }
     })();
-</script>
+  </script>
 </body>
 </html>
