@@ -549,13 +549,13 @@
     }
 
     /* =========================================================
-       تنسيقات نافذة وكادر شهادة التقدير الملكية (Masterpiece Certificate)
+       تنسيقات نافذة وكادر شهادة التقدير الملكية مع الاستجابة للموبايل (Mobile Scaling)
        ========================================================= */
     .royal-cert-modal-wrapper {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(3, 7, 18, 0.92); backdrop-filter: blur(8px);
+      background: rgba(3, 7, 18, 0.94); backdrop-filter: blur(10px);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 100000; padding: 15px; overflow-y: auto;
+      z-index: 100000; padding: 10px; overflow-y: auto;
     }
     .royal-cert-modal {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -563,15 +563,15 @@
     }
     .cert-toolbar {
       display: flex; justify-content: space-between; align-items: center;
-      width: 100%; margin-bottom: 15px; gap: 12px; flex-wrap: wrap;
+      width: 100%; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;
     }
     .cert-title-badge {
-      color: #d4af37; font-weight: 800; font-size: 1.1rem;
+      color: #d4af37; font-weight: 800; font-size: 1.05rem;
       display: flex; align-items: center; gap: 8px;
     }
     .btn-download-pdf {
       background: linear-gradient(135deg, #10b981, #059669); color: #ffffff;
-      padding: 11px 26px; font-weight: 800; font-family: inherit; font-size: 0.95rem;
+      padding: 10px 22px; font-weight: 800; font-family: inherit; font-size: 0.9rem;
       border-radius: 10px; border: none; cursor: pointer;
       box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
       transition: transform 0.2s ease, filter 0.2s ease;
@@ -579,9 +579,21 @@
     .btn-download-pdf:hover {
       transform: translateY(-2px); filter: brightness(1.1);
     }
+    
+    /* حاوية الموبايل الذكية لعرض الشهادة بالكامل تلقائياً */
     .cert-preview-scroll-container {
-      width: 100%; overflow-x: auto; display: flex; justify-content: center; padding-bottom: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      padding: 5px 0;
     }
+    .cert-scaler-box {
+      transform-origin: top center;
+      transition: transform 0.3s ease;
+    }
+
     #masterpiece-certificate {
       width: 1123px; height: 794px; min-width: 1123px; min-height: 794px;
       position: relative; background: #050b18; box-sizing: border-box; padding: 24px;
@@ -743,7 +755,6 @@
       <button id="drawer-btn-auth" class="side-nav-btn btn-logout-side" type="button">🚪 تسجيل الخروج</button>
     </div>
   </div>
-
   <div class="main-wrapper">
     <!-- كارت المصادقة والتسجيل الرئيسي -->
     <div id="auth-section" class="glass-card anime-fade-in">
@@ -1086,6 +1097,7 @@
         </section>
       </main>
     </div>
+
     <!-- لوحة تحكم المعلم -->
     <div id="teacher-dashboard" class="glass-card hidden">
       <header class="dash-header-flex">
@@ -1114,9 +1126,9 @@
             <button class="side-nav-btn" data-ttab="t-tab-promos" type="button">🎟️ كروت شحن الحصص والاشتراكات</button>
             <button class="side-nav-btn" data-ttab="t-tab-student-codes" type="button">👥 طلبات انضمام وقبول الطلاب</button>
             <button class="side-nav-btn" data-ttab="t-tab-video" type="button">📹 رفع وتعديل المحاضرات</button>
-            <button class="side-nav-btn" data-ttab="t-tab-quiz" type="button">✍️ بنك الأسئلة والامتحانات</button>
+            <button class="side-nav-btn" data-ttab="t-tab-quiz" type="button">✍️ بنك الأسئلة والامتحانات والشهادات</button>
             <button class="side-nav-btn" data-ttab="t-tab-profits" type="button">📈 تقارير الأرباح والنسخ الاحتياطي</button>
-            <button class="side-nav-btn" data-ttab="t-tab-results" type="button">📊 تصدير Excel لكل صف</button>
+            <button class="side-nav-btn" data-ttab="t-tab-results" type="button">📊 تصدير Excel واعتماد الشهادات</button>
             <button class="side-nav-btn" data-ttab="t-tab-homework" type="button">📝 تصدير ومتابعة الواجبات</button>
             <button class="side-nav-btn" data-ttab="t-tab-qa" type="button">💬 استفسارات الطلاب</button>
           </nav>
@@ -1454,10 +1466,10 @@
             </div>
           </div>
 
-          <!-- 10. بنك الأسئلة والامتحانات المستقلة (L.T.R ومع 3 أنواع أسئلة) -->
+          <!-- 10. بنك الأسئلة والامتحانات المستقلة والشهادات (تحكم المستر في الشهادة) -->
           <div id="t-sec-quiz" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
-              <h3 class="box-title">📝 بنك الأسئلة وإنشاء الامتحانات العامة (صف دراسي كامل)</h3>
+              <h3 class="box-title">📝 بنك الأسئلة وإنشاء الامتحانات العامة والشهادات المعتمدة</h3>
               
               <div class="input-field">
                 <label>اختر الصف الدراسي المستهدف للامتحان:</label>
@@ -1486,9 +1498,22 @@
                 </div>
               </div>
 
-              <div class="input-field">
-                <label>🔄 عدد مرات السماح بدخول الامتحان للطالب:</label>
-                <input type="number" id="teacher-quiz-attempts-input" min="1" max="5" value="1">
+              <div class="grid-2col">
+                <div class="input-field">
+                  <label>🔄 عدد مرات السماح بدخول الامتحان للطالب:</label>
+                  <input type="number" id="teacher-quiz-attempts-input" min="1" max="5" value="1">
+                </div>
+                <!-- تحكم المستر في منح شهادة تقدير لهذا الامتحان -->
+                <div class="input-field" style="background:rgba(212,175,55,0.08); border:1.5px solid var(--accent-gold); padding:8px 12px; border-radius:10px;">
+                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-bottom:6px;">
+                    <input type="checkbox" id="teacher-quiz-has-cert" checked style="width:auto;">
+                    <strong style="color:var(--accent-gold);">🏅 هل هذا الامتحان يمنح شهادة تقدير للمتفوقين؟</strong>
+                  </label>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:0.8rem;">الحد الأدنى للنسبة المئوية لاستحقاق الشهادة تلقائياً:</span>
+                    <input type="number" id="teacher-quiz-cert-min" min="50" max="100" value="85" style="width:75px; padding:3px 6px;"> %
+                  </div>
+                </div>
               </div>
 
               <hr style="border: 1px solid var(--border-color); margin: 15px 0;">
@@ -1559,13 +1584,13 @@
               </div>
             </div>
 
-            <!-- قائمة الامتحانات العامة المنشورة -->
+            <!-- قائمة الامتحانات العامة المنشورة مع بيان توفر الشهادة -->
             <div class="dash-box" style="margin-top: 15px;">
               <h3 class="box-title">📑 إدارة الامتحانات العامة المنشورة</h3>
               <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
-                    <tr><th>الصف الدراسي</th><th>عنوان الامتحان</th><th>الأسئلة</th><th>إرسال واتساب للطلاب 📲</th><th>إجراء</th></tr>
+                    <tr><th>الصف الدراسي</th><th>عنوان الامتحان</th><th>الأسئلة</th><th>شهادة التقدير</th><th>إرسال واتساب للطلاب 📲</th><th>إجراء</th></tr>
                   </thead>
                   <tbody id="teacher-published-exams-table"></tbody>
                 </table>
@@ -1604,11 +1629,11 @@
             </div>
           </div>
 
-          <!-- 12. تصدير النتائج -->
+          <!-- 12. تصدير النتائج واعتماد ومنح شهادات التقدير يدوياً للمستر -->
           <div id="t-sec-results" class="teacher-content-tab hidden anime-fade-in">
             <div class="dash-box">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-                <h3 class="box-title" style="margin:0;">📊 كشف نتائج واختبارات الطلاب والتقارير</h3>
+                <h3 class="box-title" style="margin:0;">📊 كشف نتائج واختبارات الطلاب والتحكم في منح الشهادات</h3>
                 <div style="display:flex; gap:8px;">
                   <select id="export-grade-select" style="max-width:220px; padding:4px 8px; font-size:0.85rem;">
                     <option value="" disabled selected>اختر الصف للتصدير</option>
@@ -1628,7 +1653,7 @@
               <div class="table-responsive">
                 <table class="custom-table">
                   <thead>
-                    <tr><th>اسم الطالب</th><th>الصف</th><th>الدرجة</th><th>النسبة</th><th>التقدير / النتيجة</th><th>ملاحظات الغش</th><th>وقت التسليم</th></tr>
+                    <tr><th>اسم الطالب</th><th>الصف</th><th>الامتحان</th><th>الدرجة</th><th>النسبة</th><th>التقدير / النتيجة</th><th>شهادة التقدير (تحكم المستر)</th><th>ملاحظات الغش</th><th>وقت التسليم</th></tr>
                   </thead>
                   <tbody id="teacher-results-table"></tbody>
                 </table>
@@ -1863,7 +1888,7 @@
     </footer>
   </div>
 
-  <!-- نافذة مودال شهادة التقدير الأكاديمية الملكية المدمجة -->
+  <!-- نافذة مودال شهادة التقدير الأكاديمية الملكية مع ضبط الحجم الذكي للهواتف -->
   <div id="masterpiece-certificate-modal" class="royal-cert-modal-wrapper hidden">
     <div class="royal-cert-modal">
       <div class="cert-toolbar">
@@ -1873,7 +1898,7 @@
         </div>
         <div style="display:flex; gap:8px;">
           <button class="btn-download-pdf" onclick="downloadMasterpiecePDF()" type="button">
-            📥 تنزيل كملف PDF عالي الدقة (جاهز للطباعة فوراً)
+            📥 تنزيل كملف PDF عالي الدقة (جاهز للطباعة)
           </button>
           <button onclick="document.getElementById('masterpiece-certificate-modal').classList.add('hidden')" class="btn btn-danger btn-sm" type="button" style="width:auto; padding:8px 18px;">
             ✕ إغلاق
@@ -1881,145 +1906,148 @@
         </div>
       </div>
 
+      <!-- حاوية التكبير والتصغير التلقائي لتناسب شاشات الموبايل بالكامل -->
       <div class="cert-preview-scroll-container">
-        <!-- كادر الشهادة (A4 Landscape 1123 x 794) -->
-        <div id="masterpiece-certificate">
-          <div class="cert-bg-layer"></div>
-          <div class="cert-pattern-grid"></div>
+        <div id="cert-scaler-box" class="cert-scaler-box">
+          <!-- كادر الشهادة (A4 Landscape 1123 x 794) -->
+          <div id="masterpiece-certificate">
+            <div class="cert-bg-layer"></div>
+            <div class="cert-pattern-grid"></div>
 
-          <div class="cert-outer-frame">
-            <div class="cert-inner-container">
+            <div class="cert-outer-frame">
+              <div class="cert-inner-container">
 
-              <!-- الأركان الهندسية -->
-              <div class="c-accent c-tl"></div>
-              <div class="c-accent c-tr"></div>
-              <div class="c-accent c-bl"></div>
-              <div class="c-accent c-br"></div>
+                <!-- الأركان الهندسية -->
+                <div class="c-accent c-tl"></div>
+                <div class="c-accent c-tr"></div>
+                <div class="c-accent c-bl"></div>
+                <div class="c-accent c-br"></div>
 
-              <!-- 1. الترويسة والعنوان الملكي -->
-              <div style="display:flex; flex-direction:column; align-items:center;">
-                <div style="display:flex; align-items:center; gap:16px; margin-bottom:4px;">
-                  <div style="height:1px; width:130px; background:linear-gradient(90deg, transparent, #caa038);"></div>
-                  <span style="font-family:'Cinzel', serif; font-size:0.92rem; letter-spacing:6px; color:#cbd5e1; font-weight:700;">MR. YOUSSEF KHAMIS ENGLISH ACADEMY</span>
-                  <div style="height:1px; width:130px; background:linear-gradient(90deg, #caa038, transparent);"></div>
-                </div>
+                <!-- 1. الترويسة والعنوان الملكي -->
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                  <div style="display:flex; align-items:center; gap:16px; margin-bottom:4px;">
+                    <div style="height:1px; width:130px; background:linear-gradient(90deg, transparent, #caa038);"></div>
+                    <span style="font-family:'Cinzel', serif; font-size:0.92rem; letter-spacing:6px; color:#cbd5e1; font-weight:700;">MR. YOUSSEF KHAMIS ENGLISH ACADEMY</span>
+                    <div style="height:1px; width:130px; background:linear-gradient(90deg, #caa038, transparent);"></div>
+                  </div>
 
-                <h1 class="gold-foil-text" style="
-                  font-family: 'Cinzel Decorative', 'Cinzel', serif;
-                  font-size: 2.75rem;
-                  font-weight: 900;
-                  letter-spacing: 3px;
-                  margin: 2px 0 0;
-                ">CERTIFICATE OF EXCELLENCE</h1>
-
-                <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
-                  <span style="color:#d4af37; font-size:0.8rem;">★ ★ ★</span>
-                  <span style="font-family:'Cinzel', serif; font-size:0.75rem; letter-spacing:4px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Official Academic Credential</span>
-                  <span style="color:#d4af37; font-size:0.8rem;">★ ★ ★</span>
-                </div>
-              </div>
-
-              <!-- 2. نص المنح واسم الطالب والاختبار -->
-              <div style="width:100%; margin-top:6px;">
-                <p style="font-family:'Montserrat', sans-serif; font-size:0.95rem; color:#94a3b8; letter-spacing:1px; margin-bottom:8px; font-weight:500;">
-                  This certificate is proudly and officially conferred upon
-                </p>
-
-                <div class="student-name-ribbon">
-                  <h2 id="cert-render-student-name" style="
-                    font-family: 'Playfair Display', serif;
-                    font-size: 2.65rem;
+                  <h1 class="gold-foil-text" style="
+                    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+                    font-size: 2.75rem;
                     font-weight: 900;
-                    letter-spacing: 1.5px;
-                    color: #ffffff;
-                    margin: 0;
-                    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-                  ">AHMED MOHAMED ALI</h2>
-                </div>
+                    letter-spacing: 3px;
+                    margin: 2px 0 0;
+                  ">CERTIFICATE OF EXCELLENCE</h1>
 
-                <p style="font-family:'Montserrat', sans-serif; font-size:0.92rem; color:#cbd5e1; margin-top:6px; font-weight:500;">
-                  for outstanding academic performance, exemplary mastery, and high distinction in
-                </p>
-
-                <h3 id="cert-render-exam-title" style="
-                  font-family: 'Cinzel', serif;
-                  font-size: 1.35rem;
-                  font-weight: 800;
-                  color: #fef0cd;
-                  letter-spacing: 1px;
-                  margin: 6px 0;
-                ">Comprehensive English Language Examination</h3>
-              </div>
-
-              <!-- 3. كبسولة التقدير والدرجة والصف -->
-              <div style="display:flex; align-items:center; gap:25px;">
-                <div class="honors-capsule">
-                  <span style="color:#38bdf8; font-size:0.92rem; font-weight:800; letter-spacing:1px;">★ HONORS STATUS</span>
-                  <span style="color:rgba(212,175,55,0.4);">|</span>
-                  <span id="cert-render-score-text" style="color:#fef3c7; font-size:1.15rem; font-weight:900; letter-spacing:1px;">FINAL SCORE: 99% (OUTSTANDING)</span>
-                </div>
-                
-                <div style="text-align:right; font-size:0.85rem; color:#94a3b8; font-weight:600;">
-                  <span style="font-family:'Montserrat', sans-serif;">Academic Level:</span>
-                  <strong id="cert-render-grade-text" style="color:#f8fafc; font-size:0.95rem; display:block;">Third Preparatory Grade</strong>
-                </div>
-              </div>
-
-              <!-- 4. فوتر الاعتماد (الـ QR + ختم الشمع 3D + التوقيع المعتمد) -->
-              <div style="
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-end;
-                padding-top: 15px;
-                border-top: 1px solid rgba(212, 175, 55, 0.25);
-                position: relative;
-              ">
-                <!-- الجانب الأيسر: كود التحقق المشفر ورابط الفحص المباشر -->
-                <div style="display:flex; align-items:center; gap:14px; text-align:left;">
-                  <div style="background:#ffffff; padding:4px; border-radius:8px; border:1.5px solid #caa038; width:70px; height:70px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.5);">
-                    <img id="cert-render-qr-img" src="" alt="Verification QR" style="width:100%; height:100%;">
-                  </div>
-                  <div>
-                    <div style="font-size:0.72rem; color:#94a3b8; letter-spacing:1px; text-transform:uppercase; font-weight:700;">Certificate ID</div>
-                    <strong id="cert-render-code-val" style="color:#caa038; font-size:1.05rem; font-family:'Courier New', monospace; letter-spacing:2px;">YK-948210</strong>
-                    <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">Issue Date: <span id="cert-render-issue-date" style="color:#e2e8f0; font-weight:600;">2026/09/04</span></div>
-                    <span style="font-size:0.65rem; color:#10b981; font-weight:800; letter-spacing:0.5px;">SECURE DIGITAL VALIDATION</span>
+                  <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
+                    <span style="color:#d4af37; font-size:0.8rem;">★ ★ ★</span>
+                    <span style="font-family:'Cinzel', serif; font-size:0.75rem; letter-spacing:4px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Official Academic Credential</span>
+                    <span style="color:#d4af37; font-size:0.8rem;">★ ★ ★</span>
                   </div>
                 </div>
 
-                <!-- المنتصف: الختم الذهبي الملكي البارز 3D -->
-                <div class="royal-seal-container">
-                  <div class="royal-seal-disc">
-                    <div style="position:absolute; width:94px; height:94px; border-radius:50%; border:1px dashed rgba(255,255,255,0.7);"></div>
-                    <span style="font-size:1.2rem; line-height:1;">👑</span>
-                    <span style="font-family:'Cinzel', serif; font-size:0.62rem; font-weight:900; color:#1e1b4b; letter-spacing:2px; margin-top:2px;">ACADEMY</span>
-                    <strong style="font-size:0.75rem; font-weight:900; color:#0f172a;">SEAL</strong>
-                    <span style="font-size:0.55rem; color:#1e1b4b; font-weight:800; letter-spacing:1px;">OFFICIAL</span>
+                <!-- 2. نص المنح واسم الطالب بالإنجليزية والاختبار -->
+                <div style="width:100%; margin-top:6px;">
+                  <p style="font-family:'Montserrat', sans-serif; font-size:0.95rem; color:#94a3b8; letter-spacing:1px; margin-bottom:8px; font-weight:500;">
+                    This certificate is proudly and officially conferred upon
+                  </p>
+
+                  <div class="student-name-ribbon">
+                    <h2 id="cert-render-student-name" style="
+                      font-family: 'Playfair Display', serif;
+                      font-size: 2.65rem;
+                      font-weight: 900;
+                      letter-spacing: 1.5px;
+                      color: #ffffff;
+                      margin: 0;
+                      text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+                    ">AHMED MOHAMED ALI</h2>
+                  </div>
+
+                  <p style="font-family:'Montserrat', sans-serif; font-size:0.92rem; color:#cbd5e1; margin-top:6px; font-weight:500;">
+                    for outstanding academic performance, exemplary mastery, and high distinction in
+                  </p>
+
+                  <h3 id="cert-render-exam-title" style="
+                    font-family: 'Cinzel', serif;
+                    font-size: 1.35rem;
+                    font-weight: 800;
+                    color: #fef0cd;
+                    letter-spacing: 1px;
+                    margin: 6px 0;
+                  ">Comprehensive English Language Examination</h3>
+                </div>
+
+                <!-- 3. كبسولة التقدير والدرجة والصف -->
+                <div style="display:flex; align-items:center; gap:25px;">
+                  <div class="honors-capsule">
+                    <span style="color:#38bdf8; font-size:0.92rem; font-weight:800; letter-spacing:1px;">★ HONORS STATUS</span>
+                    <span style="color:rgba(212,175,55,0.4);">|</span>
+                    <span id="cert-render-score-text" style="color:#fef3c7; font-size:1.15rem; font-weight:900; letter-spacing:1px;">FINAL SCORE: 99% (OUTSTANDING)</span>
                   </div>
                   
-                  <div style="display:flex; gap:6px; margin-top:-10px; z-index:-1;">
-                    <div class="seal-ribbon-left"></div>
-                    <div class="seal-ribbon-right"></div>
+                  <div style="text-align:right; font-size:0.85rem; color:#94a3b8; font-weight:600;">
+                    <span style="font-family:'Montserrat', sans-serif;">Academic Level:</span>
+                    <strong id="cert-render-grade-text" style="color:#f8fafc; font-size:0.95rem; display:block;">Third Preparatory Grade</strong>
                   </div>
                 </div>
 
-                <!-- الجانب الأيمن: التوقيع الحي للمستر -->
-                <div style="text-align:right;">
-                  <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-weight:700;">Senior Course Director</div>
-                  <strong style="color:#ffffff; font-size:1.1rem; font-family:'Cinzel', serif; display:block; margin:2px 0;">Mr. Youssef Khamis</strong>
-                  <div style="
-                    font-family: 'Alex Brush', cursive;
-                    font-size: 2.3rem;
-                    color: #ffd700;
-                    line-height: 1;
-                    transform: rotate(-4deg);
-                    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-                  ">Youssef Khamis</div>
+                <!-- 4. فوتر الاعتماد (الـ QR + ختم الشمع 3D + التوقيع المعتمد) -->
+                <div style="
+                  width: 100%;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: flex-end;
+                  padding-top: 15px;
+                  border-top: 1px solid rgba(212, 175, 55, 0.25);
+                  position: relative;
+                ">
+                  <!-- الجانب الأيسر: كود التحقق المشفر ورابط الفحص المباشر -->
+                  <div style="display:flex; align-items:center; gap:14px; text-align:left;">
+                    <div style="background:#ffffff; padding:4px; border-radius:8px; border:1.5px solid #caa038; width:70px; height:70px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+                      <img id="cert-render-qr-img" src="" alt="Verification QR" style="width:100%; height:100%;">
+                    </div>
+                    <div>
+                      <div style="font-size:0.72rem; color:#94a3b8; letter-spacing:1px; text-transform:uppercase; font-weight:700;">Certificate ID</div>
+                      <strong id="cert-render-code-val" style="color:#caa038; font-size:1.05rem; font-family:'Courier New', monospace; letter-spacing:2px;">YK-948210</strong>
+                      <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">Issue Date: <span id="cert-render-issue-date" style="color:#e2e8f0; font-weight:600;">2026/09/04</span></div>
+                      <span style="font-size:0.65rem; color:#10b981; font-weight:800; letter-spacing:0.5px;">SECURE DIGITAL VALIDATION</span>
+                    </div>
+                  </div>
+
+                  <!-- المنتصف: الختم الذهبي الملكي البارز 3D -->
+                  <div class="royal-seal-container">
+                    <div class="royal-seal-disc">
+                      <div style="position:absolute; width:94px; height:94px; border-radius:50%; border:1px dashed rgba(255,255,255,0.7);"></div>
+                      <span style="font-size:1.2rem; line-height:1;">👑</span>
+                      <span style="font-family:'Cinzel', serif; font-size:0.62rem; font-weight:900; color:#1e1b4b; letter-spacing:2px; margin-top:2px;">ACADEMY</span>
+                      <strong style="font-size:0.75rem; font-weight:900; color:#0f172a;">SEAL</strong>
+                      <span style="font-size:0.55rem; color:#1e1b4b; font-weight:800; letter-spacing:1px;">OFFICIAL</span>
+                    </div>
+                    
+                    <div style="display:flex; gap:6px; margin-top:-10px; z-index:-1;">
+                      <div class="seal-ribbon-left"></div>
+                      <div class="seal-ribbon-right"></div>
+                    </div>
+                  </div>
+
+                  <!-- الجانب الأيمن: التوقيع الحي للمستر -->
+                  <div style="text-align:right;">
+                    <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-weight:700;">Senior Course Director</div>
+                    <strong style="color:#ffffff; font-size:1.1rem; font-family:'Cinzel', serif; display:block; margin:2px 0;">Mr. Youssef Khamis</strong>
+                    <div style="
+                      font-family: 'Alex Brush', cursive;
+                      font-size: 2.3rem;
+                      color: #ffd700;
+                      line-height: 1;
+                      transform: rotate(-4deg);
+                      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+                    ">Youssef Khamis</div>
+                  </div>
+
                 </div>
 
               </div>
-
             </div>
           </div>
         </div>
@@ -2171,6 +2199,82 @@
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>'"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'\"':"&quot;"}[ch]));
     }
+    /* =========================================================
+       نظام التحويل الصوتي للأسماء العربية إلى الإنجليزية المعتمدة للشهادات
+       (Arabic-to-English Smart Transliteration)
+       ========================================================= */
+    function convertArabicNameToEnglish(arabicName) {
+      if (!arabicName) return "STUDENT NAME";
+      // إذا كان الاسم مكتوباً بالإنجليزية بالفعل
+      if (!/[\u0600-\u06FF]/.test(arabicName)) {
+        return arabicName.trim().toUpperCase();
+      }
+
+      const exactMap = {
+        "محمد": "Mohamed", "احمد": "Ahmed", "أحمد": "Ahmed", "محمود": "Mahmoud",
+        "علي": "Ali", "على": "Ali", "ابراهيم": "Ibrahim", "إبراهيم": "Ibrahim",
+        "يوسف": "Youssef", "عمر": "Omar", "عمرو": "Amr", "خالد": "Khaled",
+        "طارق": "Tarek", "كريم": "Kareem", "مصطفى": "Moustafa", "حسين": "Hussein",
+        "حسن": "Hassan", "عبدالرحمن": "Abdelrahman", "عبد الرحمن": "Abdelrahman",
+        "عبدالله": "Abdullah", "عبد الله": "Abdullah", "سيد": "Sayed", "سامح": "Sameh",
+        "ياسر": "Yasser", "وليد": "Waleed", "وائل": "Wael", "زياد": "Ziad",
+        "حمزة": "Hamza", "بلال": "Belal", "مريم": "Mariam", "فاطمة": "Fatma",
+        "سارة": "Sara", "ساره": "Sara", "نور": "Nour", "اية": "Aya", "آية": "Aya",
+        "ياسمين": "Yasmin", "منة": "Menna", "هدى": "Hoda", "منى": "Mona",
+        "رانيا": "Rania", "ريم": "Reem", "شهد": "Shahd", "ملك": "Malak",
+        "حبيبة": "Habiba", "ندى": "Nada", "سلمى": "Salma", "روان": "Rowan",
+        "خميس": "Khamis", "سعيد": "Saeed", "عادل": "Adel", "رمضان": "Ramadan"
+      };
+
+      const charMap = {
+        'ا': 'A', 'أ': 'A', 'إ': 'E', 'آ': 'A', 'ء': 'A', 'ئ': 'E', 'ؤ': 'O',
+        'ب': 'B', 'ت': 'T', 'ث': 'Th', 'ج': 'G', 'ح': 'H', 'خ': 'Kh',
+        'د': 'D', 'ذ': 'Z', 'ر': 'R', 'ز': 'Z', 'س': 'S', 'ش': 'Sh',
+        'ص': 'S', 'ض': 'D', 'ط': 'T', 'ظ': 'Z', 'ع': 'A', 'غ': 'Gh',
+        'ف': 'F', 'ق': 'Q', 'ك': 'K', 'ل': 'L', 'م': 'M', 'ن': 'N',
+        'ه': 'H', 'ة': 'A', 'و': 'W', 'ي': 'Y', 'ى': 'A'
+      };
+
+      const words = arabicName.trim().split(/\s+/);
+      const translatedWords = words.map(word => {
+        let cleanWord = word.replace(/[\u064B-\u065F]/g, ''); // إزالة التشكيل
+        if (cleanWord.startsWith("ال") && cleanWord.length > 3) {
+          const sub = cleanWord.substring(2);
+          if (exactMap[sub]) return "El-" + exactMap[sub];
+        }
+        if (exactMap[cleanWord]) return exactMap[cleanWord];
+        
+        let out = "";
+        for (let i = 0; i < cleanWord.length; i++) {
+          const ch = cleanWord[i];
+          out += charMap[ch] || ch;
+        }
+        return out.charAt(0).toUpperCase() + out.slice(1).toLowerCase();
+      });
+
+      return translatedWords.join(" ").toUpperCase();
+    }
+
+    /* =========================================================
+       تحجيم وتطبيع الشهادة للموبايل تلقائياً (Mobile Auto-Scale)
+       ========================================================= */
+    function adjustMasterpieceCertScale() {
+      const scaler = document.getElementById("cert-scaler-box");
+      if (!scaler) return;
+      const screenWidth = window.innerWidth - 24;
+      const certBaseWidth = 1123;
+
+      if (screenWidth < certBaseWidth) {
+        const scale = Math.max(0.28, screenWidth / certBaseWidth);
+        scaler.style.transform = `scale(${scale})`;
+        scaler.style.marginBottom = `-${Math.round((794 * (1 - scale)))}px`;
+      } else {
+        scaler.style.transform = "scale(1)";
+        scaler.style.marginBottom = "0px";
+      }
+    }
+    window.addEventListener("resize", adjustMasterpieceCertScale);
+
     const defaultPrices = {
       "الصف الأول الابتدائي": 50, "الصف الثاني الابتدائي": 50, "الصف الثالث الابتدائي": 50,
       "الصف الرابع الابتدائي": 60, "الصف الخامس الابتدائي": 60, "الصف السادس الابتدائي": 60,
@@ -2514,9 +2618,9 @@
         const myRes = results.filter(r => r.name === std.name && !r.isCheated);
         if (myRes.length > 0) {
           const best = myRes.sort((a, b) => parseInt(b.percentage) - parseInt(a.percentage))[0];
-          topStudents.push({ name: std.name, grade: std.grade, score: best.score, percentage: best.percentage, code: std.code, examTitle: best.examTitle });
+          topStudents.push({ name: std.name, grade: std.grade, score: best.score, percentage: best.percentage, code: std.code, examTitle: best.examTitle, hasCert: best.hasCertGranted });
         } else if (std.manualScore) {
-          topStudents.push({ name: std.name, grade: std.grade, score: std.manualScore, percentage: std.manualPercentage || "100%", code: std.code, examTitle: "اختبار التفوق الأكاديمي" });
+          topStudents.push({ name: std.name, grade: std.grade, score: std.manualScore, percentage: std.manualPercentage || "100%", code: std.code, examTitle: "اختبار التفوق الأكاديمي", hasCert: true });
         }
       });
 
@@ -3054,10 +3158,23 @@
         });
       }
 
-      // إشعارات الامتحانات التلقائية الموجهة للطالب
+      // إشعارات الامتحانات والشهادات التلقائية الموجهة للطالب
       getAutoNotifications().filter(n => n.recipientType === "student" && n.studentCode === student.code).forEach(n => {
-        rawNotifs.push({ id: "notif_auto_" + n.id, title: n.title, text: n.text, time: new Date(n.timestamp || Date.now()).toLocaleString('ar-EG'), type: "exam", isSpecialFree: true,
-          actionCallback: () => { const examTab = document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-exams']"); if (examTab) examTab.click(); }
+        rawNotifs.push({ 
+          id: "notif_auto_" + n.id, 
+          title: n.title, 
+          text: n.text, 
+          time: new Date(n.timestamp || Date.now()).toLocaleString('ar-EG'), 
+          type: n.type || "exam", 
+          isSpecialFree: true,
+          actionCallback: () => { 
+            if (n.type === 'cert_granted_student') {
+              showStudentMasterpieceCert(student.name, student.grade, n.examTitle || "Comprehensive Examination", n.percentage || "100%", student.code);
+            } else {
+              const examTab = document.querySelector("#student-drawer-links .side-nav-btn[data-tab='tab-exams']"); 
+              if (examTab) examTab.click(); 
+            }
+          }
         });
       });
 
@@ -3094,7 +3211,7 @@
         rawNotifs.push({
           id: "notif_gexam_" + ge.id,
           title: "📝 امتحان جديد متاح الآن!",
-          text: `تم إضافة امتحان جديد (${ge.title}) لصفك الدراسي. برجاء الدخول وحله فوراً!`,
+          text: `تم إضافة امتحان جديد (${ge.title}) لصفك الدراسي. ${ge.hasCert ? '🏅 هذا الامتحان يمنح شهادة تقدير معتمدة!' : ''} برجاء الدخول وحله فوراً!`,
           time: ge.time || "جديد",
           type: "exam",
           isSpecialFree: true,
@@ -3282,7 +3399,7 @@
       });
     }
 
-    // عرض الامتحانات العامة في لوحة الطالب
+    // عرض الامتحانات العامة في لوحة الطالب مع شرط استحقاق الشهادة
     function renderStudentExamsCatalog(student) {
       const completedBox = document.getElementById("std-completed-exams-list");
       const pendingBox = document.getElementById("std-pending-exams-list");
@@ -3304,8 +3421,9 @@
             ? `<button class="btn btn-primary btn-sm" type="button" onclick="openExamReview(${resultIdx})" style="width:auto; margin-right:6px;">📖 مراجعة الامتحان</button>`
             : "";
 
-          const isPass = parseInt(r.percentage) >= 60 && !r.isCheated;
-          const certButton = isPass 
+          // يظهر زر الشهادة إذا منحها المستر يدوياً أو اجتاز شرط النسبة المحددة للامتحان
+          const hasCert = r.hasCertGranted === true || (r.examHasCert === true && parseInt(r.percentage) >= (r.examMinCert || 85) && !r.isCheated);
+          const certButton = hasCert 
             ? `<button class="btn btn-accent btn-sm" type="button" onclick="showStudentMasterpieceCert('${escapeHTML(student.name)}', '${escapeHTML(student.grade)}', '${escapeHTML(r.examTitle || 'Comprehensive Examination')}', '${escapeHTML(r.percentage)}', '${escapeHTML(student.code)}')" style="width:auto; margin-right:6px;">🏅 الشهادة</button>` 
             : "";
 
@@ -3337,7 +3455,7 @@
           item.style.borderColor = "var(--primary-glow)";
           item.innerHTML = `
             <div>
-              <strong>📝 ${escapeHTML(exam.title)}</strong>
+              <strong>📝 ${escapeHTML(exam.title)} ${exam.hasCert ? '<span style="color:var(--accent-gold); font-size:0.8rem;">[🏅 عليه شهادة]</span>' : ''}</strong>
               <p style="font-size:0.75rem; color:var(--text-muted);">اختبار دوري متاح للمشاركة</p>
             </div>
             <div>
@@ -3897,6 +4015,7 @@
       document.getElementById("std-exam-result").innerText = `🚨 تم إلغاء نتيجتك (0 من ${total}) بسبب محاولة الغش!`;
       const results = getExamResults();
       results.unshift({
+        id: "res_" + Date.now(),
         name: currentActiveStudent.name,
         grade: currentActiveStudent.grade,
         examTitle: examTitle,
@@ -3904,6 +4023,7 @@
         percentage: `0%`,
         status: "راسب (محاولة غش)",
         isCheated: true,
+        hasCertGranted: false,
         reviewData: [],
         time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
@@ -4097,8 +4217,14 @@
         localStorage.setItem("yk_active_student_data", JSON.stringify(currentActiveStudent));
       }
 
+      // التحقق هل الامتحان محدد له شهادة من المستر واستحقها الطالب
+      const examHasCert = exam ? (exam.hasCert !== false) : true;
+      const examMinCert = exam ? (exam.minCertPercent || 85) : 85;
+      const qualifiesCert = examHasCert && percent >= examMinCert;
+
       const results = getExamResults();
       results.unshift({
+        id: "res_" + Date.now(),
         name: currentActiveStudent.name,
         grade: currentActiveStudent.grade,
         examTitle: examTitle,
@@ -4106,6 +4232,9 @@
         percentage: `${percent}%`,
         status: status,
         isCheated: false,
+        examHasCert: examHasCert,
+        examMinCert: examMinCert,
+        hasCertGranted: qualifiesCert, // تفعيل الشهادة تلقائياً إذا حقق شرط المستر
         reviewData: reviewData,
         time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       });
@@ -4113,7 +4242,7 @@
 
       // زر استعراض وتحميل شهادة التقدير الرسمية للمتفوقين
       const btnCert = document.getElementById("btn-view-my-cert");
-      if (percent >= 60) {
+      if (qualifiesCert) {
         btnCert.classList.remove("hidden");
         btnCert.onclick = () => {
           showStudentMasterpieceCert(currentActiveStudent.name, currentActiveStudent.grade, examTitle, `${percent}%`, currentActiveStudent.code);
@@ -4136,12 +4265,12 @@
           percentage: `${percent}%`,
           status: status,
           title: "📊 نتيجة امتحان الطالب",
-          text: `نتيجة الطالب ${currentActiveStudent.name} في اختبار (${examTitle}): ${score}/${total} بنسبة ${percent}% - ${status}.`
+          text: `نتيجة الطالب ${currentActiveStudent.name} في اختبار (${examTitle}): ${score}/${total} بنسبة ${percent}% - ${status}. ${qualifiesCert ? '🏅 وتم منح الطالب شهادة تقدير معتمدة!' : ''}`
         });
       }
       renderStudentExamsCatalog(currentActiveStudent);
 
-      let parentMsgText = `📊 [تقرير نتيجة امتحان]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nأتم الطالب اختبار (${examTitle}) وحصل على نتيجة: ${score}/${total} بنسبة ${percent}% (${status}).`;
+      let parentMsgText = `📊 [تقرير نتيجة امتحان]\nالسلام عليكم ولي أمر الطالب: ${currentActiveStudent.name}\nأتم الطالب اختبار (${examTitle}) وحصل على نتيجة: ${score}/${total} بنسبة ${percent}% (${status}). ${qualifiesCert ? '\n🏅 مبارك! تم منح الطالب شهادة تقدير معتمدة رسمياً من المستر!' : ''}`;
       window.open(`https://wa.me/2${currentActiveStudent.parentPhone}?text=${encodeURIComponent(parentMsgText)}`, "_blank");
 
       const btnWa = document.getElementById("btn-whatsapp-parent");
@@ -4228,12 +4357,14 @@
 
     window.clearQuizDraft = function() { teacherQuizDraftQuestions = []; renderDraftQuestionsPreview(); };
 
-    // حفظ ونشر الامتحان العام وإرسال رسالة واتساب تلقائية لكل طلاب الصف وأولياء أمورهم
+    // حفظ ونشر الامتحان العام مع خيارات الشهادة للمستر
     window.saveAndPublishGeneralExam = function() {
       const grade = document.getElementById("teacher-quiz-grade-select").value;
       const title = document.getElementById("teacher-quiz-title-input").value.trim();
       const duration = parseInt(document.getElementById("teacher-quiz-duration-input").value) || 10;
       const maxAttempts = parseInt(document.getElementById("teacher-quiz-attempts-input").value) || 1;
+      const hasCert = document.getElementById("teacher-quiz-has-cert").checked;
+      const minCertPercent = parseInt(document.getElementById("teacher-quiz-cert-min").value) || 85;
 
       if (!grade || !title || teacherQuizDraftQuestions.length === 0) {
         alert("⚠️ يرجى اختيار الصف، كتابة عنوان الامتحان، وإضافة سؤال واحد على الأقل.");
@@ -4247,6 +4378,8 @@
         title,
         duration,
         maxAttempts,
+        hasCert,
+        minCertPercent,
         questions: [...teacherQuizDraftQuestions],
         time: new Date().toLocaleDateString('ar-EG') + " " + new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       };
@@ -4254,7 +4387,7 @@
       generalExams.unshift(newExam);
       saveGeneralExams(generalExams);
 
-      alert(`🎉 تم نشر الامتحان العام (${title}) بنجاح لجميع طلاب (${grade})!`);
+      alert(`🎉 تم نشر الامتحان العام (${title}) بنجاح لجميع طلاب (${grade})! ${hasCert ? '🏅 تم تفعيل منح شهادات التقدير للمتفوقين.' : ''}`);
       teacherQuizDraftQuestions = [];
       renderDraftQuestionsPreview();
       document.getElementById("teacher-quiz-title-input").value = "";
@@ -4268,7 +4401,7 @@
       const students = getStudents().filter(s => s.grade === exam.grade && s.approved !== false);
       if (students.length === 0) return;
 
-      // إنشاء إشعارات تلقائية بمجرد نشر الامتحان، بدون تدخل المستر
+      // إنشاء إشعارات تلقائية بمجرد نشر الامتحان
       students.forEach(student => {
         addAutoNotification({
           type: "exam_published_student",
@@ -4277,7 +4410,7 @@
           grade: exam.grade,
           examId: exam.id,
           title: "📝 امتحان جديد متاح الآن!",
-          text: `تم إضافة امتحان جديد بعنوان (${exam.title}). برجاء الدخول إلى قسم الامتحانات وحله.`
+          text: `تم إضافة امتحان جديد بعنوان (${exam.title}). ${exam.hasCert ? '🏅 هذا الامتحان يمنح شهادة تقدير رسمية لمن يجتازه!' : ''} برجاء الدخول إلى قسم الامتحانات وحله.`
         });
         if (student.parentPhone) {
           addAutoNotification({
@@ -4288,7 +4421,7 @@
             grade: exam.grade,
             examId: exam.id,
             title: "📢 تنبيه امتحان جديد",
-            text: `يوجد امتحان جديد بعنوان (${exam.title}) للطالب ${student.name} (${exam.grade}). برجاء تنبيه الطالب للدخول إلى المنصة وحل الامتحان.`
+            text: `يوجد امتحان جديد بعنوان (${exam.title}) للطالب ${student.name} (${exam.grade}). ${exam.hasCert ? '🏅 متوفر شهادة تقدير معتمدة من المستر.' : ''} برجاء تنبيه الطالب للدخول وحل الامتحان.`
           });
         }
       });
@@ -4310,17 +4443,18 @@
       const generalExams = getGeneralExams();
 
       if (generalExams.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>لا توجد امتحانات عامة منشورة حالياً.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>لا توجد امتحانات عامة منشورة حالياً.</td></tr>";
         return;
       }
 
       generalExams.forEach(exam => {
         const tr = document.createElement("tr");
-        const msg = encodeURIComponent(`📢 [تنبيه امتحان جديد]\nالصف: ${exam.grade}\nالامتحان: ${exam.title}\nبرجاء الدخول للمنصة وحل الاختبار.`);
+        const msg = encodeURIComponent(`📢 [تنبيه امتحان جديد]\nالصف: ${exam.grade}\nالامتحان: ${exam.title}\n${exam.hasCert ? '🏅 الامتحان يمنح شهادة تقدير معتمدة!\n' : ''}برجاء الدخول للمنصة وحل الاختبار.`);
         tr.innerHTML = `
           <td><strong>${exam.grade}</strong></td>
           <td>${escapeHTML(exam.title)}</td>
           <td>${exam.questions.length} سؤال</td>
+          <td>${exam.hasCert ? `<span class="badge-score-pill" style="background:#fef3c7; color:#b45309;">مفعلة (≥ ${exam.minCertPercent || 85}%)</span>` : '<span style="color:var(--text-muted); font-size:0.8rem;">بدون شهادة</span>'}</td>
           <td><a href="https://wa.me/?text=${msg}" target="_blank" class="btn btn-sm btn-whatsapp" style="padding:3px 10px; font-size:0.75rem;">📲 إرسال جماعي واتساب</a></td>
           <td><button class="btn btn-danger btn-sm" onclick="deleteGeneralExam('${exam.id}')">حذف</button></td>
         `;
@@ -4848,12 +4982,16 @@
       if (!selectedGrade) { alert("اختر الصف أولاً."); return; }
       const students = getStudents().filter(s => s.grade === selectedGrade);
       const allResults = getExamResults();
-      let htmlTable = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"/></head><body dir="rtl"><h2>كشف النتائج - ${selectedGrade}</h2><table border="1"><tr><th>الاسم</th><th>الكود</th><th>الدرجة</th><th>النتيجة</th></tr>`;
+      let htmlTable = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"/></head><body dir="rtl"><h2>كشف النتائج - ${selectedGrade}</h2><table border="1"><tr><th>الاسم</th><th>الكود</th><th>الدرجة</th><th>النتيجة</th><th>شهادة التقدير</th></tr>`;
       students.forEach(s => {
         const myRes = allResults.filter(r => r.name === s.name);
-        let score = "لم يمتحن", status = "غير متاح";
-        if (myRes.length > 0) { score = myRes[0].score; status = myRes[0].status; }
-        htmlTable += `<tr><td>${escapeHTML(s.name)}</td><td>${s.code}</td><td>${score}</td><td>${status}</td></tr>`;
+        let score = "لم يمتحن", status = "غير متاح", hasCert = "لا";
+        if (myRes.length > 0) { 
+          score = myRes[0].score; 
+          status = myRes[0].status;
+          hasCert = myRes[0].hasCertGranted ? "تم المنح ✅" : "لا";
+        }
+        htmlTable += `<tr><td>${escapeHTML(s.name)}</td><td>${s.code}</td><td>${score}</td><td>${status}</td><td>${hasCert}</td></tr>`;
       });
       htmlTable += `</table></body></html>`;
       const blob = new Blob(["\uFEFF" + htmlTable], { type: "application/vnd.ms-excel;charset=utf-8;" });
@@ -4867,12 +5005,95 @@
       const tbody = document.getElementById("teacher-results-table");
       if (!tbody) return;
       tbody.innerHTML = "";
-      getExamResults().forEach(r => {
+      const results = getExamResults();
+      
+      results.forEach((r, rIdx) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>${r.name}</strong></td><td>${r.grade}</td><td>${r.score}</td><td><strong>${r.percentage}</strong></td><td>${r.status}</td><td>${r.isCheated ? '🚨 غش' : 'سليم'}</td><td>${r.time}</td>`;
+        const hasCert = r.hasCertGranted === true;
+        
+        tr.innerHTML = `
+          <td><strong>${escapeHTML(r.name)}</strong></td>
+          <td>${escapeHTML(r.grade)}</td>
+          <td>${escapeHTML(r.examTitle || 'امتحان')}</td>
+          <td>${r.score}</td>
+          <td><strong>${r.percentage}</strong></td>
+          <td>${r.status}</td>
+          <td>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="btn ${hasCert ? 'btn-success' : 'btn-accent'} btn-sm" type="button" onclick="toggleTeacherGrantCert(${rIdx})">
+                ${hasCert ? 'ممنوحة 🏅 (إلغاء)' : 'منح شهادة 🏅'}
+              </button>
+              ${hasCert ? `<button class="btn btn-primary btn-sm" type="button" onclick="previewCertByTeacher(${rIdx})">معاينة</button>` : ''}
+            </div>
+          </td>
+          <td>${r.isCheated ? '🚨 غش' : 'سليم'}</td>
+          <td>${r.time}</td>
+        `;
         tbody.appendChild(tr);
       });
     }
+
+    // دالة تحكم المستر في منح الشهادة لطالب معين فورياً مع إشعار الطالب وولي الأمر
+    window.toggleTeacherGrantCert = function(resultIndex) {
+      const results = getExamResults();
+      const res = results[resultIndex];
+      if (!res) return;
+
+      const willGrant = !res.hasCertGranted;
+      res.hasCertGranted = willGrant;
+      saveExamResults(results);
+
+      const students = getStudents();
+      const studentObj = students.find(s => s.name === res.name);
+
+      if (willGrant) {
+        alert(`🎉 تم اعتماد ومنح شهادة التقدير للطالب (${res.name}) بنجاح!`);
+        
+        if (studentObj) {
+          // 1. إشعار الطالب في المنصة
+          addAutoNotification({
+            type: "cert_granted_student",
+            recipientType: "student",
+            studentCode: studentObj.code,
+            grade: res.grade,
+            examTitle: res.examTitle,
+            percentage: res.percentage,
+            title: "🏅 مبارك! تم منحك شهادة تقدير معتمدة!",
+            text: `قام مستر يوسف خميس باعتماد شهادة تفوق وتقدير رسمية لك في اختبار (${res.examTitle || 'امتحان المنصة'}). يمكنك الآن استعراضها وتحميلها PDF!`
+          });
+
+          // 2. إشعار ولي الأمر في المنصة
+          if (studentObj.parentPhone) {
+            addAutoNotification({
+              type: "cert_granted_parent",
+              recipientType: "parent",
+              parentPhone: studentObj.parentPhone,
+              studentCode: studentObj.code,
+              grade: res.grade,
+              title: "🏅 تهنئة: منح شهادة تفوق للطالب",
+              text: `يسر مستر يوسف خميس تهنئتكم بحصول الطالب (${studentObj.name}) على شهادة تقدير وتفوق معتمدة بنسبة ${res.percentage}!`
+            });
+
+            // 3. فتح واتساب لمراسلة ولي الأمر مباشرة
+            const waMsg = encodeURIComponent(`🏅 [شهادة تقدير وتفوق معتمدة]\nالسلام عليكم ولي أمر الطالب المتميز: ${studentObj.name}\nيسر إدارة أكاديمية مستر يوسف خميس للغة الإنجليزية تهنئتكم بتفوق الطالب وحصوله على شهادة تقدير رسمية معتمدة لاجتيازه اختبار (${res.examTitle || 'الاختبار الأكاديمي'}) بنسبة (${res.percentage}) بتفوق باهر! 🌟\n\nتم إتاحة الشهادة للتحميل داخل حساب الطالب.`);
+            window.open(`https://wa.me/2${studentObj.parentPhone}?text=${waMsg}`, "_blank");
+          }
+        }
+      } else {
+        alert(`⚠️ تم إلغاء منح الشهادة للطالب (${res.name}).`);
+      }
+
+      renderTeacherResults();
+    };
+
+    window.previewCertByTeacher = function(resultIndex) {
+      const res = getExamResults()[resultIndex];
+      if (!res) return;
+      const students = getStudents();
+      const studentObj = students.find(s => s.name === res.name);
+      const studentCode = studentObj ? studentObj.code : "YK-000000";
+      showStudentMasterpieceCert(res.name, res.grade, res.examTitle || "Comprehensive Examination", res.percentage, studentCode);
+    };
 
     function renderTeacherPayments() {
       const students = getStudents();
@@ -5033,16 +5254,32 @@
     }, true);
 
     /* =========================================================
-       دوال تشغيل وتصدير شهادة التقدير الملكية (Masterpiece Certificate)
+       دوال تشغيل وتصدير شهادة التقدير الملكية مع التحويل التلقائي للإنجليزية
        ========================================================= */
     let currentStudentNameForExport = "Student";
 
     function renderMasterpieceCertificate(studentName, grade, examTitle, percentage, studentCode) {
-      currentStudentNameForExport = studentName || "Student";
+      // تحويل اسم الطالب تلقائياً إلى الإنجليزية إذا كان مسجلاً بالعربية
+      const englishStudentName = convertArabicNameToEnglish(studentName);
+      currentStudentNameForExport = englishStudentName;
 
-      document.getElementById("cert-render-student-name").innerText = (studentName || "STUDENT NAME").toUpperCase();
-      document.getElementById("cert-render-grade-text").innerText = grade || "Academic Grade";
-      document.getElementById("cert-render-exam-title").innerText = examTitle || "Comprehensive English Examination";
+      // تحويل اسم الصف تلقائياً إلى الإنجليزية
+      const gradeEnglishMap = {
+        "الصف الأول الابتدائي": "First Primary Grade",
+        "الصف الثاني الابتدائي": "Second Primary Grade",
+        "الصف الثالث الابتدائي": "Third Primary Grade",
+        "الصف الرابع الابتدائي": "Fourth Primary Grade",
+        "الصف الخامس الابتدائي": "Fifth Primary Grade",
+        "الصف السادس الابتدائي": "Sixth Primary Grade",
+        "الصف الأول الإعدادي": "First Preparatory Grade",
+        "الصف الثاني الإعدادي": "Second Preparatory Grade",
+        "الصف الثالث الإعدادي": "Third Preparatory Grade"
+      };
+      const englishGrade = gradeEnglishMap[grade] || grade || "Academic Level";
+
+      document.getElementById("cert-render-student-name").innerText = englishStudentName;
+      document.getElementById("cert-render-grade-text").innerText = englishGrade;
+      document.getElementById("cert-render-exam-title").innerText = examTitle || "Comprehensive English Language Examination";
       document.getElementById("cert-render-score-text").innerText = `FINAL SCORE: ${percentage} (OUTSTANDING)`;
       document.getElementById("cert-render-code-val").innerText = studentCode || "YK-000000";
 
@@ -5050,14 +5287,18 @@
       document.getElementById("cert-render-issue-date").innerText = today;
 
       // توليد كود التحقق الرقمي الحي
-      const verifyUrl = `https://mryoussefkhamis.com/verify?code=${encodeURIComponent(studentCode || '')}&name=${encodeURIComponent(studentName || '')}`;
+      const verifyUrl = `https://mryoussefkhamis.com/verify?code=${encodeURIComponent(studentCode || '')}&name=${encodeURIComponent(englishStudentName)}`;
       document.getElementById("cert-render-qr-img").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}`;
+
+      // ضبط التكبير والتصغير الفوري ليناسب شاشة الهاتف بالكامل
+      adjustMasterpieceCertScale();
     }
 
     function showStudentMasterpieceCert(studentName, grade, examTitle, percentage, studentCode) {
       renderMasterpieceCertificate(studentName, grade, examTitle, percentage, studentCode);
       const modal = document.getElementById("masterpiece-certificate-modal");
       if (modal) modal.classList.remove("hidden");
+      setTimeout(adjustMasterpieceCertScale, 50);
     }
 
     function downloadMasterpiecePDF() {
