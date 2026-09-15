@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>El-Afandi | Smart English Board</title>
+<style>
+  :root {
+    --bg-dark: #060913;
+    --card-bg: rgba(14, 22, 41, 0.92);
+    --gold: #f59e0b;
+    --gold-glow: rgba(245, 158, 11, 0.45);
+    --cyan: #38bdf8;
+    --cyan-glow: rgba(56, 189, 248, 0.35);
+    --green: #10b981;
+    --red: #ef4444;
+    --text-light: #f8fafc;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* خلفية استوديو ذكية وفخمة جداً مع إضاءات هادئة وشبكة تكنولوجية */
+  body {
+    background-color: var(--bg-dark);
+    background-image: 
+      radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(245, 158, 11, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.9) 0%, #060913 100%),
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    color: var(--text-light);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    touch-action: manipulation;
+    overflow: hidden;
+  }
+
+  /* الإطار الخارجي الفخم المحيط بالشاشة بالكامل */
+  .outer-frame {
+    position: relative;
+    width: 100%;
+    max-width: 1260px;
+    padding: 16px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(56, 189, 248, 0.2) 50%, rgba(15, 23, 42, 0.85) 100%);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(245, 158, 11, 0.2);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+  }
+
+  /* لمسات تكنولوجية في أركان الإطار */
+  .corner-decor {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border: 3.5px solid var(--gold);
+    pointer-events: none;
+  }
+  .corner-tl { top: 6px; left: 6px; border-right: none; border-bottom: none; border-radius: 8px 0 0 0; }
+  .corner-tr { top: 6px; right: 6px; border-left: none; border-bottom: none; border-radius: 0 8px 0 0; }
+  .corner-bl { bottom: 6px; left: 6px; border-right: none; border-top: none; border-radius: 0 0 0 8px; }
+  .corner-br { bottom: 6px; right: 6px; border-left: none; border-top: none; border-radius: 0 0 8px 0; }
+
+  /* Top Bar */
+  .top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 0 8px;
+  }
+
+  .branding-title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 1.5px;
+    text-shadow: 0 0 16px var(--gold-glow);
+  }
+
+  .branding-sub {
+    font-size: 0.95rem;
+    color: var(--cyan);
+    font-weight: bold;
+    letter-spacing: 3px;
+    margin-left: 8px;
+  }
+
+  .stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .badge {
+    background: #141f36;
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 20px;
+    font-size: 1.15rem;
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  #counterBadge {
+    color: var(--cyan);
+    border-color: var(--cyan);
+    box-shadow: 0 0 12px var(--cyan-glow);
+  }
+
+  .fs-toggle-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: var(--cyan);
+    padding: 9px 15px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  /* Screen Stage مع طبقة زجاجية وتدرج سينمائي مريح */
+  .stage {
+    position: relative;
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: 22px;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    padding: 28px 34px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Drawing Layer */
+  #smartCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 22px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  #smartCanvas.drawing-mode {
+    pointer-events: auto;
+    cursor: crosshair;
+  }
+
+  .topic-text {
+    font-size: 1.2rem;
+    color: var(--cyan);
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  /* تكبير نص السؤال ووضوحه */
+  .question-container {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #ffffff;
+    min-height: 80px;
+    margin-bottom: 20px;
+    line-height: 1.45;
+  }
+
+  .q-num {
+    color: var(--gold);
+    margin-right: 12px;
+    text-shadow: 0 0 14px var(--gold-glow);
+  }
+
+  /* تكبير كروت الاختيارات */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .opt-btn {
+    background: #15223a;
+    border: 2px solid #2a3c61;
+    border-radius: 16px;
+    padding: 18px 24px;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: 0.15s ease;
+  }
+
+  .opt-btn:hover {
+    border-color: var(--cyan);
+    background: #1b2b4a;
+  }
+
+  .opt-btn:active {
+    transform: scale(0.99);
+  }
+
+  .opt-key {
+    width: 44px;
+    height: 44px;
+    background: #2a3c61;
+    color: var(--cyan);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .opt-btn.correct {
+    background: rgba(16, 185, 129, 0.25) !important;
+    border-color: var(--green) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+  }
+
+  .opt-btn.correct .opt-key {
+    background: var(--green);
+    color: #fff;
+  }
+
+  .opt-btn.wrong {
+    background: rgba(239, 68, 68, 0.25) !important;
+    border-color: var(--red) !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.35);
+  }
+
+  .opt-btn.wrong .opt-key {
+    background: var(--red);
+    color: #fff;
+  }
+
+  /* Note Box */
+  .note-box {
+    display: none;
+    background: rgba(245, 158, 11, 0.12);
+    border-left: 5px solid var(--gold);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 1.25rem;
+    color: #fef08a;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  /* Control Dock */
+  .dock {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 16px;
+    z-index: 20;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .btn-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .dock-btn {
+    background: #1b2844;
+    color: #fff;
+    border: 1px solid #334a75;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .dock-btn.active-pen {
+    background: var(--gold);
+    color: #000;
+    border-color: var(--gold);
+    box-shadow: 0 0 16px var(--gold-glow);
+  }
+
+  .color-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+
+  .color-btn.active-color {
+    border-color: #fff;
+    transform: scale(1.2);
+  }
+
+  .nav-btn {
+    background: linear-gradient(135deg, var(--gold), #d97706);
+    color: #000;
+    border: none;
+    padding: 13px 30px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+  }
+
+  .nav-btn:disabled {
+    background: #1c273d;
+    color: #64748b;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  /* Start Screen */
+  .start-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #060913;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+
+  .start-box {
+    text-align: center;
+    padding: 45px 60px;
+    border-radius: 28px;
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 45px var(--gold-glow);
+    background: #111a2e;
+  }
+
+  .start-btn {
+    background: var(--gold);
+    color: #000;
+    font-size: 2rem;
+    font-weight: 900;
+    padding: 18px 52px;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    margin-top: 25px;
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+  }
+
+  /* Result Screen */
+  .result-modal {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(6, 9, 19, 0.97);
+    border-radius: 22px;
+    z-index: 50;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 25px;
+  }
+
+  .res-emoji {
+    font-size: 5.5rem;
+    margin-bottom: 10px;
+  }
+
+  .res-title {
+    font-size: 2.6rem;
+    color: var(--gold);
+    margin-bottom: 8px;
+    font-weight: 900;
+  }
+
+  .res-sub {
+    font-size: 1.5rem;
+    color: var(--cyan);
+    margin-bottom: 16px;
+    font-weight: bold;
+  }
+
+  .res-score {
+    font-size: 1.8rem;
+    color: #cbd5e1;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 768px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .question-container { font-size: 1.6rem; }
+    .opt-btn { font-size: 1.25rem; padding: 14px 18px; }
+    .branding-title { font-size: 1.5rem; }
+    .top-bar { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Start Screen -->
+  <div class="start-overlay" id="startScreen">
+    <div class="start-box">
+      <h1 style="color: var(--gold); font-size: 3.5rem; margin-bottom: 8px; text-shadow: 0 0 25px var(--gold-glow);">EL-AFANDI</h1>
+      <p style="color: var(--cyan); font-size: 1.4rem; letter-spacing: 3px; font-weight: bold;">ENGLISH ACADEMY</p>
+      <button class="start-btn" onclick="startApp()">Start Quiz 🚀</button>
+    </div>
+  </div>
+
+  <div class="outer-frame">
+    <div class="corner-decor corner-tl"></div>
+    <div class="corner-decor corner-tr"></div>
+    <div class="corner-decor corner-bl"></div>
+    <div class="corner-decor corner-br"></div>
+
+    <div class="top-bar">
+      <div>
+        <span class="branding-title">El-Afandi</span>
+        <span class="branding-sub">ENGLISH ACADEMY</span>
+      </div>
+      <div class="stats">
+        <button class="fs-toggle-btn" onclick="toggleFullScreen()">⛶ Fullscreen</button>
+        <div class="badge" id="scoreBadge">Score: 0</div>
+        <div class="badge" id="counterBadge">QUESTION 01 / 10</div>
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <canvas id="smartCanvas"></canvas>
+
+      <div class="topic-text" id="topicText">Topic Focus</div>
+      <div class="question-container" id="questionBox">Loading...</div>
+      <div class="options-grid" id="optionsGrid"></div>
+
+      <div class="note-box" id="noteBox">
+        💡 <strong>ملاحظة El-Afandi:</strong> <span id="noteText"></span>
+      </div>
+
+      <div class="dock">
+        <div class="btn-group">
+          <button class="dock-btn" id="penToggle" onclick="togglePen()">🖊️ Pen</button>
+          <div class="color-btn active-color" style="background:#f59e0b;" onclick="setPenColor('#f59e0b', this)"></div>
+          <div class="color-btn" style="background:#38bdf8;" onclick="setPenColor('#38bdf8', this)"></div>
+          <div class="color-btn" style="background:#10b981;" onclick="setPenColor('#10b981', this)"></div>
+          <button class="dock-btn" onclick="clearPen()">🧹 Clear</button>
+          <button class="dock-btn" onclick="toggleTeacherNote()">💡 Note</button>
+        </div>
+
+        <div class="btn-group">
+          <button class="nav-btn" id="prevBtn" onclick="prevQ()" disabled>Previous</button>
+          <button class="nav-btn" id="nextBtn" onclick="nextQ()">Next</button>
+        </div>
+      </div>
+
+      <!-- Result Modal -->
+      <div class="result-modal" id="resultModal">
+        <div class="res-emoji" id="resEmoji">🤩</div>
+        <div class="res-title" id="resTitle">فرحااااااااان بيك جداً!</div>
+        <div class="res-sub" id="resSub">الدرجة النهائية كاملة.. عبقري!</div>
+        <div class="res-score" id="resScore">Final Score: 100 / 100 with El-Afandi!</div>
+        <button class="nav-btn" onclick="restart()">Restart Quiz</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // --- إعدادات وتغيرات المتغيرات العامة ---
+  const questions = [
+    {
+      topic: "Past Continuous vs Past Simple",
+      text: "While we ________ dinner, the lights suddenly went out.",
+      opts: ["were having", "had", "have had", "are having"],
+      correct: 0,
+      note: "حدث مستمر في الماضي قطعه حدث آخر مفاجئ: While + Past Continuous ➔ Past Simple."
+    },
+    {
+      topic: "Second Conditional",
+      text: "If he ________ more free time, he would join our sports club.",
+      opts: ["has", "had", "would have", "had had"],
+      correct: 1,
+      note: "الحالة التانية تعبر عن افتراض خيالي في الحاضر: If + Past Simple ➔ would + inf."
+    },
+    {
+      topic: "Present Perfect Key Words",
+      text: "I haven't seen Omar ________ he travelled to Alexandria last month.",
+      opts: ["for", "since", "ago", "while"],
+      correct: 1,
+      note: "نستخدم since إذا جاء بعدها بداية نقطة زمنية محددة أو جملة ماضي بسيط."
+    },
+    {
+      topic: "Passive Voice (Future)",
+      text: "A massive central hospital ________ in our district next year.",
+      opts: ["will build", "will be built", "is built", "was built"],
+      correct: 1,
+      note: "مبني للمجهول في المستقبل البسيط: will + be + P.P."
+    },
+    {
+      topic: "Relative Clauses",
+      text: "The professor ________ lecture we attended yesterday was very inspiring.",
+      opts: ["who", "which", "whose", "whom"],
+      correct: 2,
+      note: "نستخدم whose للملكية لأن المحاضرة تخص البروفيسور."
+    },
+    {
+      topic: "Predictions with Evidence",
+      text: "Look at those dark clouds! It ________ rain heavily.",
+      opts: ["is going to", "might have", "can't", "mustn't"],
+      correct: 0,
+      note: "تنبؤ بدليل حاضر وملموس في الواقع: be going to."
+    },
+    {
+      topic: "Reported Speech",
+      text: "Mona told me that she ________ to London the previous year.",
+      opts: ["has travelled", "travelled", "had travelled", "travels"],
+      correct: 2,
+      note: "وجود the previous year يعني أن أصل الجملة ماضي، ويرجع للماضي التام had travelled."
+    },
+    {
+      topic: "Gerund vs Infinitive",
+      text: "Don't forget ________ your assignments before coming to class.",
+      opts: ["submitting", "to submit", "submit", "submitted"],
+      correct: 1,
+      note: "قاعدة forget + to + inf تعني تذكر أن تفعل الفعل أولاً."
+    },
+    {
+      topic: "Subject-Verb Agreement",
+      text: "Neither the captain nor the players ________ satisfied with the match yesterday.",
+      opts: ["was", "were", "is", "are"],
+      correct: 1,
+      note: "مع Neither... nor الفعل يتبع الفاعل الأقرب له (the players) وهو جمع ماضي (were)."
+    },
+    {
+      topic: "Quantifiers",
+      text: "She speaks ________ French, but it is quite enough to communicate well.",
+      opts: ["a little", "little", "a few", "few"],
+      correct: 0,
+      note: "نستخدم a little مع غير المعدود لتعني كمية قليلة لكنها كافية للغرض."
+    }
+  ];
+
+  let currentIdx = 0;
+  let score = 0;
+  let penActive = false;
+  let drawing = false;
+  let penColor = "#f59e0b";
+
+  // هيكل حفظ حالة الامتحان
+  const quizState = {
+    userAnswers: Array(questions.length).fill(null), // سيخزن { selected: index, isCorrect: bool } أو null
+  };
+
+  const stage = document.getElementById("stage");
+  const canvas = document.getElementById("smartCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // --- وظائف النظام (Fullscreen, Audio) ---
+  function triggerFullScreen() {
+    const docEl = document.documentElement;
+    const req = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+    if (req) req.call(docEl).catch(() => {});
+  }
+
+  function toggleFullScreen() {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      triggerFullScreen();
+    } else {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+      if (exit) exit.call(document);
+    }
+  }
+
+  let audioCtx = null;
+  function getAudio() {
+    if (!audioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) audioCtx = new AudioContextClass();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function playTone(freq, type, duration) {
+    try {
+      const ctx = getAudio();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + duration);
+    } catch(e) {}
+  }
+
+  const Sound = {
+    click: () => playTone(500, 'sine', 0.05),
+    correct: () => {
+      [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+        setTimeout(() => playTone(f, 'triangle', 0.25), i * 70);
+      });
+    },
+    wrong: () => playTone(120, 'sawtooth', 0.25),
+    fanfare: () => {
+      for (let i = 0; i < 4; i++) setTimeout(() => Sound.correct(), i * 140);
+    }
+  };
+
+  // --- وظائف الرسم (Canvas) ---
+  function resizeCanvas() {
+    canvas.width = stage.offsetWidth;
+    canvas.height = stage.offsetHeight;
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = penColor;
+  }
+  window.addEventListener("resize", resizeCanvas);
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: cx - rect.left, y: cy - rect.top };
+  }
+
+  function startDraw(e) {
+    if (!penActive) return;
+    drawing = true;
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  }
+
+  function doDraw(e) {
+    if (!drawing || !penActive) return;
+    const p = getPos(e);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+  }
+
+  function endDraw() { drawing = false; }
+
+  canvas.addEventListener("mousedown", startDraw);
+  canvas.addEventListener("mousemove", doDraw);
+  canvas.addEventListener("mouseup", endDraw);
+  canvas.addEventListener("mouseleave", endDraw);
+
+  canvas.addEventListener("touchstart", (e) => { e.preventDefault(); startDraw(e); }, { passive: false });
+  canvas.addEventListener("touchmove", (e) => { e.preventDefault(); doDraw(e); }, { passive: false });
+  canvas.addEventListener("touchend", endDraw);
+
+  // --- وظائف التحكم في الأدوات (Pen, Note) ---
+  function togglePen() {
+    Sound.click();
+    penActive = !penActive;
+    const btn = document.getElementById("penToggle");
+    if (penActive) {
+      canvas.classList.add("drawing-mode");
+      btn.classList.add("active-pen");
+      btn.textContent = "✏️ Pen ON";
+    } else {
+      canvas.classList.remove("drawing-mode");
+      btn.classList.remove("active-pen");
+      btn.textContent = "🖊️ Pen";
+    }
+  }
+
+  function setPenColor(c, el) {
+    Sound.click();
+    penColor = c;
+    ctx.strokeStyle = c;
+    document.querySelectorAll(".color-btn").forEach(d => d.classList.remove("active-color"));
+    el.classList.add("active-color");
+  }
+
+  function clearPen() {
+    Sound.click();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function toggleTeacherNote() {
+    Sound.click();
+    const b = document.getElementById("noteBox");
+    b.style.display = b.style.display === "block" ? "none" : "block";
+  }
+
+  // --- وظائف الكويز الأساسية (Load, Choose, Navigation) ---
+  function startApp() {
+    triggerFullScreen();
+    getAudio();
+    document.getElementById("startScreen").style.display = "none";
+    setTimeout(resizeCanvas, 100);
+    loadQ(0);
+  }
+
+  // دالة تحميل السؤال المعدلة (تستعيد الحالة المحفوظة)
+  function loadQ(idx) {
+    currentIdx = idx; // تحديث المؤشر الحالي
+    clearPen();
+    const q = questions[idx];
+    const num = String(idx + 1).padStart(2, '0');
+    document.getElementById("counterBadge").textContent = "QUESTION " + num + " / 10";
+    document.getElementById("topicText").textContent = "TOPIC: " + q.topic;
+    document.getElementById("questionBox").innerHTML = '<span class="q-num">Q' + (idx + 1) + '.</span> ' + q.text;
+    document.getElementById("noteText").textContent = q.note;
+    document.getElementById("noteBox").style.display = "none";
+
+    const grid = document.getElementById("optionsGrid");
+    grid.innerHTML = "";
+    const letters = ["A", "B", "C", "D"];
+
+    // تحقق مما إذا تم حل هذا السؤال سابقاً
+    const savedAnswer = quizState.userAnswers[idx];
+
+    q.opts.forEach((opt, i) => {
+      const btn = document.createElement("div");
+      btn.className = "opt-btn";
+      btn.innerHTML = '<span class="opt-key">' + letters[i] + '</span><span>' + opt + '</span>';
+      
+      // استعادة الحالة: إذا تم الحل سابقاً، قم بتطبيق الألوان وقفل الزر
+      if (savedAnswer !== null) {
+          btn.style.pointerEvents = "none"; // قفل التفاعل
+
+          // إذا كان هذا هو الزر الذي اختاره الطالب
+          if (i === savedAnswer.selected) {
+              if (savedAnswer.isCorrect) {
+                  btn.classList.add("correct");
+              } else {
+                  btn.classList.add("wrong");
+              }
+          }
+          // إذا كان الطالب أخطأ، قم بإبراز الإجابة الصحيحة أيضاً
+          if (!savedAnswer.isCorrect && i === q.correct) {
+              btn.classList.add("correct");
+          }
+      } else {
+          // الحالة العادية: السؤال لم يحل بعد، فعّل الضغط
+          btn.onclick = () => choose(btn, i, q.correct);
+      }
+      
+      grid.appendChild(btn);
+    });
+
+    document.getElementById("prevBtn").disabled = idx === 0;
+    document.getElementById("nextBtn").disabled = idx === questions.length - 1;
+  }
+
+  // دالة الاختيار المعدلة (تحفظ الحالة عند الاختيار)
+  function choose(card, selected, correct) {
+    // منع إعادة الاختيار إذا تم الحل (للتأكيد فقط)
+    if (quizState.userAnswers[currentIdx] !== null) return;
+
+    const all = document.querySelectorAll(".opt-btn");
+    all.forEach(b => b.style.pointerEvents = "none");
+
+    let isCorrect = (selected === correct);
+
+    if (isCorrect) {
+      Sound.correct();
+      card.classList.add("correct");
+      score += 10;
+      document.getElementById("scoreBadge").textContent = "Score: " + score;
+    } else {
+      Sound.wrong();
+      card.classList.add("wrong");
+      all[correct].classList.add("correct");
+    }
+
+    // --- حفظ حالة السؤال الحالية ---
+    quizState.userAnswers[currentIdx] = {
+      selected: selected,
+      isCorrect: isCorrect
+    };
+
+    // التحقق مما إذا كان هذا هو السؤال الأخير لتهيئة عرض النتيجة
+    let allAnswered = quizState.userAnswers.every(ans => ans !== null);
+    if (allAnswered || currentIdx === questions.length - 1) {
+       // حساب النتيجة النهائية الفعلية بناءً على الإجابات المحفوظة
+       score = quizState.userAnswers.reduce((sum, ans) => (ans && ans.isCorrect) ? sum + 10 : sum, 0);
+       document.getElementById("scoreBadge").textContent = "Score: " + score;
+       
+       // إذا كان السؤال الأخير، اعرض النتيجة بعد ثانية
+       if(currentIdx === questions.length - 1){
+          setTimeout(() => showResult(score), 1000);
+       }
+    }
+  }
+
+  function showResult(finalScore) {
+    const emoji = document.getElementById("resEmoji");
+    const title = document.getElementById("resTitle");
+    const sub = document.getElementById("resSub");
+    document.getElementById("resScore").textContent = "Final Score: " + finalScore + " / 100 with El-Afandi!";
+
+    if (finalScore === 100) {
+      emoji.textContent = "🤩🥳";
+      title.textContent = "فرحااااااااان بيك جداً!";
+      sub.textContent = "الدرجة النهائية كاملة.. عبقري الدفعة! 👑";
+      Sound.fanfare();
+    } else if (finalScore >= 80) {
+      emoji.textContent = "😎😄";
+      title.textContent = "مبسوط منك أوي!";
+      sub.textContent = "مستوى ممتاز وفاضلك تكه على التقفيل ⚡";
+      Sound.fanfare();
+    } else if (finalScore >= 50) {
+      emoji.textContent = "🙂👌";
+      title.textContent = "عدت.. بس نص نص!";
+      sub.textContent = "محتاجين شوية تركيز عشان نوصل للقمة 💪";
+      Sound.correct();
+    } else {
+      emoji.textContent = "😭🤦‍♂️";
+      title.textContent = "صدمتني والله!";
+      sub.textContent = "إيه النتيجة دي؟! يلا نعيد ونركز 🛑";
+      Sound.wrong();
+    }
+
+    document.getElementById("resultModal").style.display = "flex";
+  }
+
+  function nextQ() {
+    Sound.click();
+    if (currentIdx < questions.length - 1) {
+      loadQ(currentIdx + 1);
+    }
+  }
+
+  function prevQ() {
+    Sound.click();
+    if (currentIdx > 0) {
+      loadQ(currentIdx - 1);
+    }
+  }
+
+  // دالة إعادة التشغيل المعدلة (تمسح الحالة المحفوظة)
+  function restart() {
+    Sound.click();
+    score = 0;
+    
+    // --- مسح الذاكرة الداخلية للامتحان ---
+    quizState.userAnswers = Array(questions.length).fill(null);
+    
+    document.getElementById("scoreBadge").textContent = "Score: 0";
+    document.getElementById("resultModal").style.display = "none";
+    loadQ(0);
+  }
+</script>
+</body>
+</html>
